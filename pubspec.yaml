@@ -66,6 +66,8 @@ flutter:
     - assets/db/
     - assets/images/
     - assets/lotties/
+    - assets/bundled_editions.sqlite.gz
+    - assets/downloadable_editions.json
 
   # fonts:
   #   - family: QCFPage1

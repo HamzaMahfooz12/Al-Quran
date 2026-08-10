@@ -85,7 +85,7 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
     }
     transEdition ??= (availableTranslations.isNotEmpty
         ? availableTranslations.first
-        : const Edition(id: 1, type: 'translation', language: 'ur', name: 'Mufti Taqi Usmani', apiKey: 'ur.taqi', isBundled: true, isDownloaded: true));
+        : const Edition(id: 1, type: 'translation', language: 'ur', name: 'Fateh Muhammad Jalandhry', apiKey: 'ur.jalandhry', isBundled: true, isDownloaded: true));
 
     // Select active tafseer
     Edition? tafseerEdition;
@@ -96,7 +96,7 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
     }
     tafseerEdition ??= (availableTafseers.isNotEmpty
         ? availableTafseers.first
-        : const Edition(id: 7, type: 'tafseer', language: 'ur', name: 'Mufti Taqi Usmani Tafseer', apiKey: 'ur.taqiusmani', isBundled: true, isDownloaded: true));
+        : const Edition(id: 103, type: 'tafseer', language: 'ur', name: 'Tafseer Ibn e Kaseer', apiKey: 'tafseer-ibn-e-kaseer-urdu', isBundled: true, isDownloaded: true));
 
     Map<int, String> translations = await repo.getContentBulk(ayahIds, transEdition.id);
     Map<int, String> tafseers = await repo.getContentBulk(ayahIds, tafseerEdition.id);
@@ -242,9 +242,12 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
     await repo.fetchAndSyncApiEditions(type);
     final allEditions = await repo.getAllEditions(type: type);
 
-    if (!mounted) return;
+    final currentLang = type == 'translation'
+        ? (_activeTranslationEdition?.language.toLowerCase() ?? 'ur')
+        : (_activeTafseerEdition?.language.toLowerCase() ?? 'ar');
+    String selectedLangFilter = currentLang;
 
-    String selectedLangFilter = 'ur'; // Default filter: Urdu
+    if (!mounted) return;
 
     showModalBottomSheet(
       context: context,
@@ -256,17 +259,9 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
       builder: (ctx) {
         return StatefulBuilder(
           builder: (context, setModalState) {
-            List<Edition> baseFiltered;
-            if (selectedLangFilter == 'other') {
-              baseFiltered = allEditions.where((e) {
-                final lang = e.language.toLowerCase();
-                return lang != 'ur' && lang != 'en' && lang != 'hi';
-              }).toList();
-            } else if (selectedLangFilter == 'all') {
-              baseFiltered = List<Edition>.from(allEditions);
-            } else {
-              baseFiltered = allEditions.where((e) => e.language.toLowerCase() == selectedLangFilter).toList();
-            }
+            final baseFiltered = selectedLangFilter == 'all'
+                ? List<Edition>.from(allEditions)
+                : allEditions.where((e) => e.language.toLowerCase() == selectedLangFilter).toList();
 
             final filteredList = baseFiltered
               ..sort((a, b) {
@@ -300,11 +295,14 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                     ),
                     const SizedBox(height: 8),
 
-                    // Language Filter Chips
+                    // Language Filter Chips — Arabic, Urdu, English, Hindi
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
+                          _buildLangChip('Arabic (AR)', 'ar', selectedLangFilter, (lang) {
+                            setModalState(() => selectedLangFilter = lang);
+                          }),
                           _buildLangChip('Urdu (UR)', 'ur', selectedLangFilter, (lang) {
                             setModalState(() => selectedLangFilter = lang);
                           }),
@@ -312,9 +310,6 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                             setModalState(() => selectedLangFilter = lang);
                           }),
                           _buildLangChip('Hindi (HI)', 'hi', selectedLangFilter, (lang) {
-                            setModalState(() => selectedLangFilter = lang);
-                          }),
-                          _buildLangChip('Other Languages', 'other', selectedLangFilter, (lang) {
                             setModalState(() => selectedLangFilter = lang);
                           }),
                         ],
@@ -360,15 +355,21 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
 
                                     // 1. Immediately activate in settings & state
                                     if (type == 'translation') {
-                                      setState(() => _activeTranslationEdition = ed);
+                                      setState(() {
+                                        _activeTranslationEdition = ed;
+                                        _showTranslation = true;
+                                      });
                                       await ref.read(settingsServiceProvider).setSelectedTranslationId(ed.id);
                                     } else {
-                                      setState(() => _activeTafseerEdition = ed);
+                                      setState(() {
+                                        _activeTafseerEdition = ed;
+                                        _showTafseer = true;
+                                      });
                                       await ref.read(settingsServiceProvider).setSelectedTafseerEditionId(ed.id);
                                     }
 
                                     // 2. Refresh UI immediately for current surah
-                                    _loadData();
+                                    await _loadData();
 
                                     // 3. If not downloaded yet, fetch full edition in background
                                     if (!ed.isAvailable) {
@@ -782,29 +783,119 @@ class _AyahCard extends StatelessWidget {
             ),
           ],
 
-          // Tafseer Text
-          if (showTafseer && tafseerText != null) ...[
+          // Tafseer Section — named header + styled body
+          if (showTafseer) ...[
             const SizedBox(height: 14),
             Container(
-              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.8),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFD4E3D6)),
+                color: const Color(0xFFF0F8F1),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: const Color(0xFFA8C8AD), width: 1),
               ),
-              child: Text(
-                tafseerText!,
-                textAlign: tafseerText!.contains(RegExp(r'[\u0600-\u06FF]'))
-                    ? TextAlign.right
-                    : TextAlign.left,
-                textDirection: tafseerText!.contains(RegExp(r'[\u0600-\u06FF]'))
-                    ? TextDirection.rtl
-                    : TextDirection.ltr,
-                style: GoogleFonts.notoNastaliqUrdu(
-                  fontSize: 15,
-                  height: 2.1,
-                  color: const Color(0xFF34495E),
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // ── Tafseer Author Header ───────────────────────────────
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2D5A34).withValues(alpha: 0.08),
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(13)),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF2D5A34).withValues(alpha: 0.12),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.menu_book_rounded,
+                            size: 14,
+                            color: Color(0xFF2D5A34),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'تفسير',
+                                style: GoogleFonts.amiri(
+                                  fontSize: 11,
+                                  color: const Color(0xFF4A7A52),
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                              Text(
+                                tafseerName,
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFF2D5A34),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // ── Divider ─────────────────────────────────────────────
+                  Container(height: 1, color: const Color(0xFFC8DEC9)),
+
+                  // ── Tafseer Body ─────────────────────────────────────────
+                  Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: tafseerText == null
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF2D5A34)),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                'Loading tafseer…',
+                                style: GoogleFonts.inter(
+                                  fontSize: 13,
+                                  color: const Color(0xFF4A7A52),
+                                ),
+                              ),
+                            ],
+                          )
+                        : Builder(
+                            builder: (context) {
+                              final cleanedText = _cleanHtml(tafseerText!);
+                              final isRtl = cleanedText.contains(RegExp(r'[\u0600-\u06FF\u0900-\u097F]'));
+
+                              return Text(
+                                cleanedText,
+                                textAlign: isRtl ? TextAlign.right : TextAlign.left,
+                                textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+                                style: cleanedText.contains(RegExp(r'[\u0600-\u06FF]'))
+                                    ? GoogleFonts.notoNastaliqUrdu(
+                                        fontSize: 15,
+                                        height: 2.4,
+                                        color: const Color(0xFF2C3E50),
+                                      )
+                                    : GoogleFonts.inter(
+                                        fontSize: 14,
+                                        height: 1.75,
+                                        color: const Color(0xFF2C3E50),
+                                      ),
+                              );
+                            },
+                          ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -812,4 +903,28 @@ class _AyahCard extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Strip all HTML tags, clean HTML entities, and format linebreaks for pure text
+String _cleanHtml(String text) {
+  var s = text;
+  // Replace paragraph break tags with double linebreaks
+  s = s.replaceAll(RegExp(r'</p>|<br\s*/?>|</div>', caseSensitive: false), '\n');
+
+  // Strip all HTML tags
+  s = s.replaceAll(RegExp(r'<[^>]*>'), '');
+
+  // Clean HTML entities
+  s = s
+      .replaceAll('&nbsp;', ' ')
+      .replaceAll('&quot;', '"')
+      .replaceAll('&amp;', '&')
+      .replaceAll('&lt;', '<')
+      .replaceAll('&gt;', '>')
+      .replaceAll('&#39;', "'");
+
+  // Remove multiple consecutive blank lines
+  s = s.replaceAll(RegExp(r'\n\s*\n+'), '\n\n');
+
+  return s.trim();
 }

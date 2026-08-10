@@ -3,6 +3,7 @@
 // SQLite helper — schema creation for all 9 tables + first-launch seeding
 // ─────────────────────────────────────────────────────────────────────────────
 import 'dart:async';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -22,6 +23,11 @@ class DatabaseHelper {
   }
 
   Future<Database> _initDatabase() async {
+    if (kIsWeb) {
+      throw UnsupportedError(
+        'Al Quran app requires Windows/Android/iOS — SQLite is not supported on Flutter Web.'
+      );
+    }
     final dbsPath = await getDatabasesPath();
     final path = join(dbsPath, _dbName);
 
@@ -34,10 +40,10 @@ class DatabaseHelper {
 
     // Auto-cleanup any invalid audio entries saved under translation
     await db.rawDelete(
-      "DELETE FROM ayah_content WHERE edition_id IN (SELECT id FROM editions WHERE api_key IN ('ur.taqi', 'ur.tariqmasood', 'quran-uthmani') AND type = 'translation')",
+      "DELETE FROM ayah_content WHERE edition_id IN (SELECT id FROM editions WHERE api_key LIKE '%taqi%' OR api_key IN ('ur.tariqmasood', 'quran-uthmani'))",
     );
     await db.rawDelete(
-      "DELETE FROM editions WHERE api_key IN ('ur.taqi', 'ur.tariqmasood', 'quran-uthmani') AND type = 'translation'",
+      "DELETE FROM editions WHERE api_key LIKE '%taqi%' OR api_key IN ('ur.tariqmasood', 'quran-uthmani')",
     );
 
     return db;
@@ -280,15 +286,6 @@ class DatabaseHelper {
         'api_key': 'ur.jalalayn',
         'is_bundled': 1,
         'is_downloaded': 1,
-      },
-      {
-        'id': 8,
-        'type': 'tafseer',
-        'language': 'ur',
-        'name': 'Mufti Taqi Usmani Tafseer (تفسیر مفتی تقی عثمانی)',
-        'api_key': 'ur.taqiusmani',
-        'is_bundled': 1,
-        'is_downloaded': 0,
       },
     ];
 

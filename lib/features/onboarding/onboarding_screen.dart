@@ -384,14 +384,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     // Default selections
     Edition? defaultTranslation;
     try {
-      defaultTranslation = filteredT.firstWhere((e) => e.apiKey.contains('taqi') || e.apiKey.contains('jalandhry'));
+      defaultTranslation = filteredT.firstWhere((e) => e.apiKey.contains('jalandhry') || e.apiKey.contains('ahmedali'));
     } catch (_) {
       defaultTranslation = filteredT.isNotEmpty ? filteredT.first : null;
     }
 
     Edition? defaultTafseer;
     try {
-      defaultTafseer = filteredTf.firstWhere((e) => e.apiKey.contains('taqi') || e.apiKey.contains('jalalayn'));
+      defaultTafseer = filteredTf.firstWhere((e) => e.apiKey.contains('ibn-e-kaseer') || e.apiKey.contains('bayan-ul-quran'));
     } catch (_) {
       defaultTafseer = filteredTf.isNotEmpty ? filteredTf.first : null;
     }

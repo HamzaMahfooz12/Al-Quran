@@ -1,0 +1,152 @@
+[
+  {
+    "id": 102,
+    "type": "tafseer",
+    "language": "ar",
+    "name": "Tafsir al-Tabari (تفسير الطبري)",
+    "api_key": "ar-tafsir-al-tabari",
+    "is_bundled": 0,
+    "is_downloaded": 0,
+    "source": "tafssir/arabic/ar-tafsir-al-tabari.json"
+  },
+  {
+    "id": 201,
+    "type": "tafseer",
+    "language": "ar",
+    "name": "Tafseer Al-Qurtubi (تفسير القرطبي)",
+    "api_key": "ar-tafseer-al-qurtubi",
+    "is_bundled": 0,
+    "is_downloaded": 0,
+    "source": "tafssir/arabic/ar-tafseer-al-qurtubi.json"
+  },
+  {
+    "id": 202,
+    "type": "tafseer",
+    "language": "ar",
+    "name": "Tafseer As-Sa'di (تفسير السعدي)",
+    "api_key": "ar-tafseer-al-saddi",
+    "is_bundled": 0,
+    "is_downloaded": 0,
+    "source": "tafssir/arabic/ar-tafseer-al-saddi.json"
+  },
+  {
+    "id": 203,
+    "type": "tafseer",
+    "language": "ar",
+    "name": "As-Seraj Fi Bayan Gharib Al-Quran",
+    "api_key": "asseraj-fi-bayan-gharib-alquran",
+    "is_bundled": 0,
+    "is_downloaded": 0,
+    "source": "tafssir/arabic/asseraj-fi-bayan-gharib-alquran.json"
+  },
+  {
+    "id": 204,
+    "type": "tafseer",
+    "language": "ar",
+    "name": "Tafsir Ibn Abi Hatim",
+    "api_key": "tafsir-ibn-abi-hatim",
+    "is_bundled": 0,
+    "is_downloaded": 0,
+    "source": "tafssir/arabic/tafsir-ibn-abi-hatim.json"
+  },
+  {
+    "id": 205,
+    "type": "tafseer",
+    "language": "ar",
+    "name": "Tafsir Ibn Uthaymeen",
+    "api_key": "tafsir-ibn-uthaymeen",
+    "is_bundled": 0,
+    "is_downloaded": 0,
+    "source": "tafssir/arabic/tafsir-ibn-uthaymeen.json"
+  },
+  {
+    "id": 206,
+    "type": "tafseer",
+    "language": "ar",
+    "name": "Tafsir Al-Jalalayn (تفسير الجلالين)",
+    "api_key": "tafsir-jalalayn",
+    "is_bundled": 0,
+    "is_downloaded": 0,
+    "source": "tafssir/arabic/tafsir-jalalayn.json"
+  },
+  {
+    "id": 207,
+    "type": "tafseer",
+    "language": "ur",
+    "name": "Tafseer As-Sa'di Urdu",
+    "api_key": "tafsir-as-saadi",
+    "is_bundled": 0,
+    "is_downloaded": 0,
+    "source": "tafssir/urdu/tafsir-as-saadi.json"
+  },
+  {
+    "id": 208,
+    "type": "tafseer",
+    "language": "ur",
+    "name": "Fi Zilal al-Quran (Syed Qutb)",
+    "api_key": "tafsir-fe-zalul-quran-syed-qatab",
+    "is_bundled": 0,
+    "is_downloaded": 0,
+    "source": "tafssir/urdu/tafsir-fe-zalul-quran-syed-qatab.json"
+  },
+  {
+    "id": 209,
+    "type": "tafseer",
+    "language": "ur",
+    "name": "Tazkirul Quran Urdu",
+    "api_key": "tazkiru-quran-ur",
+    "is_bundled": 0,
+    "is_downloaded": 0,
+    "source": "tafssir/urdu/tazkiru-quran-ur.json"
+  },
+  {
+    "id": 106,
+    "type": "tafseer",
+    "language": "en",
+    "name": "Tafseer Ibn Kathir English",
+    "api_key": "en-tafisr-ibn-kathir",
+    "is_bundled": 0,
+    "is_downloaded": 0,
+    "source": "tafssir/english/en-tafisr-ibn-kathir.json"
+  },
+  {
+    "id": 210,
+    "type": "tafseer",
+    "language": "en",
+    "name": "Al-Mukhtasar English",
+    "api_key": "Al-Mukhtasar",
+    "is_bundled": 0,
+    "is_downloaded": 0,
+    "source": "tafssir/english/Al-Mukhtasar.json"
+  },
+  {
+    "id": 211,
+    "type": "tafseer",
+    "language": "en",
+    "name": "Ma'arif-ul-Quran English",
+    "api_key": "en-tafsir-maarif-ul-quran",
+    "is_bundled": 0,
+    "is_downloaded": 0,
+    "source": "tafssir/english/en-tafsir-maarif-ul-quran.json"
+  },
+  {
+    "id": 212,
+    "type": "tafseer",
+    "language": "en",
+    "name": "Tafsir Al-Jalalayn English",
+    "api_key": "tafsir-al-jalalayn",
+    "is_bundled": 0,
+    "is_downloaded": 0,
+    "source": "tafssir/english/tafsir-al-jalalayn.json"
+  },
+  {
+    "id": 213,
+    "type": "tafseer",
+    "language": "en",
+    "name": "Tazkirul Quran English",
+    "api_key": "tazkirul-quran-en",
+    "is_bundled": 0,
+    "is_downloaded": 0,
+    "source": "tafssir/english/tazkirul-quran-en.json"
+  }
+]

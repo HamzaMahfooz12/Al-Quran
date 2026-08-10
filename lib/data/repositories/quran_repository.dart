@@ -103,10 +103,10 @@ class QuranRepository {
 
     // Delete any invalid audio reciter entries saved under translation type
     await db.rawDelete(
-      "DELETE FROM ayah_content WHERE edition_id IN (SELECT id FROM editions WHERE api_key IN ('ur.taqi', 'ur.tariqmasood', 'quran-uthmani') AND type = 'translation')",
+      "DELETE FROM ayah_content WHERE edition_id IN (SELECT id FROM editions WHERE api_key LIKE '%taqi%' OR api_key IN ('ur.tariqmasood', 'quran-uthmani'))",
     );
     await db.rawDelete(
-      "DELETE FROM editions WHERE api_key IN ('ur.taqi', 'ur.tariqmasood', 'quran-uthmani') AND type = 'translation'",
+      "DELETE FROM editions WHERE api_key LIKE '%taqi%' OR api_key IN ('ur.tariqmasood', 'quran-uthmani')",
     );
 
     String? where;
@@ -133,45 +133,45 @@ class QuranRepository {
   }
 
   /// Fetches all worldwide editions of a given type ('translation' or 'tafseer')
-  /// directly from AlQuran Cloud API and caches them in SQLite database.
   Future<List<Edition>> fetchAndSyncApiEditions(String type) async {
-    try {
-      final dio = Dio();
-      final response = await dio.get('https://api.alquran.cloud/v1/edition/type/$type');
-      if (response.data != null && response.data['status'] == 'OK') {
-        final items = (response.data['data'] as List).cast<Map<String, dynamic>>();
+    if (type == 'translation') {
+      try {
+        final dio = Dio();
+        final response = await dio.get('https://api.alquran.cloud/v1/edition/type/translation');
+        if (response.data != null && response.data['status'] == 'OK') {
+          final items = (response.data['data'] as List).cast<Map<String, dynamic>>();
 
-        final db = await _db.database;
-        final batch = db.batch();
+          final db = await _db.database;
+          final batch = db.batch();
 
-        for (final item in items) {
-          final apiKey = item['identifier'] as String? ?? '';
-          final name = item['name'] as String? ?? item['englishName'] as String? ?? '';
-          final language = item['language'] as String? ?? 'en';
-          final edType = item['type'] as String? ?? type;
+          for (final item in items) {
+            final apiKey = item['identifier'] as String? ?? '';
+            final name = item['name'] as String? ?? item['englishName'] as String? ?? '';
+            final language = item['language'] as String? ?? 'en';
 
-          // Skip invalid translation keys that return Arabic text
-          if (apiKey == 'ur.taqi' || apiKey == 'ur.tariqmasood' || apiKey == 'quran-uthmani') {
-            continue;
+            // Skip invalid translation keys that return Arabic text
+            if (apiKey == 'ur.taqi' || apiKey == 'ur.tariqmasood' || apiKey == 'quran-uthmani') {
+              continue;
+            }
+
+            batch.insert(
+              'editions',
+              {
+                'type': 'translation',
+                'language': language,
+                'name': name,
+                'api_key': apiKey,
+                'is_bundled': 0,
+                'is_downloaded': 0,
+              },
+              conflictAlgorithm: ConflictAlgorithm.ignore,
+            );
           }
 
-          batch.insert(
-            'editions',
-            {
-              'type': edType,
-              'language': language,
-              'name': name,
-              'api_key': apiKey,
-              'is_bundled': 0,
-              'is_downloaded': 0,
-            },
-            conflictAlgorithm: ConflictAlgorithm.ignore,
-          );
+          await batch.commit(noResult: true);
         }
-
-        await batch.commit(noResult: true);
-      }
-    } catch (_) {}
+      } catch (_) {}
+    }
 
     return getAllEditions(type: type);
   }

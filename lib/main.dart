@@ -12,6 +12,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'data/db/db_helper.dart';
+import 'data/db/tafseer_import_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,7 +42,10 @@ Future<void> main() async {
 
   // Pre-initialize DB helper (will seed on first launch inside)
   final dbHelper = DatabaseHelper.instance;
-  await dbHelper.database; // triggers onCreate if first launch
+  final mainDb = await dbHelper.database; // triggers onCreate if first launch
+
+  // One-time: import bundled tafseer from compressed asset
+  await TafseerImportService.importOnce(mainDb);
 
   final prefs = await SharedPreferences.getInstance();
 
