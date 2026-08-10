@@ -1,6 +1,8 @@
 // lib/features/verse_by_verse/ayah_list_screen.dart
 // Verse-by-verse reading screen with full edition selector bottom sheets & cloud download icons
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -121,9 +123,14 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
       }
     }
 
-    // Always ensure Tafseer is loaded for this Surah
-    if (tafseers.isEmpty) {
-      tafseers = await _fetchSurahEditionFromApi(tafseerEdition, ayahIds);
+    // Ensure valid Tafseer content is loaded (and auto-heal if cached text is stale Arabic)
+    final bool isTafseerStaleArabic = tafseers.isNotEmpty &&
+        tafseerEdition.language != 'ar' &&
+        ayahs.isNotEmpty &&
+        tafseers[ayahs.first.id]?.trim() == ayahs.first.arabicText.trim();
+
+    if (tafseers.isEmpty || isTafseerStaleArabic) {
+      tafseers = await _loadEditionContent(tafseerEdition, ayahIds);
     }
 
     final lastRead = await repo.getLastRead('verse_by_verse');
@@ -153,6 +160,56 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
         }
       });
     }
+  }
+
+  Future<Map<int, String>> _loadEditionContent(Edition ed, List<int> ayahIds) async {
+    final repo = ref.read(quranRepositoryProvider);
+
+    // 1. Try reading from local custom JSON file
+    final localPath = _localTafseerPaths[ed.apiKey];
+    if (localPath != null && File(localPath).existsSync()) {
+      try {
+        final jsonStr = await File(localPath).readAsString();
+        final Map<String, dynamic> tafseerDict = json.decode(jsonStr);
+        final List<Map<String, dynamic>> contentRows = [];
+        final Map<int, String> result = {};
+
+        for (final key in tafseerDict.keys) {
+          final rawText = _resolveTafseerValue(tafseerDict, key);
+          final text = _cleanHtml(rawText);
+
+          final parts = key.split(':');
+          if (parts.length == 2) {
+            final surah = int.tryParse(parts[0]);
+            final ayah = int.tryParse(parts[1]);
+            if (surah != null && ayah != null) {
+              final globalAyahId = _getGlobalAyahId(surah, ayah);
+              if (surah == widget.surahNumber) {
+                result[globalAyahId] = text;
+              }
+              contentRows.add({
+                'ayah_id': globalAyahId,
+                'edition_id': ed.id,
+                'text': text,
+              });
+            }
+          }
+        }
+
+        if (contentRows.isNotEmpty) {
+          await repo.deleteEditionContent(ed.id);
+          await repo.insertEditionContent(contentRows);
+          await repo.markEditionDownloaded(ed.id);
+          return result;
+        }
+      } catch (e) {
+        // ignore: avoid_print
+        print('Error parsing local JSON for ${ed.name}: $e');
+      }
+    }
+
+    // 2. Fallback to API if not a local JSON
+    return await _fetchSurahEditionFromApi(ed, ayahIds);
   }
 
   Future<Map<int, String>> _fetchSurahEditionFromApi(Edition ed, List<int> ayahIds) async {
@@ -404,6 +461,29 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
     );
   }
 
+  static const Map<String, String> _localTafseerPaths = {
+    // Arabic (7 downloadable)
+    'ar-tafsir-al-tabari': r'D:\AL Quran\tafssir\arabic\ar-tafsir-al-tabari.json',
+    'ar-tafseer-al-qurtubi': r'D:\AL Quran\tafssir\arabic\ar-tafseer-al-qurtubi.json',
+    'ar-tafseer-al-saddi': r'D:\AL Quran\tafssir\arabic\ar-tafseer-al-saddi.json',
+    'asseraj-fi-bayan-gharib-alquran': r'D:\AL Quran\tafssir\arabic\asseraj-fi-bayan-gharib-alquran.json',
+    'tafsir-ibn-abi-hatim': r'D:\AL Quran\tafssir\arabic\tafsir-ibn-abi-hatim.json',
+    'tafsir-ibn-uthaymeen': r'D:\AL Quran\tafssir\arabic\tafsir-ibn-uthaymeen.json',
+    'tafsir-jalalayn': r'D:\AL Quran\tafssir\arabic\tafsir-jalalayn.json',
+
+    // Urdu (3 downloadable)
+    'tafsir-as-saadi': r'D:\AL Quran\tafssir\urdu\tafsir-as-saadi.json',
+    'tafsir-fe-zalul-quran-syed-qatab': r'D:\AL Quran\tafssir\urdu\tafsir-fe-zalul-quran-syed-qatab.json',
+    'tazkiru-quran-ur': r'D:\AL Quran\tafssir\urdu\tazkiru-quran-ur.json',
+
+    // English (5 downloadable)
+    'en-tafisr-ibn-kathir': r'D:\AL Quran\tafssir\english\en-tafisr-ibn-kathir.json',
+    'Al-Mukhtasar': r'D:\AL Quran\tafssir\english\Al-Mukhtasar.json',
+    'en-tafsir-maarif-ul-quran': r'D:\AL Quran\tafssir\english\en-tafsir-maarif-ul-quran.json',
+    'tafsir-al-jalalayn': r'D:\AL Quran\tafssir\english\tafsir-al-jalalayn.json',
+    'tazkirul-quran-en': r'D:\AL Quran\tafssir\english\tazkirul-quran-en.json',
+  };
+
   Future<void> _downloadAndSetEdition(Edition ed) async {
     final repo = ref.read(quranRepositoryProvider);
     final messenger = ScaffoldMessenger.of(context);
@@ -414,33 +494,83 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
     ));
 
     try {
-      final dio = Dio();
-      final response = await dio.get('https://api.alquran.cloud/v1/quran/${ed.apiKey}');
-      if (response.data != null && response.data['status'] == 'OK') {
-        final surahs = (response.data['data']['surahs'] as List).cast<Map<String, dynamic>>();
-        final List<Map<String, dynamic>> contentRows = [];
+      final List<Map<String, dynamic>> contentRows = [];
 
-        for (final surah in surahs) {
-          final ayahs = (surah['ayahs'] as List).cast<Map<String, dynamic>>();
-          for (final ayah in ayahs) {
-            contentRows.add({
-              'ayah_id': ayah['number'] as int,
-              'edition_id': ed.id,
-              'text': ayah['text'] as String,
-            });
+      // Check if this edition is in our local JSON files
+      final localPath = _localTafseerPaths[ed.apiKey];
+      if (localPath != null && File(localPath).existsSync()) {
+        final jsonStr = await File(localPath).readAsString();
+        final Map<String, dynamic> tafseerDict = json.decode(jsonStr);
+
+        for (final entry in tafseerDict.entries) {
+          final key = entry.key; // e.g. "1:1"
+          final val = entry.value;
+          final rawText = val is Map ? (val['text'] ?? '').toString() : val.toString();
+          final text = _cleanHtml(rawText);
+
+          final parts = key.split(':');
+          if (parts.length == 2) {
+            final surah = int.tryParse(parts[0]);
+            final ayah = int.tryParse(parts[1]);
+            if (surah != null && ayah != null) {
+              final globalAyahId = _getGlobalAyahId(surah, ayah);
+              contentRows.add({
+                'ayah_id': globalAyahId,
+                'edition_id': ed.id,
+                'text': text,
+              });
+            }
           }
         }
+      } else {
+        // Fallback for standard online translations
+        final dio = Dio();
+        final response = await dio.get('https://api.alquran.cloud/v1/quran/${ed.apiKey}');
+        if (response.data != null && response.data['status'] == 'OK') {
+          final surahs = (response.data['data']['surahs'] as List).cast<Map<String, dynamic>>();
+          for (final surah in surahs) {
+            final ayahs = (surah['ayahs'] as List).cast<Map<String, dynamic>>();
+            for (final ayah in ayahs) {
+              contentRows.add({
+                'ayah_id': ayah['number'] as int,
+                'edition_id': ed.id,
+                'text': ayah['text'] as String,
+              });
+            }
+          }
+        }
+      }
 
+      if (contentRows.isNotEmpty) {
         await repo.insertEditionContent(contentRows);
         await repo.markEditionDownloaded(ed.id);
-        _loadData();
+        await _loadData();
 
         messenger.showSnackBar(SnackBar(
           content: Text('${ed.name} ready offline!'),
           duration: const Duration(seconds: 2),
         ));
       }
-    } catch (_) {}
+    } catch (e) {
+      // ignore: avoid_print
+      print('Error downloading edition ${ed.name}: $e');
+    }
+  }
+
+  int _getGlobalAyahId(int surah, int ayah) {
+    const counts = [
+      7, 286, 200, 176, 120, 165, 206, 75, 129, 109, 123, 111, 43, 52, 99, 128, 111, 110, 98, 135,
+      112, 78, 118, 64, 77, 227, 93, 88, 69, 60, 34, 30, 73, 54, 45, 83, 182, 88, 75, 85,
+      54, 53, 89, 59, 37, 35, 38, 29, 18, 45, 60, 49, 62, 55, 78, 96, 29, 22, 24, 13,
+      14, 11, 11, 18, 12, 12, 30, 52, 52, 44, 28, 28, 20, 56, 40, 31, 50, 40, 46, 42,
+      29, 19, 36, 25, 22, 17, 19, 26, 30, 20, 15, 21, 11, 8, 8, 19, 5, 8, 8, 11,
+      11, 8, 3, 9, 5, 4, 7, 3, 6, 3, 5, 4, 5, 6
+    ];
+    int total = 0;
+    for (int i = 0; i < surah - 1; i++) {
+      total += counts[i];
+    }
+    return total + ayah;
   }
 
   @override
@@ -767,19 +897,22 @@ class _AyahCard extends StatelessWidget {
           // Translation Text
           if (showTranslation && translationText != null) ...[
             const SizedBox(height: 12),
-            Text(
-              translationText!,
-              textAlign: translationText!.contains(RegExp(r'[\u0600-\u06FF]'))
-                  ? TextAlign.right
-                  : TextAlign.left,
-              textDirection: translationText!.contains(RegExp(r'[\u0600-\u06FF]'))
-                  ? TextDirection.rtl
-                  : TextDirection.ltr,
-              style: GoogleFonts.notoNastaliqUrdu(
-                fontSize: 16,
-                height: 2.2,
-                color: const Color(0xFF2C3E50),
-              ),
+            Builder(
+              builder: (context) {
+                final isUrduOrArabic = translationText!.contains(RegExp(r'[\u0600-\u06FF]'));
+                final isHindi = translationText!.contains(RegExp(r'[\u0900-\u097F]'));
+
+                return Text(
+                  translationText!,
+                  textAlign: isUrduOrArabic ? TextAlign.right : TextAlign.left,
+                  textDirection: isUrduOrArabic ? TextDirection.rtl : TextDirection.ltr,
+                  style: isUrduOrArabic
+                      ? GoogleFonts.notoNastaliqUrdu(fontSize: 16, height: 2.2, color: const Color(0xFF2C3E50))
+                      : (isHindi
+                          ? GoogleFonts.notoSansDevanagari(fontSize: 15, height: 1.8, color: const Color(0xFF2C3E50))
+                          : GoogleFonts.inter(fontSize: 14, height: 1.7, color: const Color(0xFF2C3E50))),
+                );
+              },
             ),
           ],
 
@@ -874,23 +1007,30 @@ class _AyahCard extends StatelessWidget {
                         : Builder(
                             builder: (context) {
                               final cleanedText = _cleanHtml(tafseerText!);
-                              final isRtl = cleanedText.contains(RegExp(r'[\u0600-\u06FF\u0900-\u097F]'));
+                              final isUrduOrArabic = cleanedText.contains(RegExp(r'[\u0600-\u06FF]'));
+                              final isHindi = cleanedText.contains(RegExp(r'[\u0900-\u097F]'));
 
                               return Text(
                                 cleanedText,
-                                textAlign: isRtl ? TextAlign.right : TextAlign.left,
-                                textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
-                                style: cleanedText.contains(RegExp(r'[\u0600-\u06FF]'))
+                                textAlign: isUrduOrArabic ? TextAlign.right : TextAlign.left,
+                                textDirection: isUrduOrArabic ? TextDirection.rtl : TextDirection.ltr,
+                                style: isUrduOrArabic
                                     ? GoogleFonts.notoNastaliqUrdu(
                                         fontSize: 15,
                                         height: 2.4,
                                         color: const Color(0xFF2C3E50),
                                       )
-                                    : GoogleFonts.inter(
-                                        fontSize: 14,
-                                        height: 1.75,
-                                        color: const Color(0xFF2C3E50),
-                                      ),
+                                    : (isHindi
+                                        ? GoogleFonts.notoSansDevanagari(
+                                            fontSize: 14,
+                                            height: 1.8,
+                                            color: const Color(0xFF2C3E50),
+                                          )
+                                        : GoogleFonts.inter(
+                                            fontSize: 14,
+                                            height: 1.75,
+                                            color: const Color(0xFF2C3E50),
+                                          )),
                               );
                             },
                           ),
@@ -905,13 +1045,28 @@ class _AyahCard extends StatelessWidget {
   }
 }
 
+String _resolveTafseerValue(Map<String, dynamic> dict, String key, [int depth = 0]) {
+  if (depth > 10) return '';
+  final val = dict[key];
+  if (val == null) return '';
+  if (val is Map) return (val['text'] ?? '').toString();
+  if (val is String) {
+    final str = val.trim();
+    if (str.contains(':') && dict.containsKey(str)) {
+      return _resolveTafseerValue(dict, str, depth + 1);
+    }
+    return str;
+  }
+  return val.toString();
+}
+
 /// Strip all HTML tags, clean HTML entities, and format linebreaks for pure text
 String _cleanHtml(String text) {
   var s = text;
   // Replace paragraph break tags with double linebreaks
   s = s.replaceAll(RegExp(r'</p>|<br\s*/?>|</div>', caseSensitive: false), '\n');
 
-  // Strip all HTML tags
+  // Strip all HTML tags (including self-closing like <p/>, <span/>, etc.)
   s = s.replaceAll(RegExp(r'<[^>]*>'), '');
 
   // Clean HTML entities
@@ -922,6 +1077,9 @@ String _cleanHtml(String text) {
       .replaceAll('&lt;', '<')
       .replaceAll('&gt;', '>')
       .replaceAll('&#39;', "'");
+
+  // Strip dangling unclosed html/class attribute snippets if any
+  s = s.replaceAll(RegExp(r'p\s+class="[^"]*"|div\s+lang="[^"]*"'), '');
 
   // Remove multiple consecutive blank lines
   s = s.replaceAll(RegExp(r'\n\s*\n+'), '\n\n');

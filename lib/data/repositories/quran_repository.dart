@@ -185,13 +185,22 @@ class QuranRepository {
     );
   }
 
+  Future<void> deleteEditionContent(int editionId) async {
+    final db = await _db.database;
+    await db.delete(
+      'ayah_content',
+      where: 'edition_id = ?',
+      whereArgs: [editionId],
+    );
+  }
+
   Future<void> insertEditionContent(
       List<Map<String, dynamic>> rows) async {
     final db = await _db.database;
     final batch = db.batch();
     for (final row in rows) {
       batch.insert('ayah_content', row,
-          conflictAlgorithm: ConflictAlgorithm.ignore);
+          conflictAlgorithm: ConflictAlgorithm.replace);
     }
     await batch.commit(noResult: true);
   }

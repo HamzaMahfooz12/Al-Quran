@@ -6,7 +6,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class TafseerImportService {
   /// Key stored in prefs-like flag file to skip re-import on subsequent launches.
-  static const _importFlagFile = 'tafseer_imported_v3.flag';
+  static const _importFlagFile = 'tafseer_imported_v6.flag';
 
   /// One-time import: called from main() after DB is ready.
   static Future<void> importOnce(Database mainDb) async {
@@ -152,7 +152,7 @@ class TafseerImportService {
       final batch = dst.batch();
       for (final row in rows) {
         batch.rawInsert('''
-          INSERT OR IGNORE INTO ayah_content (ayah_id, edition_id, text)
+          INSERT OR REPLACE INTO ayah_content (ayah_id, edition_id, text)
           VALUES (?, ?, ?)
         ''', [row['ayah_id'], row['edition_id'], row['text']]);
       }

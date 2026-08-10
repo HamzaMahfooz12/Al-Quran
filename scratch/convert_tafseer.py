@@ -58,7 +58,7 @@ BUNDLED_FILES = [
 ]
 
 DOWNLOADABLE_FILES = [
-    # Arabic (6 remaining — only al-Tabari moved from bundled, plus the rest)
+    # ── Arabic (7 downloadable) ─────────────────────────────────────────────
     {"folder": "arabic", "file": "ar-tafsir-al-tabari.json", "id": 102, "lang": "ar", "name": "Tafsir al-Tabari (تفسير الطبري)"},
     {"folder": "arabic", "file": "ar-tafseer-al-qurtubi.json", "id": 201, "lang": "ar", "name": "Tafseer Al-Qurtubi (تفسير القرطبي)"},
     {"folder": "arabic", "file": "ar-tafseer-al-saddi.json", "id": 202, "lang": "ar", "name": "Tafseer As-Sa'di (تفسير السعدي)"},
@@ -66,11 +66,13 @@ DOWNLOADABLE_FILES = [
     {"folder": "arabic", "file": "tafsir-ibn-abi-hatim.json", "id": 204, "lang": "ar", "name": "Tafsir Ibn Abi Hatim"},
     {"folder": "arabic", "file": "tafsir-ibn-uthaymeen.json", "id": 205, "lang": "ar", "name": "Tafsir Ibn Uthaymeen"},
     {"folder": "arabic", "file": "tafsir-jalalayn.json", "id": 206, "lang": "ar", "name": "Tafsir Al-Jalalayn (تفسير الجلالين)"},
-    # Urdu (3 remaining)
+
+    # ── Urdu (3 downloadable) ───────────────────────────────────────────────
     {"folder": "urdu", "file": "tafsir-as-saadi.json", "id": 207, "lang": "ur", "name": "Tafseer As-Sa'di Urdu"},
     {"folder": "urdu", "file": "tafsir-fe-zalul-quran-syed-qatab.json", "id": 208, "lang": "ur", "name": "Fi Zilal al-Quran (Syed Qutb)"},
     {"folder": "urdu", "file": "tazkiru-quran-ur.json", "id": 209, "lang": "ur", "name": "Tazkirul Quran Urdu"},
-    # English (5 — all English now downloadable)
+
+    # ── English (5 downloadable) ────────────────────────────────────────────
     {"folder": "english", "file": "en-tafisr-ibn-kathir.json", "id": 106, "lang": "en", "name": "Tafseer Ibn Kathir English"},
     {"folder": "english", "file": "Al-Mukhtasar.json", "id": 210, "lang": "en", "name": "Al-Mukhtasar English"},
     {"folder": "english", "file": "en-tafsir-maarif-ul-quran.json", "id": 211, "lang": "en", "name": "Ma'arif-ul-Quran English"},
@@ -106,6 +108,21 @@ CREATE TABLE IF NOT EXISTS ayah_content (
 );
 ''')
 
+def resolve_tafseer_text(tafseer_dict, key, depth=0):
+    if depth > 10:
+        return ""
+    val = tafseer_dict.get(key)
+    if not val:
+        return ""
+    if isinstance(val, dict):
+        return val.get('text', '')
+    if isinstance(val, str):
+        val_str = val.strip()
+        if ':' in val_str and val_str in tafseer_dict:
+            return resolve_tafseer_text(tafseer_dict, val_str, depth + 1)
+        return val_str
+    return str(val)
+
 total_rows_inserted = 0
 
 for item in BUNDLED_FILES:
@@ -123,10 +140,10 @@ for item in BUNDLED_FILES:
     
     rows = []
     unmapped = 0
-    for key, val in tafseer_dict.items():
-        text_str = val.get("text", "") if isinstance(val, dict) else str(val)
-        text_str = clean_html(text_str)
+    for key in tafseer_dict.keys():
         if key in surah_ayah_to_global:
+            raw_text = resolve_tafseer_text(tafseer_dict, key)
+            text_str = clean_html(raw_text)
             global_ayah_id = surah_ayah_to_global[key]
             rows.append((global_ayah_id, item["id"], text_str))
         else:
