@@ -74,15 +74,56 @@ class QuranAudioService {
       if (localFile != null && await localFile.exists()) {
         await _player.setFilePath(localFile.path);
       } else {
-        final url = 'https://cdn.islamic.network/quran/audio/128/$rId/$globalAyahNumber.mp3';
-        await _player.setUrl(url);
-        // Cache in background
-        _cacheInBackground(globalAyahNumber, rId, url);
+        final url192 = 'https://cdn.islamic.network/quran/audio/192/$rId/$globalAyahNumber.mp3';
+        final url128 = 'https://cdn.islamic.network/quran/audio/128/$rId/$globalAyahNumber.mp3';
+
+        bool loaded = false;
+        try {
+          await _player.setAudioSource(
+            AudioSource.uri(
+              Uri.parse(url192),
+              headers: const {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'},
+            ),
+          );
+          loaded = true;
+        } catch (_) {
+          try {
+            await _player.setAudioSource(
+              AudioSource.uri(
+                Uri.parse(url128),
+                headers: const {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'},
+              ),
+            );
+            loaded = true;
+          } catch (_) {}
+        }
+
+        if (!loaded) {
+          try {
+            final apiResponse = await _dio.get('https://api.alquran.cloud/v1/ayah/$globalAyahNumber/$rId');
+            if (apiResponse.data != null && apiResponse.data['data'] != null) {
+              final liveUrl = apiResponse.data['data']['audio'] as String;
+              await _player.setAudioSource(
+                AudioSource.uri(
+                  Uri.parse(liveUrl),
+                  headers: const {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'},
+                ),
+              );
+              loaded = true;
+            }
+          } catch (_) {}
+        }
+
+        // Cache in background if loaded
+        if (loaded) {
+          _cacheInBackground(globalAyahNumber, rId, url192);
+        }
       }
 
       await _player.play();
-    } catch (_) {
-      // Audio playback fallback
+    } catch (e) {
+      // ignore: avoid_print
+      print('Error playing audio for ayah $globalAyahNumber ($rId): $e');
     }
   }
 
