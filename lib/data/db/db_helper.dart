@@ -38,9 +38,12 @@ class DatabaseHelper {
       onConfigure: (db) async => await db.execute('PRAGMA foreign_keys = ON'),
     );
 
-    // Auto-cleanup any invalid audio entries saved under translation
+    // Auto-cleanup any invalid audio entries or bad Arabic text saved under non-Arabic Tafseers
     await db.rawDelete(
       "DELETE FROM ayah_content WHERE edition_id IN (SELECT id FROM editions WHERE api_key LIKE '%taqi%' OR api_key IN ('ur.tariqmasood', 'quran-uthmani'))",
+    );
+    await db.rawDelete(
+      "DELETE FROM ayah_content WHERE edition_id IN (SELECT id FROM editions WHERE type = 'tafseer' AND language != 'ar') AND (text LIKE '%بِسۡمِ ٱللَّهِ%' OR text LIKE '%اهْدِنَا الصِّرَاطَ%')",
     );
     await db.rawDelete(
       "DELETE FROM editions WHERE api_key LIKE '%taqi%' OR api_key IN ('ur.tariqmasood', 'quran-uthmani')",
@@ -97,9 +100,10 @@ class DatabaseHelper {
     // 4. reciters
     batch.execute('''
       CREATE TABLE reciters (
-        id    TEXT PRIMARY KEY,
-        name  TEXT NOT NULL,
-        style TEXT
+        id       TEXT PRIMARY KEY,
+        name     TEXT NOT NULL,
+        style    TEXT,
+        language TEXT NOT NULL DEFAULT 'ar'
       )
     ''');
 

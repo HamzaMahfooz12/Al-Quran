@@ -162,14 +162,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       itemCount: 30,
       itemBuilder: (ctx, i) {
-        final juz = i + 1;
+        final juzData = _kJuzData[i];
         return _JuzTile(
-          juzNumber: juz,
+          juzNumber: i + 1,
+          juzName: juzData['name'] as String,
+          arabicName: juzData['arabic'] as String,
+          startSurahName: juzData['startSurah'] as String,
           onTap: () {
-            // Navigate to verse-by-verse at the start of this juz
-            // For now navigate to home — juz navigation will scroll to correct ayah
-            context.goNamed('verse-by-verse',
-                pathParameters: {'surahNumber': '1'});
+            context.goNamed(
+              'juz',
+              pathParameters: {'juzNumber': (i + 1).toString()},
+            );
           },
         );
       },
@@ -334,9 +337,18 @@ class _SurahTile extends StatelessWidget {
 // ── Juz Tile ──────────────────────────────────────────────────────────────────
 class _JuzTile extends StatelessWidget {
   final int juzNumber;
+  final String juzName;
+  final String arabicName;
+  final String startSurahName;
   final VoidCallback onTap;
 
-  const _JuzTile({required this.juzNumber, required this.onTap});
+  const _JuzTile({
+    required this.juzNumber,
+    required this.juzName,
+    required this.arabicName,
+    required this.startSurahName,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -351,6 +363,7 @@ class _JuzTile extends StatelessWidget {
         ),
         child: Row(
           children: [
+            // Juz number badge
             Container(
               width: 42,
               height: 42,
@@ -370,16 +383,40 @@ class _JuzTile extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 14),
+            // Juz name + starting surah
             Expanded(
-              child: Text(
-                'Juz $juzNumber',
-                style: GoogleFonts.inter(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.textPrimary,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    juzName,
+                    style: GoogleFonts.inter(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Starts from $startSurahName',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                ],
               ),
             ),
+            // Arabic juz name
+            Text(
+              arabicName,
+              style: const TextStyle(
+                fontFamily: 'Scheherazade New',
+                fontSize: 20,
+                color: AppTheme.gold,
+              ),
+            ),
+            const SizedBox(width: 8),
             const Icon(Icons.chevron_right, color: AppTheme.textMuted),
           ],
         ),
@@ -387,3 +424,38 @@ class _JuzTile extends StatelessWidget {
     );
   }
 }
+
+// ── Juz Data — names, Arabic titles, starting surah/ayah for all 30 Juz ──────
+const _kJuzData = [
+  {'name': 'Alif Laam Meem',        'arabic': 'الم',              'startSurah': 'Al-Baqarah',   'surah': 2,  'ayah': 1},
+  {'name': 'Sayaqool',              'arabic': 'سَيَقُولُ',          'startSurah': 'Al-Baqarah',   'surah': 2,  'ayah': 142},
+  {'name': 'Tilkar Rusul',          'arabic': 'تِلۡكَ ٱلرُّسُلُ',  'startSurah': 'Al-Baqarah',   'surah': 2,  'ayah': 253},
+  {'name': 'Lan Tanaloo',           'arabic': 'لَن تَنَالُوا',     'startSurah': 'Aal-E-Imran',  'surah': 3,  'ayah': 92},
+  {'name': 'Wal Mohsanat',          'arabic': 'وَٱلۡمُحۡصَنَٰتُ', 'startSurah': 'An-Nisa',      'surah': 4,  'ayah': 24},
+  {'name': 'La Yuhibbullah',        'arabic': 'لَّا يُحِبُّ ٱللَّهُ', 'startSurah': 'An-Nisa',  'surah': 4,  'ayah': 148},
+  {'name': 'Wa Iza Samiu',          'arabic': 'وَإِذَا سَمِعُوا',  'startSurah': 'Al-Maeda',     'surah': 5,  'ayah': 82},
+  {'name': 'Wa Lau Annana',         'arabic': 'وَلَوۡ أَنَّنَا',   'startSurah': 'Al-Anaam',     'surah': 6,  'ayah': 111},
+  {'name': 'Qalal Malao',           'arabic': 'قَالَ ٱلۡمَلَأُ',   'startSurah': 'Al-Araf',      'surah': 7,  'ayah': 88},
+  {'name': 'Wa Alamu',              'arabic': 'وَٱعۡلَمُوٓا',      'startSurah': 'Al-Anfal',     'surah': 8,  'ayah': 41},
+  {'name': 'Yatazeroon',            'arabic': 'يَعۡتَذِرُونَ',     'startSurah': 'At-Tawbah',    'surah': 9,  'ayah': 94},
+  {'name': 'Wa Ma Min Daabbah',     'arabic': 'وَمَا مِن دَآبَّةٍ', 'startSurah': 'Hud',         'surah': 11, 'ayah': 6},
+  {'name': 'Wa Ma Ubarrio',         'arabic': 'وَمَآ أُبَرِّئُ',   'startSurah': 'Yusuf',        'surah': 12, 'ayah': 53},
+  {'name': 'Rubama',                'arabic': 'رُّبَمَا',           'startSurah': 'Al-Hijr',      'surah': 15, 'ayah': 1},
+  {'name': 'Subhanallazi',          'arabic': 'سُبۡحَٰنَ ٱلَّذِي', 'startSurah': 'Al-Isra',      'surah': 17, 'ayah': 1},
+  {'name': 'Qal Alam',              'arabic': 'قَالَ أَلَمۡ',      'startSurah': 'Al-Kahf',      'surah': 18, 'ayah': 75},
+  {'name': 'Iqtaraba',              'arabic': 'ٱقۡتَرَبَ',         'startSurah': 'Al-Anbiya',    'surah': 21, 'ayah': 1},
+  {'name': 'Qad Aflaha',            'arabic': 'قَدۡ أَفۡلَحَ',     'startSurah': 'Al-Muminoon',  'surah': 23, 'ayah': 1},
+  {'name': 'Wa Qalallazina',        'arabic': 'وَقَالَ ٱلَّذِينَ', 'startSurah': 'Al-Furqan',    'surah': 25, 'ayah': 20},
+  {'name': 'Amman Khalaq',          'arabic': 'أَمَّنۡ خَلَقَ',    'startSurah': 'An-Naml',      'surah': 27, 'ayah': 60},
+  {'name': 'Utlu Ma Oohiya',        'arabic': 'ٱتۡلُ مَآ أُوحِيَ', 'startSurah': 'Al-Ankabut',  'surah': 29, 'ayah': 45},
+  {'name': 'Wa Manyaqnut',          'arabic': 'وَمَن يَقۡنُتۡ',    'startSurah': 'Al-Ahzab',     'surah': 33, 'ayah': 31},
+  {'name': 'Wa Mali',               'arabic': 'وَمَالِيَ',          'startSurah': 'Ya-Seen',      'surah': 36, 'ayah': 22},
+  {'name': 'Faman Azlamu',          'arabic': 'فَمَنۡ أَظۡلَمُ',   'startSurah': 'Az-Zumar',     'surah': 39, 'ayah': 32},
+  {'name': 'Ilayhi Yuraddu',        'arabic': 'إِلَيۡهِ يُرَدُّ',  'startSurah': 'Fussilat',     'surah': 41, 'ayah': 47},
+  {'name': 'Ha Meem',               'arabic': 'حم',                 'startSurah': 'Al-Ahqaf',     'surah': 46, 'ayah': 1},
+  {'name': 'Qala Fama Khatbukum',   'arabic': 'قَالَ فَمَا خَطۡبُكُمۡ', 'startSurah': 'Az-Zariyat', 'surah': 51, 'ayah': 31},
+  {'name': 'Qad Sami Allah',        'arabic': 'قَدۡ سَمِعَ ٱللَّهُ', 'startSurah': 'Al-Mujadala', 'surah': 58, 'ayah': 1},
+  {'name': 'Tabarakallazi',         'arabic': 'تَبَٰرَكَ ٱلَّذِي', 'startSurah': 'Al-Mulk',      'surah': 67, 'ayah': 1},
+  {'name': 'Amma Yatasaaloona',     'arabic': 'عَمَّ يَتَسَآءَلُونَ', 'startSurah': 'An-Naba',   'surah': 78, 'ayah': 1},
+];
+

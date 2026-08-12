@@ -6,6 +6,7 @@ import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/verse_by_verse/verse_by_verse_screen.dart';
 import '../../features/verse_by_verse/ayah_list_screen.dart';
+import '../../features/juz/juz_screen.dart';
 import '../../features/mushaf_15/mushaf_15_screen.dart';
 import '../../features/mushaf_16/mushaf_16_screen.dart';
 import '../../features/bookmarks/bookmarks_screen.dart';
@@ -39,6 +40,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                       state.uri.queryParameters['ayah'] ?? '') ??
                   1;
               return AyahListScreen(surahNumber: surah, scrollToAyah: ayah);
+            },
+          ),
+          GoRoute(
+            path: 'juz/:juzNumber',
+            name: 'juz',
+            builder: (ctx, state) {
+              final juz = int.parse(state.pathParameters['juzNumber']!);
+              return JuzScreen(juzNumber: juz);
             },
           ),
           GoRoute(

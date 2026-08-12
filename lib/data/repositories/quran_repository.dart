@@ -16,7 +16,6 @@ class QuranRepository {
   final DatabaseHelper _db;
   QuranRepository(this._db);
 
-  // ── Ayahs ──────────────────────────────────────────────────────────────────
   Future<List<Ayah>> getAyahsBySurah(int surah) async {
     final rows = await _db.query(
       'ayahs',
@@ -24,7 +23,53 @@ class QuranRepository {
       whereArgs: [surah],
       orderBy: 'ayah_number ASC',
     );
-    return rows.map(Ayah.fromMap).toList();
+    if (rows.isNotEmpty) {
+      return rows.map(Ayah.fromMap).toList();
+    }
+
+    try {
+      final dio = Dio();
+      final res = await dio.get('https://api.alquran.cloud/v1/surah/$surah/quran-uthmani');
+      if (res.data != null && res.data['data'] != null && res.data['data']['ayahs'] != null) {
+        final list = (res.data['data']['ayahs'] as List).cast<Map<String, dynamic>>();
+        final db = await _db.database;
+        final batch = db.batch();
+        for (final item in list) {
+          final gId = item['number'] as int;
+          final aNum = item['numberInSurah'] as int;
+          final juz = item['juz'] as int;
+          final hizb = item['hizbQuarter'] as int;
+          final ruku = item['ruku'] as int;
+          final manzil = item['manzil'] as int;
+          final page = item['page'] as int;
+          final isSajda = item['sajda'] == true || item['sajda'] is Map ? 1 : 0;
+          final text = item['text'] as String;
+
+          batch.insert('ayahs', {
+            'id': gId,
+            'surah': surah,
+            'ayah_number': aNum,
+            'juz': juz,
+            'hizb': hizb,
+            'ruku': ruku,
+            'manzil': manzil,
+            'page': page,
+            'is_sajda': isSajda,
+            'arabic_text': text,
+          }, conflictAlgorithm: ConflictAlgorithm.replace);
+        }
+        await batch.commit(noResult: true);
+
+        final newRows = await _db.query(
+          'ayahs',
+          where: 'surah = ?',
+          whereArgs: [surah],
+          orderBy: 'ayah_number ASC',
+        );
+        return newRows.map(Ayah.fromMap).toList();
+      }
+    } catch (_) {}
+    return [];
   }
 
   Future<List<Ayah>> getAyahsByJuz(int juz) async {
@@ -187,22 +232,32 @@ class QuranRepository {
 
   Future<void> deleteEditionContent(int editionId) async {
     final db = await _db.database;
-    await db.delete(
-      'ayah_content',
-      where: 'edition_id = ?',
-      whereArgs: [editionId],
-    );
+    await db.execute('PRAGMA foreign_keys = OFF;');
+    try {
+      await db.delete(
+        'ayah_content',
+        where: 'edition_id = ?',
+        whereArgs: [editionId],
+      );
+    } finally {
+      await db.execute('PRAGMA foreign_keys = ON;');
+    }
   }
 
   Future<void> insertEditionContent(
       List<Map<String, dynamic>> rows) async {
     final db = await _db.database;
-    final batch = db.batch();
-    for (final row in rows) {
-      batch.insert('ayah_content', row,
-          conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.execute('PRAGMA foreign_keys = OFF;');
+    try {
+      final batch = db.batch();
+      for (final row in rows) {
+        batch.insert('ayah_content', row,
+            conflictAlgorithm: ConflictAlgorithm.replace);
+      }
+      await batch.commit(noResult: true);
+    } finally {
+      await db.execute('PRAGMA foreign_keys = ON;');
     }
-    await batch.commit(noResult: true);
   }
 
   // ── Last Read ─────────────────────────────────────────────────────────────

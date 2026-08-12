@@ -2,12 +2,29 @@
 // Global app settings — backed by SharedPreferences + Riverpod Notifiers
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../data/repositories/reciter_repository.dart';
 import '../main.dart';
 
 final settingsServiceProvider = Provider<SettingsService>((ref) {
   final prefs = ref.watch(sharedPreferencesProvider);
   return SettingsService(prefs);
 });
+
+// Reactive provider for selected reciter ID
+final selectedReciterIdProvider = StateNotifierProvider<SelectedReciterNotifier, String>((ref) {
+  final settings = ref.watch(settingsServiceProvider);
+  return SelectedReciterNotifier(settings);
+});
+
+class SelectedReciterNotifier extends StateNotifier<String> {
+  final SettingsService _settings;
+  SelectedReciterNotifier(this._settings) : super(_settings.selectedReciterId);
+
+  Future<void> setReciterId(String id) async {
+    state = id;
+    await _settings.setSelectedReciterId(id);
+  }
+}
 
 // Reactive provider for Arabic font size
 final arabicFontSizeProvider = StateNotifierProvider<ArabicFontSizeNotifier, double>((ref) {
@@ -50,8 +67,14 @@ class SettingsService {
       _prefs.setBool(_kOnboardingDone, true);
 
   // ── Reciter ───────────────────────────────────────────────────────────────
-  String get selectedReciterId =>
-      _prefs.getString(_kReciter) ?? defaultReciterId;
+  String get selectedReciterId {
+    final stored = _prefs.getString(_kReciter) ?? defaultReciterId;
+    if (!ReciterRepository.validReciterIds.contains(stored)) {
+      _prefs.setString(_kReciter, defaultReciterId);
+      return defaultReciterId;
+    }
+    return stored;
+  }
   Future<void> setSelectedReciterId(String id) =>
       _prefs.setString(_kReciter, id);
 

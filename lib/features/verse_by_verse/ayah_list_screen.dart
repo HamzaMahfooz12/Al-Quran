@@ -15,6 +15,7 @@ import '../../data/models/surah_info.dart';
 import '../../data/repositories/quran_repository.dart';
 import '../../services/settings_service.dart';
 import '../../services/audio_service.dart';
+import '../audio/audio_control_bar.dart';
 
 class AyahListScreen extends ConsumerStatefulWidget {
   final int surahNumber;
@@ -123,7 +124,7 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
       }
     }
 
-    // Ensure valid Tafseer content is loaded (and auto-heal if cached text is stale Arabic)
+    // Ensure valid Tafseer content is loaded (and auto-heal if cached text is stale Arabic or wrong)
     final bool isTafseerStaleArabic = tafseers.isNotEmpty &&
         tafseerEdition.language != 'ar' &&
         ayahs.isNotEmpty &&
@@ -208,8 +209,11 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
       }
     }
 
-    // 2. Fallback to API if not a local JSON
-    return await _fetchSurahEditionFromApi(ed, ayahIds);
+    // 2. Fallback to API ONLY for translations (never for Tafseers, as API returns Arabic text)
+    if (ed.type != 'tafseer') {
+      return await _fetchSurahEditionFromApi(ed, ayahIds);
+    }
+    return {};
   }
 
   Future<Map<int, String>> _fetchSurahEditionFromApi(Edition ed, List<int> ayahIds) async {
@@ -462,7 +466,8 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
   }
 
   static const Map<String, String> _localTafseerPaths = {
-    // Arabic (7 downloadable)
+    // Arabic (8)
+    'ar-tafsir-ibn-kathir': r'D:\AL Quran\tafssir\arabic\ar-tafsir-ibn-kathir.json',
     'ar-tafsir-al-tabari': r'D:\AL Quran\tafssir\arabic\ar-tafsir-al-tabari.json',
     'ar-tafseer-al-qurtubi': r'D:\AL Quran\tafssir\arabic\ar-tafseer-al-qurtubi.json',
     'ar-tafseer-al-saddi': r'D:\AL Quran\tafssir\arabic\ar-tafseer-al-saddi.json',
@@ -471,17 +476,22 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
     'tafsir-ibn-uthaymeen': r'D:\AL Quran\tafssir\arabic\tafsir-ibn-uthaymeen.json',
     'tafsir-jalalayn': r'D:\AL Quran\tafssir\arabic\tafsir-jalalayn.json',
 
-    // Urdu (3 downloadable)
+    // Urdu (5)
+    'tafseer-ibn-e-kaseer-urdu': r'D:\AL Quran\tafssir\urdu\tafseer-ibn-e-kaseer-urdu.json',
+    'tafsir-bayan-ul-quran': r'D:\AL Quran\tafssir\urdu\tafsir-bayan-ul-quran.json',
     'tafsir-as-saadi': r'D:\AL Quran\tafssir\urdu\tafsir-as-saadi.json',
     'tafsir-fe-zalul-quran-syed-qatab': r'D:\AL Quran\tafssir\urdu\tafsir-fe-zalul-quran-syed-qatab.json',
     'tazkiru-quran-ur': r'D:\AL Quran\tafssir\urdu\tazkiru-quran-ur.json',
 
-    // English (5 downloadable)
+    // English (5)
     'en-tafisr-ibn-kathir': r'D:\AL Quran\tafssir\english\en-tafisr-ibn-kathir.json',
     'Al-Mukhtasar': r'D:\AL Quran\tafssir\english\Al-Mukhtasar.json',
     'en-tafsir-maarif-ul-quran': r'D:\AL Quran\tafssir\english\en-tafsir-maarif-ul-quran.json',
     'tafsir-al-jalalayn': r'D:\AL Quran\tafssir\english\tafsir-al-jalalayn.json',
     'tazkirul-quran-en': r'D:\AL Quran\tafssir\english\tazkirul-quran-en.json',
+
+    // Hindi (1)
+    'hindi-mokhtasar': r'D:\AL Quran\tafssir\hindi\hindi-mokhtasar.json',
   };
 
   Future<void> _downloadAndSetEdition(Edition ed) async {
@@ -522,7 +532,7 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
             }
           }
         }
-      } else {
+      } else if (ed.type != 'tafseer') {
         // Fallback for standard online translations
         final dio = Dio();
         final response = await dio.get('https://api.alquran.cloud/v1/quran/${ed.apiKey}');
@@ -672,6 +682,29 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                   );
                 },
               ),
+      bottomSheet: (audio.currentPlayingAyahId != null && _ayahs.isNotEmpty)
+          ? AudioControlBar(
+              surahNumber: widget.surahNumber,
+              surahName: _surahInfo.nameTransliteration,
+              currentAyahNumber: _ayahs
+                  .firstWhere((a) => a.id == audio.currentPlayingAyahId, orElse: () => _ayahs.first)
+                  .ayahNumber,
+              totalAyahs: _ayahs.length,
+              onNextAyah: () {
+                final curIdx = _ayahs.indexWhere((a) => a.id == audio.currentPlayingAyahId);
+                if (curIdx >= 0 && curIdx < _ayahs.length - 1) {
+                  _playAyah(_ayahs[curIdx + 1]);
+                }
+              },
+              onPrevAyah: () {
+                final curIdx = _ayahs.indexWhere((a) => a.id == audio.currentPlayingAyahId);
+                if (curIdx > 0) {
+                  _playAyah(_ayahs[curIdx - 1]);
+                }
+              },
+              onClose: () => setState(() {}),
+            )
+          : null,
     );
   }
 }

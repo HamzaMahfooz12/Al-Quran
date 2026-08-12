@@ -6,17 +6,23 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class TafseerImportService {
   /// Key stored in prefs-like flag file to skip re-import on subsequent launches.
-  static const _importFlagFile = 'tafseer_imported_v6.flag';
+  static const _importFlagFile = 'tafseer_imported_v7.flag';
 
   /// One-time import: called from main() after DB is ready.
   static Future<void> importOnce(Database mainDb) async {
+    // Disable foreign key checks during bulk seed to allow pre-populating Tafseer content
+    await mainDb.execute('PRAGMA foreign_keys = OFF;');
+
     // Always sync downloadable editions manifest from assets/downloadable_editions.json into editions table
     await _importDownloadableManifest(mainDb);
 
     // Check flag for heavy sqlite.gz import
     final appDir = await getApplicationSupportDirectory();
     final flag = File(p.join(appDir.path, _importFlagFile));
-    if (await flag.exists()) return;
+    if (await flag.exists()) {
+      await mainDb.execute('PRAGMA foreign_keys = ON;');
+      return;
+    }
 
     try {
       // 1. Load compressed asset bytes
@@ -52,6 +58,8 @@ class TafseerImportService {
       // Non-fatal — app works even if tafseer import fails
       // ignore: avoid_print
       print('[TafseerImport] ❌ Failed: $e\n$st');
+    } finally {
+      await mainDb.execute('PRAGMA foreign_keys = ON;');
     }
   }
 

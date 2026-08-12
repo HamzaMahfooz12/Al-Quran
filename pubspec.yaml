@@ -21,6 +21,8 @@ dependencies:
 
   # ── Audio ────────────────────────────────────────────────
   just_audio: ^0.10.2
+  just_audio_media_kit: ^2.1.0
+  media_kit_libs_windows_audio: ^1.0.9
   audio_service: ^0.18.15
   audio_session: ^0.1.21
 
@@ -85,3 +87,4 @@ flutter:
   #   - family: QCFPage5
   #     fonts:
   #       - asset: assets/fonts/QCF_P005.ttf
+ 

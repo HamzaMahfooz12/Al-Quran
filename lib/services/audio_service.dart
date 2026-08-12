@@ -1,12 +1,8 @@
-// lib/services/audio_service.dart
-// Audio playback — just_audio with live CDN streaming, local caching, and player state streams
 import 'dart:async';
-import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
+import '../data/repositories/reciter_repository.dart';
 import '../services/settings_service.dart';
 
 final audioServiceProvider = Provider<QuranAudioService>((ref) {
@@ -14,16 +10,14 @@ final audioServiceProvider = Provider<QuranAudioService>((ref) {
   return QuranAudioService(settings);
 });
 
-enum AudioPlayMode { single, continuous, loop }
+// playMode: false = advance to next ayah when done, true = loop same ayah forever
 
 class QuranAudioService {
   final SettingsService _settings;
   final AudioPlayer _player = AudioPlayer();
-  final Dio _dio = Dio();
 
-  AudioPlayMode playMode = AudioPlayMode.single;
-  int loopCount = 1;
-  int _loopsDone = 0;
+  bool isLooping = false;
+  bool _isHandlingComplete = false; // guard: prevents stop() from re-triggering completion
 
   int? _currentSurah;
   int? _currentAyahNumberInSurah;
@@ -44,6 +38,85 @@ class QuranAudioService {
   bool get isPlaying => _player.playing;
   Stream<PlayerState> get playerStateStream => _player.playerStateStream;
   Stream<Duration?> get positionStream => _player.positionStream;
+  Stream<Duration?> get durationStream => _player.durationStream;
+
+  double get speed => _player.speed;
+  Future<void> setSpeed(double speed) async {
+    try {
+      await _player.setSpeed(speed);
+    } catch (_) {}
+  }
+
+  Future<void> seek(Duration position) async {
+    try {
+      await _player.seek(position);
+    } catch (_) {}
+  }
+
+  int? get currentSurah => _currentSurah;
+  int? get currentAyahNumberInSurah => _currentAyahNumberInSurah;
+
+  Future<void> setReciterAndReplay(String newReciterId) async {
+    await _settings.setSelectedReciterId(newReciterId);
+    if (currentPlayingAyahId != null && _currentSurah != null && _currentAyahNumberInSurah != null) {
+      final ayahId = currentPlayingAyahId!;
+      final surah = _currentSurah!;
+      final ayahNum = _currentAyahNumberInSurah!;
+      final total = _currentSurahTotalAyahs ?? 1;
+
+      currentPlayingAyahId = null;
+      try {
+        await playAyah(
+          globalAyahNumber: ayahId,
+          surah: surah,
+          ayahInSurah: ayahNum,
+          totalAyahsInSurah: total,
+          reciterId: newReciterId,
+        );
+      } catch (_) {}
+    }
+  }
+
+  /// Returns the exact CDN URL for any reciter in 0ms without network delays
+  static String getAudioUrlForReciter(String rId, int globalAyahNumber, [String? overrideBitrate]) {
+    if (overrideBitrate != null) {
+      return 'https://cdn.islamic.network/quran/audio/$overrideBitrate/$rId/$globalAyahNumber.mp3';
+    }
+
+    const bitrate32Reciters = {
+      'ar.ibrahimakhbar',
+    };
+    const bitrate64Reciters = {
+      'ar.saoodshuraym',
+      'ar.abdulsamad',
+      'ar.abdurrahmaansudais',
+      'ar.abdulbasitmurattal',
+      'ar.abdullahbasfar',
+      'ar.hanirifai',
+      'ar.shaatree',
+      'ar.ahmedajamy',
+      'ar.husary',
+      'ar.hudhaify',
+      'ar.minshawimujawwad',
+      'ar.aymanswoaid',
+      'ur.khan',
+      'fa.hedayatfarfooladvand',
+    };
+    const bitrate192Reciters = {
+      'en.walk',
+    };
+
+    var bitrate = '128';
+    if (bitrate32Reciters.contains(rId)) {
+      bitrate = '32';
+    } else if (bitrate64Reciters.contains(rId)) {
+      bitrate = '64';
+    } else if (bitrate192Reciters.contains(rId)) {
+      bitrate = '192';
+    }
+
+    return 'https://cdn.islamic.network/quran/audio/$bitrate/$rId/$globalAyahNumber.mp3';
+  }
 
   Future<void> playAyah({
     required int globalAyahNumber,
@@ -52,7 +125,6 @@ class QuranAudioService {
     int totalAyahsInSurah = 1,
     String? reciterId,
   }) async {
-    // If playing the same ayah, toggle pause/play
     if (currentPlayingAyahId == globalAyahNumber && _player.playing) {
       await pause();
       return;
@@ -62,108 +134,116 @@ class QuranAudioService {
     _currentAyahNumberInSurah = ayahInSurah;
     _currentSurahTotalAyahs = totalAyahsInSurah;
     currentPlayingAyahId = globalAyahNumber;
-    _loopsDone = 0;
 
-    final rId = reciterId ?? _settings.selectedReciterId;
+    var rId = reciterId ?? _settings.selectedReciterId;
+    if (!ReciterRepository.validReciterIds.contains(rId)) {
+      rId = 'ar.alafasy';
+    }
 
     try {
-      await _player.stop();
+      _isHandlingComplete = true;
+      try {
+        await _player.stop();
+      } catch (_) {}
+      _isHandlingComplete = false;
 
-      // Try playing cached local file first, or set direct URL stream
-      final localFile = await _getLocalFile(globalAyahNumber, rId);
-      if (localFile != null && await localFile.exists()) {
-        await _player.setFilePath(localFile.path);
-      } else {
-        final url192 = 'https://cdn.islamic.network/quran/audio/192/$rId/$globalAyahNumber.mp3';
-        final url128 = 'https://cdn.islamic.network/quran/audio/128/$rId/$globalAyahNumber.mp3';
+      // Pre-validate: find a URL that actually returns 200 before giving it to MPV
+      final validUrl = await _resolveValidUrl(rId, globalAyahNumber);
+      if (validUrl == null) {
+        // ignore: avoid_print
+        print('No working URL found for ayah $globalAyahNumber ($rId)');
+        return;
+      }
 
-        bool loaded = false;
-        try {
-          await _player.setAudioSource(
-            AudioSource.uri(
-              Uri.parse(url192),
-              headers: const {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'},
-            ),
-          );
-          loaded = true;
-        } catch (_) {
-          try {
-            await _player.setAudioSource(
-              AudioSource.uri(
-                Uri.parse(url128),
-                headers: const {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'},
-              ),
-            );
-            loaded = true;
-          } catch (_) {}
-        }
-
-        if (!loaded) {
-          try {
-            final apiResponse = await _dio.get('https://api.alquran.cloud/v1/ayah/$globalAyahNumber/$rId');
-            if (apiResponse.data != null && apiResponse.data['data'] != null) {
-              final liveUrl = apiResponse.data['data']['audio'] as String;
-              await _player.setAudioSource(
-                AudioSource.uri(
-                  Uri.parse(liveUrl),
-                  headers: const {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'},
-                ),
-              );
-              loaded = true;
-            }
-          } catch (_) {}
-        }
-
-        // Cache in background if loaded
-        if (loaded) {
-          _cacheInBackground(globalAyahNumber, rId, url192);
+      try {
+        await _player.setUrl(validUrl);
+        await _player.play();
+      } catch (e) {
+        if (!e.toString().contains('interrupted')) {
+          // ignore: avoid_print
+          print('Playback error for ayah $globalAyahNumber ($rId): $e');
         }
       }
 
-      await _player.play();
+      // Preload next ayah audio stream in background for zero-latency instant playback
+      if (globalAyahNumber < 6236) {
+        _preloadNextAyahAudio(rId, globalAyahNumber + 1);
+      }
     } catch (e) {
-      // ignore: avoid_print
-      print('Error playing audio for ayah $globalAyahNumber ($rId): $e');
+      final errStr = e.toString();
+      if (!errStr.contains('interrupted')) {
+        // ignore: avoid_print
+        print('Error playing audio for ayah $globalAyahNumber ($rId): $e');
+      }
     }
+  }
+
+  /// Pre-validates candidate URLs via HTTP HEAD — returns first URL returning 200, or null.
+  /// This ensures MPV never receives a dead URL, preventing 'Failed to open' errors.
+  static Future<String?> _resolveValidUrl(String rId, int globalAyahNumber) async {
+    final dio = Dio();
+    // Build candidate list: primary bitrate first, then all fallbacks, then alafasy
+    final primary = getAudioUrlForReciter(rId, globalAyahNumber);
+    final candidates = <String>[primary];
+    for (final b in ['64', '128', '32', '192']) {
+      final u = getAudioUrlForReciter(rId, globalAyahNumber, b);
+      if (!candidates.contains(u)) candidates.add(u);
+    }
+    if (rId != 'ar.alafasy') {
+      candidates.add(getAudioUrlForReciter('ar.alafasy', globalAyahNumber));
+    }
+
+    for (final url in candidates) {
+      try {
+        final resp = await dio.head(
+          url,
+          options: Options(
+            followRedirects: true,
+            validateStatus: (status) => status != null && status < 500,
+            receiveTimeout: const Duration(seconds: 4),
+            sendTimeout: const Duration(seconds: 4),
+          ),
+        );
+        if (resp.statusCode != null && resp.statusCode! < 400) {
+          return url;
+        }
+      } catch (_) {}
+    }
+    return null;
+  }
+
+  /// Background pre-fetcher to warm network connection for next Ayah stream
+  void _preloadNextAyahAudio(String rId, int nextGlobalAyahNumber) {
+    Future.microtask(() async {
+      try {
+        final nextUrl = getAudioUrlForReciter(rId, nextGlobalAyahNumber);
+        final dio = Dio();
+        await dio.head(
+          nextUrl,
+          options: Options(
+            headers: {'User-Agent': 'Mozilla/5.0'},
+            receiveTimeout: const Duration(seconds: 2),
+            sendTimeout: const Duration(seconds: 2),
+          ),
+        );
+      } catch (_) {}
+    });
   }
 
   void _onAyahComplete() {
-    if (playMode == AudioPlayMode.loop) {
-      _loopsDone++;
-      final maxLoops = loopCount == 0 ? double.maxFinite.toInt() : loopCount;
-      if (_loopsDone < maxLoops) {
-        _player.seek(Duration.zero);
-        _player.play();
-        return;
-      }
+    if (_isHandlingComplete) return; // ignore completions caused by stop()/load
+
+    if (isLooping) {
+      // Loop: replay the same ayah from the beginning
+      _player.seek(Duration.zero).then((_) => _player.play());
+      return;
     }
 
-    if (playMode == AudioPlayMode.continuous) {
-      final nextAyah = (_currentAyahNumberInSurah ?? 0) + 1;
-      if (nextAyah <= (_currentSurahTotalAyahs ?? 1)) {
-        onAdvance?.call(_currentSurah!, nextAyah);
-      }
+    // Continuous: advance to the next ayah
+    final nextAyah = (_currentAyahNumberInSurah ?? 0) + 1;
+    if (nextAyah <= (_currentSurahTotalAyahs ?? 1)) {
+      onAdvance?.call(_currentSurah!, nextAyah);
     }
-  }
-
-  Future<File?> _getLocalFile(int globalAyah, String reciterId) async {
-    try {
-      final dir = await getApplicationDocumentsDirectory();
-      final filePath = p.join(dir.path, 'audio', reciterId, '$globalAyah.mp3');
-      return File(filePath);
-    } catch (_) {
-      return null;
-    }
-  }
-
-  Future<void> _cacheInBackground(int globalAyah, String reciterId, String url) async {
-    try {
-      final dir = await getApplicationDocumentsDirectory();
-      final folder = Directory(p.join(dir.path, 'audio', reciterId));
-      if (!await folder.exists()) await folder.create(recursive: true);
-      final filePath = p.join(folder.path, '$globalAyah.mp3');
-      await _dio.download(url, filePath);
-    } catch (_) {}
   }
 
   Future<void> pause() async {

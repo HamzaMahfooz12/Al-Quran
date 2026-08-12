@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:just_audio_media_kit/just_audio_media_kit.dart';
 
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
@@ -16,6 +17,9 @@ import 'data/db/tafseer_import_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize media_kit backend for just_audio on Windows/Linux/macOS
+  JustAudioMediaKit.ensureInitialized();
 
   // Initialize FFI for Desktop (Windows / Linux / macOS)
   if (!kIsWeb &&
@@ -44,9 +48,6 @@ Future<void> main() async {
   final dbHelper = DatabaseHelper.instance;
   final mainDb = await dbHelper.database; // triggers onCreate if first launch
 
-  // One-time: import bundled tafseer from compressed asset
-  await TafseerImportService.importOnce(mainDb);
-
   final prefs = await SharedPreferences.getInstance();
 
   runApp(
@@ -57,6 +58,9 @@ Future<void> main() async {
       child: const AlQuranApp(),
     ),
   );
+
+  // One-time: import bundled tafseer AFTER UI is up (non-blocking)
+  TafseerImportService.importOnce(mainDb);
 }
 
 // Provider for SharedPreferences — accessed anywhere via ref.read
