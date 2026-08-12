@@ -623,17 +623,48 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
 
                   return ListView.builder(
                     controller: _scrollCtrl,
-                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 120),
-                    itemCount: _ayahs.length,
+                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 120),
+                    itemCount: _ayahs.length + 1,
                     itemBuilder: (ctx, i) {
-                      final isCurrentAyahPlaying = audio.currentPlayingAyahId == _ayahs[i].id;
+                      // Index 0 → premium Surah Header Banner
+                      if (i == 0) {
+                        return _SurahHeaderBanner(
+                          surahInfo: _surahInfo,
+                          showBismillah: widget.surahNumber != 9 && widget.surahNumber != 1,
+                          translationName: _activeTranslationEdition?.name ?? 'Translation',
+                          tafseerName: _activeTafseerEdition?.name ?? 'Tafseer',
+                          showTranslation: _showTranslation,
+                          showTafseer: _showTafseer,
+                          onToggleTranslation: () => setState(() => _showTranslation = !_showTranslation),
+                          onToggleTafseer: () async {
+                            setState(() => _showTafseer = !_showTafseer);
+                            if (_showTafseer) {
+                              final repo = ref.read(quranRepositoryProvider);
+                              final ayahIds = _ayahs.map((a) => a.id).toList();
+                              final edId = _activeTafseerEdition?.id ?? 7;
+                              var tMap = await repo.getContentBulk(ayahIds, edId);
+                              if (tMap.isEmpty && _activeTafseerEdition != null) {
+                                tMap = await _fetchSurahEditionFromApi(_activeTafseerEdition!, ayahIds);
+                              }
+                              if (mounted && tMap.isNotEmpty) {
+                                setState(() => _tafseers = tMap);
+                              }
+                            }
+                          },
+                          onSelectTranslation: () => _showEditionSelector('translation'),
+                          onSelectTafseer: () => _showEditionSelector('tafseer'),
+                        );
+                      }
+
+                      final ayahIdx = i - 1;
+                      final isCurrentAyahPlaying = audio.currentPlayingAyahId == _ayahs[ayahIdx].id;
                       final isPlayingNow = isCurrentAyahPlaying && audio.isPlaying;
                       final isBufferingNow = isCurrentAyahPlaying && isBuffering;
 
                       return _AyahCard(
-                        ayah: _ayahs[i],
-                        translationText: _translations[_ayahs[i].id],
-                        tafseerText: _tafseers[_ayahs[i].id],
+                        ayah: _ayahs[ayahIdx],
+                        translationText: _translations[_ayahs[ayahIdx].id],
+                        tafseerText: _tafseers[_ayahs[ayahIdx].id],
                         translationName: _activeTranslationEdition?.name ?? 'Translation',
                         tafseerName: _activeTafseerEdition?.name ?? 'Tafseer',
                         showTranslation: _showTranslation,
@@ -659,15 +690,15 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                         },
                         onSelectTranslation: () => _showEditionSelector('translation'),
                         onSelectTafseer: () => _showEditionSelector('tafseer'),
-                        onPlayTap: () => _playAyah(_ayahs[i]),
+                        onPlayTap: () => _playAyah(_ayahs[ayahIdx]),
                         onBookmarkTap: () async {
                           final repo = ref.read(quranRepositoryProvider);
                           final messenger = ScaffoldMessenger.of(context);
-                          final isBookmarked = await repo.isBookmarked(_ayahs[i].surah, _ayahs[i].ayahNumber);
+                          final isBookmarked = await repo.isBookmarked(_ayahs[ayahIdx].surah, _ayahs[ayahIdx].ayahNumber);
                           if (isBookmarked) {
-                            await repo.removeBookmark(_ayahs[i].surah, _ayahs[i].ayahNumber);
+                            await repo.removeBookmark(_ayahs[ayahIdx].surah, _ayahs[ayahIdx].ayahNumber);
                           } else {
-                            await repo.addBookmark(_ayahs[i].surah, _ayahs[i].ayahNumber);
+                            await repo.addBookmark(_ayahs[ayahIdx].surah, _ayahs[ayahIdx].ayahNumber);
                           }
                           if (mounted) {
                             messenger.showSnackBar(SnackBar(
@@ -705,6 +736,321 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
               onClose: () => setState(() {}),
             )
           : null,
+    );
+  }
+}
+
+// ── Premium Surah Header Banner ───────────────────────────────────────────────
+class _SurahHeaderBanner extends StatelessWidget {
+  final SurahInfo surahInfo;
+  final bool showBismillah;
+  final String translationName;
+  final String tafseerName;
+  final bool showTranslation;
+  final bool showTafseer;
+  final VoidCallback onToggleTranslation;
+  final VoidCallback onToggleTafseer;
+  final VoidCallback onSelectTranslation;
+  final VoidCallback onSelectTafseer;
+
+  const _SurahHeaderBanner({
+    required this.surahInfo,
+    required this.showBismillah,
+    required this.translationName,
+    required this.tafseerName,
+    required this.showTranslation,
+    required this.showTafseer,
+    required this.onToggleTranslation,
+    required this.onToggleTafseer,
+    required this.onSelectTranslation,
+    required this.onSelectTafseer,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isMeccan = surahInfo.revelationType == 'Meccan';
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(0, 8, 0, 12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF1A4731), Color(0xFF2D6A4F), Color(0xFF1B5E3B)],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF1A4731).withValues(alpha: 0.4),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // ── Main info row ────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 18, 16, 14),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Left — Revelation type badge
+                Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            isMeccan ? 'مَكِّيَّة' : 'مَدَنِيَّة',
+                            style: const TextStyle(
+                              fontFamily: 'Scheherazade New',
+                              fontSize: 15,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            isMeccan ? 'Meccan' : 'Medinan',
+                            style: GoogleFonts.inter(
+                              fontSize: 10,
+                              color: Colors.white70,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Center — Arabic surah name
+                Expanded(
+                  child: Column(
+                    children: [
+                      // Decorative line
+                      Row(
+                        children: [
+                          Expanded(child: Container(height: 1, color: Colors.white.withValues(alpha: 0.2))),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: Container(
+                              width: 6, height: 6,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFD4A843),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                          Expanded(child: Container(height: 1, color: Colors.white.withValues(alpha: 0.2))),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      // Arabic surah name
+                      Text(
+                        'سُورَةُ ${surahInfo.nameArabic}',
+                        style: const TextStyle(
+                          fontFamily: 'Scheherazade New',
+                          fontSize: 28,
+                          color: Colors.white,
+                          height: 1.3,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        surahInfo.nameTransliteration,
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: Colors.white70,
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(child: Container(height: 1, color: Colors.white.withValues(alpha: 0.2))),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: Container(
+                              width: 6, height: 6,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFD4A843),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                          Expanded(child: Container(height: 1, color: Colors.white.withValues(alpha: 0.2))),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Right — Surah stats
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _statRow('Verses', surahInfo.ayahCount.toString()),
+                      _statRow('Surah', surahInfo.number.toString()),
+                      _statRow('Page', surahInfo.startPage.toString()),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // ── Translation & Tafseer Control Pills in Header ─────────────
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Tafseer Pill Button
+                  InkWell(
+                    onTap: onToggleTafseer,
+                    borderRadius: const BorderRadius.horizontal(left: Radius.circular(20)),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: showTafseer ? const Color(0xFFD4A843) : Colors.transparent,
+                        borderRadius: const BorderRadius.horizontal(left: Radius.circular(20)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Tafseer (تفسير)',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: showTafseer ? Colors.black87 : Colors.white,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: onSelectTafseer,
+                            child: const Padding(
+                              padding: EdgeInsets.only(left: 2),
+                              child: Icon(Icons.arrow_drop_down, size: 16, color: Colors.white70),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  Container(width: 1, height: 16, color: Colors.white24),
+
+                  // Translation Pill Button
+                  InkWell(
+                    onTap: onToggleTranslation,
+                    borderRadius: const BorderRadius.horizontal(right: Radius.circular(20)),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: showTranslation ? const Color(0xFFA5D6A7) : Colors.transparent,
+                        borderRadius: const BorderRadius.horizontal(right: Radius.circular(20)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.translate,
+                            size: 14,
+                            color: showTranslation ? const Color(0xFF1B4332) : Colors.white,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            translationName.contains('Urdu') || translationName.contains('Jalandhry') || translationName.contains('Taqi')
+                                ? 'Urdu Ttion'
+                                : 'Translation',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: showTranslation ? const Color(0xFF1B4332) : Colors.white,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: onSelectTranslation,
+                            child: const Padding(
+                              padding: EdgeInsets.only(left: 2),
+                              child: Icon(Icons.arrow_drop_down, size: 16, color: Colors.white70),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 6),
+
+          // ── Bismillah line ───────────────────────────────────────────
+          if (showBismillah) ...[
+            Container(height: 1, color: Colors.white.withValues(alpha: 0.12)),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+              child: Text(
+                'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ',
+                textAlign: TextAlign.center,
+                textDirection: TextDirection.rtl,
+                style: GoogleFonts.amiri(
+                  fontSize: 22,
+                  color: Colors.white,
+                  height: 1.8,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _statRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 2),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '$label: ',
+            style: GoogleFonts.inter(
+              fontSize: 10,
+              color: Colors.white60,
+            ),
+          ),
+          Text(
+            value,
+            style: GoogleFonts.inter(
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -914,9 +1260,9 @@ class _AyahCard extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          // Arabic Verse Text
+          // Arabic Verse Text (Bismillah stripped on Ayah 1 for surahs != 1 since header shows Bismillah)
           Text(
-            ayah.arabicText,
+            cleanAyahText(ayah),
             textAlign: TextAlign.right,
             textDirection: TextDirection.rtl,
             style: GoogleFonts.amiri(
@@ -1119,3 +1465,35 @@ String _cleanHtml(String text) {
 
   return s.trim();
 }
+
+/// Helper function to strip Bismillah prefix from Ayah 1 of any surah (except Surah 1)
+/// because the Bismillah is already prominently displayed inside the Surah Header Banner.
+String cleanAyahText(Ayah ayah) {
+  if (ayah.ayahNumber == 1 && ayah.surah != 1) {
+    String text = ayah.arabicText.trim();
+    // Common Uthmani / Standard Bismillah prefixes
+    const bismillahVariants = [
+      'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ',
+      'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِيمِ',
+      'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِيمِ',
+      'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ',
+      'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
+      'بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ',
+      'بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيمِ',
+    ];
+    for (final b in bismillahVariants) {
+      if (text.startsWith(b)) {
+        final remaining = text.substring(b.length).trim();
+        if (remaining.isNotEmpty) return remaining;
+      }
+    }
+    // Regex matching fallback for any diacritic variants
+    final match = RegExp(r'^بِ?سۡ?مِ?\s*ٱ?لَّ?لَّ?هِ?\s*ٱ?لرَّ?حۡ?مَـٰ?نِ?\s*ٱ?لرَّ?حِ?ی?مِ?\s*').firstMatch(text);
+    if (match != null && match.group(0)!.length >= 15) {
+      final remaining = text.substring(match.group(0)!.length).trim();
+      if (remaining.isNotEmpty) return remaining;
+    }
+  }
+  return ayah.arabicText;
+}
+
