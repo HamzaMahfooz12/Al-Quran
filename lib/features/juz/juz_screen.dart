@@ -103,6 +103,7 @@ class _JuzScreenState extends ConsumerState<JuzScreen> {
 
   bool _showTranslation = true;
   bool _showTafseer = false;
+  bool _showHeaderTafseer = false;
 
   String _currentSurahName = '';
   int _currentSurahNumber = 0;
@@ -315,12 +316,15 @@ class _JuzScreenState extends ConsumerState<JuzScreen> {
                         bismillahTranslationText: _translations[1],
                         bismillahTafseerText: _tafseers[1],
                         showTranslation: _showTranslation,
-                        showTafseer: _showTafseer,
+                        showTafseer: _showHeaderTafseer,
                         onToggleTranslation: () => setState(() => _showTranslation = !_showTranslation),
-                        onToggleTafseer: () => setState(() => _showTafseer = !_showTafseer),
+                        onToggleTafseer: () => setState(() => _showHeaderTafseer = !_showHeaderTafseer),
                       );
                     }
                     final ayah = item as Ayah;
+                    if (ayah.surah == 1 && ayah.ayahNumber == 1) {
+                      return const SizedBox.shrink();
+                    }
                     final isCurrentAyahPlaying = audio.currentPlayingAyahId == ayah.id;
                     final isPlayingNow = isCurrentAyahPlaying && audio.isPlaying;
                     final isBufferingNow = isCurrentAyahPlaying && isBuffering;
@@ -957,28 +961,31 @@ String _cleanHtml(String text) {
   return s.trim();
 }
 
+/// Strips all Arabic diacritical marks (tashkeel) from a string for bare comparison.
+String _stripTashkeel(String s) {
+  return s.replaceAll(
+    RegExp(r'[\u064B-\u065F\u0610-\u061A\u06D6-\u06DC\u06DF-\u06E8\u06EA-\u06EF\u0670\u06E1\uFC60-\uFC62]'),
+    '',
+  );
+}
+
 /// Helper function to strip Bismillah prefix from Ayah 1 of any surah (except Surah 1)
 String cleanAyahText(Ayah ayah) {
   if (ayah.ayahNumber == 1 && ayah.surah != 1) {
-    String text = ayah.arabicText.trim();
-    const bismillahVariants = [
-      'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ',
-      'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِيمِ',
-      'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِيمِ',
-      'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ',
-      'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
-      'بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ',
-      'بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيمِ',
-    ];
-    for (final b in bismillahVariants) {
-      if (text.startsWith(b)) {
-        final remaining = text.substring(b.length).trim();
-        if (remaining.isNotEmpty) return remaining;
+    final text = ayah.arabicText.trim();
+    final bare = _stripTashkeel(text);
+    final m = RegExp(r'^بسم\s*[اٱ]لله\s*[اٱ]لرحمن\s*[اٱ]لرحيم\s*').firstMatch(bare);
+    if (m != null) {
+      final bareLen = m.group(0)!.length;
+      int bareCount = 0;
+      int idx = 0;
+      final diacriticRe = RegExp(r'[\u064B-\u065F\u0610-\u061A\u06D6-\u06DC\u06DF-\u06E8\u06EA-\u06EF\u0670\u06E1\uFC60-\uFC62]');
+      while (idx < text.length && bareCount < bareLen) {
+        if (!diacriticRe.hasMatch(text[idx])) bareCount++;
+        idx++;
       }
-    }
-    final match = RegExp(r'^بِ?سۡ?مِ?\s*ٱ?لَّ?لَّ?هِ?\s*ٱ?لرَّ?حۡ?مَـٰ?نِ?\s*ٱ?لرَّ?حِ?ی?مِ?\s*').firstMatch(text);
-    if (match != null && match.group(0)!.length >= 15) {
-      final remaining = text.substring(match.group(0)!.length).trim();
+      while (idx < text.length && (text[idx] == ' ' || text[idx] == '\u200C')) { idx++; }
+      final remaining = text.substring(idx).trim();
       if (remaining.isNotEmpty) return remaining;
     }
   }

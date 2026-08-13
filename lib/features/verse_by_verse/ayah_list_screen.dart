@@ -47,6 +47,7 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
   // Toggle states
   bool _showTranslation = true;
   bool _showTafseer = false;
+  bool _showHeaderTafseer = false;
 
   // Auto-scroll
   Timer? _scrollTimer;
@@ -650,11 +651,11 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                           bismillahTranslationText: _bismillahTranslationText,
                           bismillahTafseerText: _bismillahTafseerText,
                           showTranslation: _showTranslation,
-                          showTafseer: _showTafseer,
+                          showTafseer: _showHeaderTafseer,
                           onToggleTranslation: () => setState(() => _showTranslation = !_showTranslation),
                           onToggleTafseer: () async {
-                            setState(() => _showTafseer = !_showTafseer);
-                            if (_showTafseer) {
+                            setState(() => _showHeaderTafseer = !_showHeaderTafseer);
+                            if (_showHeaderTafseer) {
                               final repo = ref.read(quranRepositoryProvider);
                               final ayahIds = _ayahs.map((a) => a.id).toList();
                               final edId = _activeTafseerEdition?.id ?? 7;
@@ -677,6 +678,9 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                       }
 
                       final ayahIdx = i - 1;
+                      if (widget.surahNumber == 1 && _ayahs[ayahIdx].ayahNumber == 1) {
+                        return const SizedBox.shrink();
+                      }
                       final isCurrentAyahPlaying = audio.currentPlayingAyahId == _ayahs[ayahIdx].id;
                       final isPlayingNow = isCurrentAyahPlaying && audio.isPlaying;
                       final isBufferingNow = isCurrentAyahPlaying && isBuffering;
@@ -1535,6 +1539,40 @@ String _resolveTafseerValue(Map<String, dynamic> dict, String key, [int depth = 
   return val.toString();
 }
 
+/// Strips all Arabic diacritical marks (tashkeel) from a string for bare comparison.
+String _stripTashkeel(String s) {
+  return s.replaceAll(
+    RegExp(r'[\u064B-\u065F\u0610-\u061A\u06D6-\u06DC\u06DF-\u06E8\u06EA-\u06EF\u0670\u06E1\uFC60-\uFC62]'),
+    '',
+  );
+}
+
+/// Helper function to strip Bismillah prefix from Ayah 1 of any surah
+/// because the Bismillah is prominently displayed inside the Surah Header Banner.
+String cleanAyahText(Ayah ayah) {
+  if (ayah.ayahNumber == 1 && ayah.surah != 1) {
+    final text = ayah.arabicText.trim();
+    final bare = _stripTashkeel(text);
+    // Match Bismillah without any diacritics — covers ALL variant spellings
+    final m = RegExp(r'^بسم\s*[اٱ]لله\s*[اٱ]لرحمن\s*[اٱ]لرحيم\s*').firstMatch(bare);
+    if (m != null) {
+      // Walk original string, skipping diacritics, until we've consumed bareMatchLen bare chars
+      final bareLen = m.group(0)!.length;
+      int bareCount = 0;
+      int idx = 0;
+      final diacriticRe = RegExp(r'[\u064B-\u065F\u0610-\u061A\u06D6-\u06DC\u06DF-\u06E8\u06EA-\u06EF\u0670\u06E1\uFC60-\uFC62]');
+      while (idx < text.length && bareCount < bareLen) {
+        if (!diacriticRe.hasMatch(text[idx])) bareCount++;
+        idx++;
+      }
+      while (idx < text.length && (text[idx] == ' ' || text[idx] == '\u200C')) { idx++; }
+      final remaining = text.substring(idx).trim();
+      if (remaining.isNotEmpty) return remaining;
+    }
+  }
+  return ayah.arabicText;
+}
+
 /// Strip all HTML tags, clean HTML entities, and format linebreaks for pure text
 String _cleanHtml(String text) {
   var s = text;
@@ -1560,35 +1598,4 @@ String _cleanHtml(String text) {
   s = s.replaceAll(RegExp(r'\n\s*\n+'), '\n\n');
 
   return s.trim();
-}
-
-/// Helper function to strip Bismillah prefix from Ayah 1 of any surah
-/// because the Bismillah is prominently displayed inside the Surah Header Banner.
-String cleanAyahText(Ayah ayah) {
-  if (ayah.ayahNumber == 1) {
-    String text = ayah.arabicText.trim();
-    // Common Uthmani / Standard Bismillah prefixes
-    const bismillahVariants = [
-      'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ',
-      'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِيمِ',
-      'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِيمِ',
-      'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ',
-      'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
-      'بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ',
-      'بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيمِ',
-    ];
-    for (final b in bismillahVariants) {
-      if (text.startsWith(b)) {
-        final remaining = text.substring(b.length).trim();
-        if (remaining.isNotEmpty) return remaining;
-      }
-    }
-    // Regex matching fallback for any diacritic variants
-    final match = RegExp(r'^بِ?سۡ?مِ?\s*ٱ?لَّ?لَّ?هِ?\s*ٱ?لرَّ?حۡ?مَـٰ?نِ?\s*ٱ?لرَّ?حِ?ی?مِ?\s*').firstMatch(text);
-    if (match != null && match.group(0)!.length >= 15) {
-      final remaining = text.substring(match.group(0)!.length).trim();
-      if (remaining.isNotEmpty) return remaining;
-    }
-  }
-  return ayah.arabicText;
 }

@@ -150,7 +150,7 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                 TextField(
                   onChanged: (val) => setModalState(() => searchQuery = val),
                   decoration: InputDecoration(
-                    hintText: 'Search 188+ Reciters...',
+                    hintText: 'Search ${filtered.length} Reciters...',
                     prefixIcon: const Icon(Icons.search, color: Color(0xFF2D5A34)),
                     filled: true,
                     fillColor: const Color(0xFFF0F8F1),
