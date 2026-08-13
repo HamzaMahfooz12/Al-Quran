@@ -312,6 +312,8 @@ class _JuzScreenState extends ConsumerState<JuzScreen> {
                         surahNumber: item,
                         translationName: _activeTranslationEdition?.name ?? 'Translation',
                         tafseerName: _activeTafseerEdition?.name ?? 'Tafseer',
+                        bismillahTranslationText: _translations[1],
+                        bismillahTafseerText: _tafseers[1],
                         showTranslation: _showTranslation,
                         showTafseer: _showTafseer,
                         onToggleTranslation: () => setState(() => _showTranslation = !_showTranslation),
@@ -390,6 +392,8 @@ class _SurahHeader extends StatelessWidget {
   final int surahNumber;
   final String translationName;
   final String tafseerName;
+  final String? bismillahTranslationText;
+  final String? bismillahTafseerText;
   final bool showTranslation;
   final bool showTafseer;
   final VoidCallback onToggleTranslation;
@@ -399,6 +403,8 @@ class _SurahHeader extends StatelessWidget {
     required this.surahNumber,
     required this.translationName,
     required this.tafseerName,
+    required this.bismillahTranslationText,
+    required this.bismillahTafseerText,
     required this.showTranslation,
     required this.showTafseer,
     required this.onToggleTranslation,
@@ -409,7 +415,7 @@ class _SurahHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final info = kSurahList[surahNumber - 1];
     final isMeccan = info.revelationType == 'Meccan';
-    final showBismillah = surahNumber != 9 && surahNumber != 1;
+    final showBismillah = surahNumber != 9;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10, top: 6),
@@ -580,19 +586,90 @@ class _SurahHeader extends StatelessWidget {
           ),
           const SizedBox(height: 6),
 
+          // ── Bismillah & Translation line ─────────────────────────────────
           if (showBismillah) ...[
             Container(height: 1, color: Colors.white.withValues(alpha: 0.12)),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-              child: Text(
-                'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ',
-                textAlign: TextAlign.center,
-                textDirection: TextDirection.rtl,
-                style: GoogleFonts.amiri(
-                  fontSize: 20,
-                  color: Colors.white,
-                  height: 1.8,
-                  fontWeight: FontWeight.bold,
+              child: Column(
+                children: [
+                  Text(
+                    'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ',
+                    textAlign: TextAlign.center,
+                    textDirection: TextDirection.rtl,
+                    style: GoogleFonts.amiri(
+                      fontSize: 22,
+                      color: Colors.white,
+                      height: 1.8,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (showTranslation && bismillahTranslationText != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      bismillahTranslationText!,
+                      textAlign: TextAlign.center,
+                      textDirection: bismillahTranslationText!.contains(RegExp(r'[\u0600-\u06FF]'))
+                          ? TextDirection.rtl
+                          : TextDirection.ltr,
+                      style: bismillahTranslationText!.contains(RegExp(r'[\u0600-\u06FF]'))
+                          ? GoogleFonts.notoNastaliqUrdu(
+                              fontSize: 14, height: 2.1, color: const Color(0xFFE8F5E9))
+                          : GoogleFonts.inter(
+                              fontSize: 12, height: 1.4, color: const Color(0xFFE8F5E9)),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+
+          // ── Surah Tafseer Background Details ──────────────────────────────
+          if (showTafseer && bismillahTafseerText != null) ...[
+            Container(height: 1, color: Colors.white.withValues(alpha: 0.12)),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.25),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFD4A843).withValues(alpha: 0.4)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.menu_book_rounded, size: 15, color: Color(0xFFD4A843)),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            'تفسیر و پس منظر — $tafseerName',
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFFD4A843),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      _cleanHtml(bismillahTafseerText!),
+                      textAlign: bismillahTafseerText!.contains(RegExp(r'[\u0600-\u06FF]'))
+                          ? TextAlign.right
+                          : TextAlign.left,
+                      textDirection: bismillahTafseerText!.contains(RegExp(r'[\u0600-\u06FF]'))
+                          ? TextDirection.rtl
+                          : TextDirection.ltr,
+                      style: bismillahTafseerText!.contains(RegExp(r'[\u0600-\u06FF]'))
+                          ? GoogleFonts.notoNastaliqUrdu(
+                              fontSize: 13, height: 2.2, color: Colors.white)
+                          : GoogleFonts.inter(fontSize: 12, height: 1.5, color: Colors.white),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -861,6 +938,23 @@ class _JuzAyahCard extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Strip all HTML tags, clean HTML entities, and format linebreaks for pure text
+String _cleanHtml(String text) {
+  var s = text;
+  s = s.replaceAll(RegExp(r'</p>|<br\s*/?>|</div>', caseSensitive: false), '\n');
+  s = s.replaceAll(RegExp(r'<[^>]*>'), '');
+  s = s
+      .replaceAll('&nbsp;', ' ')
+      .replaceAll('&quot;', '"')
+      .replaceAll('&amp;', '&')
+      .replaceAll('&lt;', '<')
+      .replaceAll('&gt;', '>')
+      .replaceAll('&#39;', "'");
+  s = s.replaceAll(RegExp(r'p\s+class="[^"]*"|div\s+lang="[^"]*"'), '');
+  s = s.replaceAll(RegExp(r'\n\s*\n+'), '\n\n');
+  return s.trim();
 }
 
 /// Helper function to strip Bismillah prefix from Ayah 1 of any surah (except Surah 1)

@@ -36,6 +36,8 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
   List<Ayah> _ayahs = [];
   Map<int, String> _translations = {};
   Map<int, String> _tafseers = {};
+  String? _bismillahTranslationText;
+  String? _bismillahTafseerText;
   bool _loading = true;
 
   // Active editions
@@ -104,6 +106,14 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
     Map<int, String> translations = await repo.getContentBulk(ayahIds, transEdition.id);
     Map<int, String> tafseers = await repo.getContentBulk(ayahIds, tafseerEdition.id);
 
+    // Fetch Bismillah translation & tafseer for Ayah ID 1 (Ayah 1 of Surah 1 = Bismillah)
+    String? bTrans = translations[1] ?? await repo.getContent(1, transEdition.id);
+    bTrans ??= (transEdition.language == 'ur'
+        ? 'شروع اللہ کے نام سے جو بڑا مہربان نہایت رحم والا ہے'
+        : 'In the name of Allah, the Entirely Merciful, the Especially Merciful.');
+
+    String? bTafseer = tafseers[1] ?? await repo.getContent(1, tafseerEdition.id);
+
     // If selected translation rows don't exist yet, download on the fly for this Surah
     if (translations.isEmpty) {
       translations = await _fetchSurahEditionFromApi(transEdition, ayahIds);
@@ -121,6 +131,7 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
         if (translations.isEmpty) {
           translations = await _fetchSurahEditionFromApi(fallbackEdition, ayahIds);
         }
+        bTrans = translations[1] ?? 'شروع اللہ کے نام سے جو بڑا مہربان نہایت رحم والا ہے';
       }
     }
 
@@ -132,6 +143,7 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
 
     if (tafseers.isEmpty || isTafseerStaleArabic) {
       tafseers = await _loadEditionContent(tafseerEdition, ayahIds);
+      bTafseer = tafseers[1] ?? await repo.getContent(1, tafseerEdition.id);
     }
 
     final lastRead = await repo.getLastRead('verse_by_verse');
@@ -143,6 +155,8 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
         _activeTafseerEdition = tafseerEdition;
         _translations = translations;
         _tafseers = tafseers;
+        _bismillahTranslationText = bTrans;
+        _bismillahTafseerText = bTafseer;
         _loading = false;
       });
 
@@ -630,9 +644,11 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                       if (i == 0) {
                         return _SurahHeaderBanner(
                           surahInfo: _surahInfo,
-                          showBismillah: widget.surahNumber != 9 && widget.surahNumber != 1,
+                          showBismillah: widget.surahNumber != 9,
                           translationName: _activeTranslationEdition?.name ?? 'Translation',
                           tafseerName: _activeTafseerEdition?.name ?? 'Tafseer',
+                          bismillahTranslationText: _bismillahTranslationText,
+                          bismillahTafseerText: _bismillahTafseerText,
                           showTranslation: _showTranslation,
                           showTafseer: _showTafseer,
                           onToggleTranslation: () => setState(() => _showTranslation = !_showTranslation),
@@ -646,8 +662,12 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                               if (tMap.isEmpty && _activeTafseerEdition != null) {
                                 tMap = await _fetchSurahEditionFromApi(_activeTafseerEdition!, ayahIds);
                               }
+                              final bTaf = tMap[1] ?? await repo.getContent(1, edId);
                               if (mounted && tMap.isNotEmpty) {
-                                setState(() => _tafseers = tMap);
+                                setState(() {
+                                  _tafseers = tMap;
+                                  _bismillahTafseerText = bTaf;
+                                });
                               }
                             }
                           },
@@ -746,6 +766,8 @@ class _SurahHeaderBanner extends StatelessWidget {
   final bool showBismillah;
   final String translationName;
   final String tafseerName;
+  final String? bismillahTranslationText;
+  final String? bismillahTafseerText;
   final bool showTranslation;
   final bool showTafseer;
   final VoidCallback onToggleTranslation;
@@ -758,6 +780,8 @@ class _SurahHeaderBanner extends StatelessWidget {
     required this.showBismillah,
     required this.translationName,
     required this.tafseerName,
+    required this.bismillahTranslationText,
+    required this.bismillahTafseerText,
     required this.showTranslation,
     required this.showTafseer,
     required this.onToggleTranslation,
@@ -1005,20 +1029,92 @@ class _SurahHeaderBanner extends StatelessWidget {
           ),
           const SizedBox(height: 6),
 
-          // ── Bismillah line ───────────────────────────────────────────
+          // ── Bismillah & Bismillah Translation line ─────────────────────────
           if (showBismillah) ...[
             Container(height: 1, color: Colors.white.withValues(alpha: 0.12)),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-              child: Text(
-                'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ',
-                textAlign: TextAlign.center,
-                textDirection: TextDirection.rtl,
-                style: GoogleFonts.amiri(
-                  fontSize: 22,
-                  color: Colors.white,
-                  height: 1.8,
-                  fontWeight: FontWeight.bold,
+              child: Column(
+                children: [
+                  Text(
+                    'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ',
+                    textAlign: TextAlign.center,
+                    textDirection: TextDirection.rtl,
+                    style: GoogleFonts.amiri(
+                      fontSize: 24,
+                      color: Colors.white,
+                      height: 1.8,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  // Bismillah Translation
+                  if (showTranslation && bismillahTranslationText != null) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      bismillahTranslationText!,
+                      textAlign: TextAlign.center,
+                      textDirection: bismillahTranslationText!.contains(RegExp(r'[\u0600-\u06FF]'))
+                          ? TextDirection.rtl
+                          : TextDirection.ltr,
+                      style: bismillahTranslationText!.contains(RegExp(r'[\u0600-\u06FF]'))
+                          ? GoogleFonts.notoNastaliqUrdu(
+                              fontSize: 15, height: 2.2, color: const Color(0xFFE8F5E9))
+                          : GoogleFonts.inter(
+                              fontSize: 13, height: 1.5, color: const Color(0xFFE8F5E9)),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+
+          // ── Surah Tafseer Background Details ────────────────────────────────
+          if (showTafseer && bismillahTafseerText != null) ...[
+            Container(height: 1, color: Colors.white.withValues(alpha: 0.12)),
+            Padding(
+              padding: const EdgeInsets.all(14),
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.25),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: const Color(0xFFD4A843).withValues(alpha: 0.4)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.menu_book_rounded, size: 16, color: Color(0xFFD4A843)),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            'تفسیر و پس منظر — $tafseerName',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFFD4A843),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      _cleanHtml(bismillahTafseerText!),
+                      textAlign: bismillahTafseerText!.contains(RegExp(r'[\u0600-\u06FF]'))
+                          ? TextAlign.right
+                          : TextAlign.left,
+                      textDirection: bismillahTafseerText!.contains(RegExp(r'[\u0600-\u06FF]'))
+                          ? TextDirection.rtl
+                          : TextDirection.ltr,
+                      style: bismillahTafseerText!.contains(RegExp(r'[\u0600-\u06FF]'))
+                          ? GoogleFonts.notoNastaliqUrdu(
+                              fontSize: 14, height: 2.3, color: Colors.white)
+                          : GoogleFonts.inter(fontSize: 13, height: 1.6, color: Colors.white),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -1466,10 +1562,10 @@ String _cleanHtml(String text) {
   return s.trim();
 }
 
-/// Helper function to strip Bismillah prefix from Ayah 1 of any surah (except Surah 1)
-/// because the Bismillah is already prominently displayed inside the Surah Header Banner.
+/// Helper function to strip Bismillah prefix from Ayah 1 of any surah
+/// because the Bismillah is prominently displayed inside the Surah Header Banner.
 String cleanAyahText(Ayah ayah) {
-  if (ayah.ayahNumber == 1 && ayah.surah != 1) {
+  if (ayah.ayahNumber == 1) {
     String text = ayah.arabicText.trim();
     // Common Uthmani / Standard Bismillah prefixes
     const bismillahVariants = [
@@ -1496,4 +1592,3 @@ String cleanAyahText(Ayah ayah) {
   }
   return ayah.arabicText;
 }
-
