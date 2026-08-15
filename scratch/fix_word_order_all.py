@@ -1,9 +1,9 @@
 """
 fix_word_order_all.py
 ======================
-Fix word_pos in word_layout for both 15_line and 16_line mushafs.
-word_pos will store the 1-based sequential position of the word ON ITS LINE (1, 2, 3, 4...).
-This guarantees 100% correct Right-to-Left Arabic word ordering when rendered in Flutter RTL Row.
+Re-import both 15_line and 16_line word_layout tables with:
+1. Sequential word_pos per line (1, 2, 3...) for 100% proper Right-to-Left Arabic text.
+2. Complete Bismillah header insertion with CORRECT surah integer ID (2..114 excl. 9).
 """
 
 import json
@@ -80,25 +80,50 @@ def import_mushaf(mushaf_type, layout_path):
     inserted_count = 0
     missing_count = 0
 
-    for row in all_rows:
+    current_surah = 1
+    surahs_with_basmallah = set()
+
+    for idx, row in enumerate(all_rows):
         page_num  = row["page_number"]
         line_num  = row["line_number"]
         line_type = row["line_type"]
-        surah_num = row["surah_number"]
         fwid      = row["first_word_id"]
         lwid      = row["last_word_id"]
 
+        surah_raw = row["surah_number"]
+        surah_num = int(surah_raw) if (surah_raw is not None and str(surah_raw).isdigit()) else None
+
+        if surah_num is not None:
+            current_surah = surah_num
+
         if line_type == "surah_name":
-            name_ar = SURAH_NAMES_AR[surah_num - 1] if 1 <= surah_num <= 114 else f"surah {surah_num}"
-            batch.append((mushaf_type, page_num, line_num, surah_num, 0, 1,
-                          f"surah_name:{surah_num}", name_ar, "Amiri"))
+            s_id = surah_num if (surah_num is not None and surah_num > 0) else current_surah
+            name_ar = SURAH_NAMES_AR[s_id - 1] if 1 <= s_id <= 114 else f"surah {s_id}"
+            batch.append((mushaf_type, page_num, line_num, s_id, 0, 1,
+                          f"surah_name:{s_id}", name_ar, "Amiri"))
             inserted_count += 1
+
+            # If surah is 2..114 (excl 9) and next line is not 'basmallah', insert explicit basmallah line
+            if s_id != 1 and s_id != 9:
+                next_is_basmallah = False
+                if idx + 1 < len(all_rows):
+                    next_row = all_rows[idx + 1]
+                    if next_row["line_type"] == "basmallah":
+                        next_is_basmallah = True
+                
+                if not next_is_basmallah:
+                    batch.append((mushaf_type, page_num, line_num, s_id, 0, 2,
+                                  f"basmallah:{s_id}", BISMILLAH_TEXT, "Amiri"))
+                    inserted_count += 1
+                    surahs_with_basmallah.add(s_id)
             continue
 
         if line_type == "basmallah":
-            batch.append((mushaf_type, page_num, line_num, surah_num, 0, 1,
-                          f"basmallah:{surah_num}", BISMILLAH_TEXT, "Amiri"))
+            s_id = surah_num if (surah_num is not None and surah_num > 0) else current_surah
+            batch.append((mushaf_type, page_num, line_num, s_id, 0, 1,
+                          f"basmallah:{s_id}", BISMILLAH_TEXT, "Amiri"))
             inserted_count += 1
+            surahs_with_basmallah.add(s_id)
             continue
 
         if fwid is None or lwid is None:
@@ -125,9 +150,10 @@ def import_mushaf(mushaf_type, layout_path):
     app_con.commit()
     lcon.close()
     print(f"  Done {mushaf_type}: Inserted {inserted_count:,} rows (Missing words: {missing_count})")
+    print(f"  Total Surahs with Basmallah header in {mushaf_type}: {len(surahs_with_basmallah)} (Expected: 112)")
 
 import_mushaf("15_line", LAYOUT_15_PATH)
 import_mushaf("16_line", LAYOUT_16_PATH)
 
 app_con.close()
-print("\nAll word_layout tables fixed and updated successfully!")
+print("\nBoth 15_line and 16_line word_layout tables populated with complete Bismillah headers & correct surah IDs!")

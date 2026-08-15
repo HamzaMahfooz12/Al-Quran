@@ -297,18 +297,40 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
   }
 
   Widget _buildLine(MushafLineData line) {
-    // Check if this is a surah-name line (single word, word_id starts with 'surah_name:')
-    final isSurahNameLine = line.words.length == 1 &&
-        line.words.first.wordId.startsWith('surah_name:');
-    // Check if this is a basmallah line
-    final isBasmallahLine = line.words.length == 1 &&
-        line.words.first.wordId.startsWith('basmallah:');
+    // Check if line contains header elements (surah_name or basmallah)
+    final surahNameWord = line.words.where((w) => w.wordId.startsWith('surah_name:')).firstOrNull;
+    final basmallahWord = line.words.where((w) => w.wordId.startsWith('basmallah:')).firstOrNull;
+    final ayahWords = line.words.where((w) => !w.wordId.startsWith('surah_name:') && !w.wordId.startsWith('basmallah:')).toList();
 
-    if (isSurahNameLine) {
-      return _buildSurahNameLine(line.words.first);
+    // If line is exclusively headers (surah_name and/or basmallah)
+    if (ayahWords.isEmpty && (surahNameWord != null || basmallahWord != null)) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (surahNameWord != null) _buildSurahNameLine(surahNameWord),
+          if (basmallahWord != null) _buildBasmallahLine(basmallahWord),
+        ],
+      );
     }
-    if (isBasmallahLine) {
-      return _buildBasmallahLine(line.words.first);
+
+    // If line has headers followed by ayah words
+    if (surahNameWord != null || basmallahWord != null) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (surahNameWord != null) _buildSurahNameLine(surahNameWord),
+          if (basmallahWord != null) _buildBasmallahLine(basmallahWord),
+          if (ayahWords.isNotEmpty)
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                textDirection: TextDirection.rtl,
+                children: ayahWords.map((word) => _buildWord(word)).toList(),
+              ),
+            ),
+        ],
+      );
     }
 
     return FittedBox(
@@ -323,27 +345,30 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
 
   // ── Surah Name Header (decorative box) ─────────────────────────────────────
   Widget _buildSurahNameLine(WordLayoutData word) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFFD4A843), width: 1.5),
-        borderRadius: BorderRadius.circular(6),
-        gradient: const LinearGradient(
-          colors: [Color(0xFFFFF8E7), Color(0xFFFFF3D0)],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color(0xFFD4A843), width: 1.5),
+          borderRadius: BorderRadius.circular(6),
+          gradient: const LinearGradient(
+            colors: [Color(0xFFFFF8E7), Color(0xFFFFF3D0)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
-      child: Text(
-        'سُورَةُ ${word.glyphCode}',
-        textDirection: TextDirection.rtl,
-        style: const TextStyle(
-          fontFamily: 'Amiri',
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFF7B4F00),
-          letterSpacing: 0.5,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+        child: Text(
+          'سُورَةُ ${word.glyphCode}',
+          textDirection: TextDirection.rtl,
+          style: const TextStyle(
+            fontFamily: 'Amiri',
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF7B4F00),
+            letterSpacing: 0.5,
+          ),
         ),
       ),
     );
@@ -351,17 +376,20 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
 
   // ── Basmallah Line ─────────────────────────────────────────────────────────
   Widget _buildBasmallahLine(WordLayoutData word) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Text(
-        word.glyphCode,
-        textDirection: TextDirection.rtl,
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontFamily: 'Amiri',
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFF1A1A1A),
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Text(
+          word.glyphCode,
+          textDirection: TextDirection.rtl,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontFamily: 'Amiri',
+            fontSize: 19,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF1A1A1A),
+          ),
         ),
       ),
     );
