@@ -1,9 +1,8 @@
-// lib/features/bookmarks/bookmarks_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../core/theme/app_theme.dart';
+import 'package:intl/intl.dart';
 import '../../data/models/bookmark.dart';
 import '../../data/models/surah_info.dart';
 import '../../data/repositories/quran_repository.dart';
@@ -16,102 +15,135 @@ class BookmarksScreen extends ConsumerStatefulWidget {
 }
 
 class _BookmarksScreenState extends ConsumerState<BookmarksScreen> {
-  List<Bookmark> _bookmarks = [];
   bool _loading = true;
+  List<Bookmark> _bookmarks = [];
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    _load();
+    _loadBookmarks();
   }
 
-  Future<void> _load() async {
-    final bk = await ref.read(quranRepositoryProvider).getAllBookmarks();
-    if (mounted) setState(() { _bookmarks = bk; _loading = false; });
+  Future<void> _loadBookmarks() async {
+    setState(() => _loading = true);
+    final repo = ref.read(quranRepositoryProvider);
+    final list = await repo.getBookmarks();
+    if (mounted) {
+      setState(() {
+        _bookmarks = list;
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _deleteBookmark(Bookmark b) async {
+    final repo = ref.read(quranRepositoryProvider);
+    await repo.removeBookmark(b.surah, b.ayah);
+    _loadBookmarks();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Bookmark removed'), duration: Duration(seconds: 2)),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final filtered = _bookmarks.where((b) {
+      final info = kSurahList[b.surah - 1];
+      final matchesSurah = info.nameTransliteration.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          info.nameArabic.contains(_searchQuery);
+      final matchesLabel = b.label?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false;
+      return matchesSurah || matchesLabel;
+    }).toList();
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Bookmarks')),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _bookmarks.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.bookmark_border, size: 64, color: AppTheme.textMuted),
-                      const SizedBox(height: 16),
-                      Text('No bookmarks yet',
-                          style: GoogleFonts.inter(color: AppTheme.textMuted, fontSize: 16)),
-                      const SizedBox(height: 8),
-                      Text('Tap the bookmark icon on any ayah to save it.',
-                          style: GoogleFonts.inter(color: AppTheme.textMuted, fontSize: 13)),
-                    ],
-                  ),
-                )
-              : ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: _bookmarks.length,
-                  itemBuilder: (ctx, i) {
-                    final bk = _bookmarks[i];
-                    final surah = kSurahList[bk.surah - 1];
-                    return Dismissible(
-                      key: Key('bk-${bk.id}'),
-                      direction: DismissDirection.endToStart,
-                      background: Container(
-                        alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.only(right: 20),
-                        decoration: BoxDecoration(
-                          color: AppTheme.error.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: const Icon(Icons.delete_outline, color: AppTheme.error),
-                      ),
-                      onDismissed: (_) async {
-                        await ref.read(quranRepositoryProvider)
-                            .removeBookmark(bk.surah, bk.ayah);
-                        setState(() => _bookmarks.removeAt(i));
-                      },
-                      child: GestureDetector(
-                        onTap: () => context.goNamed('verse-by-verse',
-                            pathParameters: {'surahNumber': bk.surah.toString()},
-                            queryParameters: {'ayah': bk.ayah.toString()}),
-                        child: Container(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: AppTheme.cardBg,
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.bookmark, color: AppTheme.primary, size: 22),
-                              const SizedBox(width: 14),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('${surah.nameTransliteration} : ${bk.ayah}',
-                                        style: GoogleFonts.inter(
-                                            fontSize: 15, fontWeight: FontWeight.w600,
-                                            color: AppTheme.textPrimary)),
-                                    if (bk.label != null)
-                                      Text(bk.label!,
-                                          style: GoogleFonts.inter(
-                                              fontSize: 12, color: AppTheme.textSecondary)),
-                                  ],
-                                ),
-                              ),
-                              const Icon(Icons.chevron_right, color: AppTheme.textMuted),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
+      backgroundColor: const Color(0xFFF4F7F5),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF1B4332),
+        elevation: 0,
+        title: Text(
+          'Saved Bookmarks',
+          style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+      ),
+      body: Column(
+        children: [
+          // Search Bar
+          Padding(
+            padding: const EdgeInsets.all(14),
+            child: TextField(
+              onChanged: (val) => setState(() => _searchQuery = val),
+              decoration: InputDecoration(
+                hintText: 'Search bookmarks...',
+                prefixIcon: const Icon(Icons.search, color: Color(0xFF2D6A4F)),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
                 ),
+              ),
+            ),
+          ),
+
+          Expanded(
+            child: _loading
+                ? const Center(child: CircularProgressIndicator(color: Color(0xFF1B4332)))
+                : filtered.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.bookmark_border_rounded, size: 54, color: Colors.grey),
+                            const SizedBox(height: 12),
+                            Text('No Bookmarks Found', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 4),
+                            Text('Tap the bookmark icon on any verse to save it.', style: GoogleFonts.inter(fontSize: 12, color: Colors.grey)),
+                          ],
+                        ),
+                      )
+                    : ListView.separated(
+                        padding: const EdgeInsets.fromLTRB(14, 0, 14, 20),
+                        itemCount: filtered.length,
+                        separatorBuilder: (_, _) => const SizedBox(height: 8),
+                        itemBuilder: (ctx, idx) {
+                          final b = filtered[idx];
+                          final info = kSurahList[b.surah - 1];
+                          final dateStr = DateFormat('MMM dd, yyyy').format(b.createdAt);
+
+                          return Card(
+                            elevation: 1,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            child: ListTile(
+                              leading: const CircleAvatar(
+                                backgroundColor: Color(0xFFE8F5E9),
+                                child: Icon(Icons.bookmark, color: Color(0xFF2E7D32)),
+                              ),
+                              title: Text(
+                                '${info.nameTransliteration} (${info.nameArabic}) — Verse ${b.ayah}',
+                                style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600),
+                              ),
+                              subtitle: Text(
+                                b.label != null && b.label!.isNotEmpty
+                                    ? 'Note: ${b.label}\nSaved on $dateStr'
+                                    : 'Saved on $dateStr',
+                                style: GoogleFonts.inter(fontSize: 11, color: Colors.grey[600]),
+                              ),
+                              trailing: IconButton(
+                                icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                                onPressed: () => _deleteBookmark(b),
+                              ),
+                              onTap: () => context.push('/home/surah/${b.surah}?scrollToAyah=${b.ayah}'),
+                            ),
+                          );
+                        },
+                      ),
+          ),
+        ],
+      ),
     );
   }
 }

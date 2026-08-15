@@ -82,6 +82,16 @@ class QuranRepository {
     return rows.map(Ayah.fromMap).toList();
   }
 
+  Future<List<Ayah>> getAyahsByPage(int page) async {
+    final rows = await _db.query(
+      'ayahs',
+      where: 'page = ?',
+      whereArgs: [page],
+      orderBy: 'id ASC',
+    );
+    return rows.map(Ayah.fromMap).toList();
+  }
+
   Future<Ayah?> getAyah(int surah, int ayah) async {
     final rows = await _db.query(
       'ayahs',
@@ -277,13 +287,17 @@ class QuranRepository {
     int? ayah,
     int? page,
   }) async {
-    await _db.insert('last_read', {
-      'section': section,
-      'surah': surah,
-      'ayah': ayah,
-      'page': page,
-      'updated_at': DateTime.now().millisecondsSinceEpoch,
-    });
+    await _db.insert(
+      'last_read',
+      {
+        'section': section,
+        'surah': surah,
+        'ayah': ayah,
+        'page': page,
+        'updated_at': DateTime.now().millisecondsSinceEpoch,
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   // ── Bookmarks ─────────────────────────────────────────────────────────────
@@ -292,6 +306,8 @@ class QuranRepository {
         await _db.query('bookmarks', orderBy: 'created_at DESC');
     return rows.map(Bookmark.fromMap).toList();
   }
+
+  Future<List<Bookmark>> getBookmarks() => getAllBookmarks();
 
   Future<bool> isBookmarked(int surah, int ayah) async {
     final rows = await _db.query(
@@ -320,7 +336,56 @@ class QuranRepository {
     );
   }
 
-  // ── Marked Mistakes ───────────────────────────────────────────────────────
+  // ── Mushaf Word-Layout Queries ─────────────────────────────────────────────
+  Future<List<Map<String, dynamic>>> getMushafPageWords(int page, String mushaf) async {
+    final rows = await _db.query(
+      'word_layout',
+      where: 'mushaf = ? AND page = ?',
+      whereArgs: [mushaf, page],
+      orderBy: 'line ASC, word_pos ASC',
+    );
+    return rows;
+  }
+
+  Future<int> getSurahStartPage(int surah, String mushaf) async {
+    final rows = await _db.query(
+      'word_layout',
+      where: 'mushaf = ? AND surah = ?',
+      whereArgs: [mushaf, surah],
+      orderBy: 'page ASC',
+      limit: 1,
+    );
+    if (rows.isNotEmpty) {
+      final val = rows.first['page'];
+      if (val is int) return val;
+      if (val != null) return int.tryParse(val.toString()) ?? 1;
+    }
+    final ayahs = await getAyahsBySurah(surah);
+    return ayahs.isNotEmpty ? ayahs.first.page : 1;
+  }
+
+  Future<int> getJuzStartPage(int juz, String mushaf) async {
+    final ayahs = await getAyahsByJuz(juz);
+    if (ayahs.isNotEmpty) {
+      final firstAyah = ayahs.first;
+      final rows = await _db.query(
+        'word_layout',
+        where: 'mushaf = ? AND surah = ? AND ayah >= ?',
+        whereArgs: [mushaf, firstAyah.surah, firstAyah.ayahNumber],
+        orderBy: 'page ASC',
+        limit: 1,
+      );
+      if (rows.isNotEmpty) {
+        final val = rows.first['page'];
+        if (val is int) return val;
+        if (val != null) return int.tryParse(val.toString()) ?? firstAyah.page;
+      }
+      return firstAyah.page;
+    }
+    return 1;
+  }
+
+  // ── Marked Mistakes & Rich Analytics ───────────────────────────────────────
   Future<Set<String>> getMarkedMistakes(String section) async {
     final rows = await _db.query(
       'marked_mistakes',
@@ -349,6 +414,49 @@ class QuranRepository {
     }
   }
 
+  Future<List<Map<String, dynamic>>> getAllMarkedMistakesWithDetails() async {
+    final rows = await _db.query('marked_mistakes', orderBy: 'marked_at DESC');
+    final List<Map<String, dynamic>> results = [];
+    for (final row in rows) {
+      final wId = row['word_id'] as String;
+      final parts = wId.split(':');
+      final surah = parts.isNotEmpty ? int.tryParse(parts[0]) ?? 1 : 1;
+      final ayahNum = parts.length > 1 ? int.tryParse(parts[1]) ?? 1 : 1;
+      
+      final ayah = await getAyah(surah, ayahNum);
+      results.add({
+        'word_id': wId,
+        'section': row['section'],
+        'marked_at': row['marked_at'],
+        'surah': surah,
+        'ayah': ayahNum,
+        'juz': ayah?.juz ?? 1,
+        'page': ayah?.page ?? 1,
+      });
+    }
+    return results;
+  }
+
+  Future<Map<int, int>> getMistakeCountsByJuz() async {
+    final mistakes = await getAllMarkedMistakesWithDetails();
+    final Map<int, int> counts = {};
+    for (final m in mistakes) {
+      final juz = m['juz'] as int;
+      counts[juz] = (counts[juz] ?? 0) + 1;
+    }
+    return counts;
+  }
+
+  Future<Map<int, int>> getMistakeCountsBySurah() async {
+    final mistakes = await getAllMarkedMistakesWithDetails();
+    final Map<int, int> counts = {};
+    for (final m in mistakes) {
+      final surah = m['surah'] as int;
+      counts[surah] = (counts[surah] ?? 0) + 1;
+    }
+    return counts;
+  }
+
   // ── Section Preferences ───────────────────────────────────────────────────
   Future<Map<String, dynamic>?> getSectionPreferences(String section) async {
     final rows = await _db.query(
@@ -373,4 +481,5 @@ class QuranRepository {
       'reciter_id': reciterId,
     });
   }
+
 }

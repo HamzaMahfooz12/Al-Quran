@@ -10,6 +10,7 @@ import '../../features/juz/juz_screen.dart';
 import '../../features/mushaf_15/mushaf_15_screen.dart';
 import '../../features/mushaf_16/mushaf_16_screen.dart';
 import '../../features/bookmarks/bookmarks_screen.dart';
+import '../../features/mark_mistakes/mistakes_report_screen.dart';
 import '../../features/settings/settings_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -74,6 +75,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: 'bookmarks',
             name: 'bookmarks',
             builder: (ctx, state) => const BookmarksScreen(),
+          ),
+          GoRoute(
+            path: 'mistakes-report',
+            name: 'mistakes-report',
+            builder: (ctx, state) => const MistakesReportScreen(),
           ),
           GoRoute(
             path: 'settings',

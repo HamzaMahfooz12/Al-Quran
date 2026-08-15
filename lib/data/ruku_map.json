@@ -1,0 +1,3338 @@
+{
+  "1:7": {
+    "surah": 1,
+    "ayah": 7,
+    "ruku_in_surah": 1,
+    "global_ruku": 1
+  },
+  "2:7": {
+    "surah": 2,
+    "ayah": 7,
+    "ruku_in_surah": 1,
+    "global_ruku": 2
+  },
+  "2:20": {
+    "surah": 2,
+    "ayah": 20,
+    "ruku_in_surah": 2,
+    "global_ruku": 3
+  },
+  "2:29": {
+    "surah": 2,
+    "ayah": 29,
+    "ruku_in_surah": 3,
+    "global_ruku": 4
+  },
+  "2:39": {
+    "surah": 2,
+    "ayah": 39,
+    "ruku_in_surah": 4,
+    "global_ruku": 5
+  },
+  "2:46": {
+    "surah": 2,
+    "ayah": 46,
+    "ruku_in_surah": 5,
+    "global_ruku": 6
+  },
+  "2:59": {
+    "surah": 2,
+    "ayah": 59,
+    "ruku_in_surah": 6,
+    "global_ruku": 7
+  },
+  "2:61": {
+    "surah": 2,
+    "ayah": 61,
+    "ruku_in_surah": 7,
+    "global_ruku": 8
+  },
+  "2:71": {
+    "surah": 2,
+    "ayah": 71,
+    "ruku_in_surah": 8,
+    "global_ruku": 9
+  },
+  "2:82": {
+    "surah": 2,
+    "ayah": 82,
+    "ruku_in_surah": 9,
+    "global_ruku": 10
+  },
+  "2:86": {
+    "surah": 2,
+    "ayah": 86,
+    "ruku_in_surah": 10,
+    "global_ruku": 11
+  },
+  "2:96": {
+    "surah": 2,
+    "ayah": 96,
+    "ruku_in_surah": 11,
+    "global_ruku": 12
+  },
+  "2:103": {
+    "surah": 2,
+    "ayah": 103,
+    "ruku_in_surah": 12,
+    "global_ruku": 13
+  },
+  "2:112": {
+    "surah": 2,
+    "ayah": 112,
+    "ruku_in_surah": 13,
+    "global_ruku": 14
+  },
+  "2:121": {
+    "surah": 2,
+    "ayah": 121,
+    "ruku_in_surah": 14,
+    "global_ruku": 15
+  },
+  "2:129": {
+    "surah": 2,
+    "ayah": 129,
+    "ruku_in_surah": 15,
+    "global_ruku": 16
+  },
+  "2:141": {
+    "surah": 2,
+    "ayah": 141,
+    "ruku_in_surah": 16,
+    "global_ruku": 17
+  },
+  "2:147": {
+    "surah": 2,
+    "ayah": 147,
+    "ruku_in_surah": 17,
+    "global_ruku": 18
+  },
+  "2:152": {
+    "surah": 2,
+    "ayah": 152,
+    "ruku_in_surah": 18,
+    "global_ruku": 19
+  },
+  "2:163": {
+    "surah": 2,
+    "ayah": 163,
+    "ruku_in_surah": 19,
+    "global_ruku": 20
+  },
+  "2:167": {
+    "surah": 2,
+    "ayah": 167,
+    "ruku_in_surah": 20,
+    "global_ruku": 21
+  },
+  "2:176": {
+    "surah": 2,
+    "ayah": 176,
+    "ruku_in_surah": 21,
+    "global_ruku": 22
+  },
+  "2:182": {
+    "surah": 2,
+    "ayah": 182,
+    "ruku_in_surah": 22,
+    "global_ruku": 23
+  },
+  "2:188": {
+    "surah": 2,
+    "ayah": 188,
+    "ruku_in_surah": 23,
+    "global_ruku": 24
+  },
+  "2:196": {
+    "surah": 2,
+    "ayah": 196,
+    "ruku_in_surah": 24,
+    "global_ruku": 25
+  },
+  "2:210": {
+    "surah": 2,
+    "ayah": 210,
+    "ruku_in_surah": 25,
+    "global_ruku": 26
+  },
+  "2:216": {
+    "surah": 2,
+    "ayah": 216,
+    "ruku_in_surah": 26,
+    "global_ruku": 27
+  },
+  "2:221": {
+    "surah": 2,
+    "ayah": 221,
+    "ruku_in_surah": 27,
+    "global_ruku": 28
+  },
+  "2:228": {
+    "surah": 2,
+    "ayah": 228,
+    "ruku_in_surah": 28,
+    "global_ruku": 29
+  },
+  "2:231": {
+    "surah": 2,
+    "ayah": 231,
+    "ruku_in_surah": 29,
+    "global_ruku": 30
+  },
+  "2:235": {
+    "surah": 2,
+    "ayah": 235,
+    "ruku_in_surah": 30,
+    "global_ruku": 31
+  },
+  "2:242": {
+    "surah": 2,
+    "ayah": 242,
+    "ruku_in_surah": 31,
+    "global_ruku": 32
+  },
+  "2:248": {
+    "surah": 2,
+    "ayah": 248,
+    "ruku_in_surah": 32,
+    "global_ruku": 33
+  },
+  "2:253": {
+    "surah": 2,
+    "ayah": 253,
+    "ruku_in_surah": 33,
+    "global_ruku": 34
+  },
+  "2:257": {
+    "surah": 2,
+    "ayah": 257,
+    "ruku_in_surah": 34,
+    "global_ruku": 35
+  },
+  "2:260": {
+    "surah": 2,
+    "ayah": 260,
+    "ruku_in_surah": 35,
+    "global_ruku": 36
+  },
+  "2:266": {
+    "surah": 2,
+    "ayah": 266,
+    "ruku_in_surah": 36,
+    "global_ruku": 37
+  },
+  "2:273": {
+    "surah": 2,
+    "ayah": 273,
+    "ruku_in_surah": 37,
+    "global_ruku": 38
+  },
+  "2:281": {
+    "surah": 2,
+    "ayah": 281,
+    "ruku_in_surah": 38,
+    "global_ruku": 39
+  },
+  "2:283": {
+    "surah": 2,
+    "ayah": 283,
+    "ruku_in_surah": 39,
+    "global_ruku": 40
+  },
+  "2:286": {
+    "surah": 2,
+    "ayah": 286,
+    "ruku_in_surah": 40,
+    "global_ruku": 41
+  },
+  "3:9": {
+    "surah": 3,
+    "ayah": 9,
+    "ruku_in_surah": 1,
+    "global_ruku": 42
+  },
+  "3:20": {
+    "surah": 3,
+    "ayah": 20,
+    "ruku_in_surah": 2,
+    "global_ruku": 43
+  },
+  "3:30": {
+    "surah": 3,
+    "ayah": 30,
+    "ruku_in_surah": 3,
+    "global_ruku": 44
+  },
+  "3:41": {
+    "surah": 3,
+    "ayah": 41,
+    "ruku_in_surah": 4,
+    "global_ruku": 45
+  },
+  "3:54": {
+    "surah": 3,
+    "ayah": 54,
+    "ruku_in_surah": 5,
+    "global_ruku": 46
+  },
+  "3:63": {
+    "surah": 3,
+    "ayah": 63,
+    "ruku_in_surah": 6,
+    "global_ruku": 47
+  },
+  "3:71": {
+    "surah": 3,
+    "ayah": 71,
+    "ruku_in_surah": 7,
+    "global_ruku": 48
+  },
+  "3:80": {
+    "surah": 3,
+    "ayah": 80,
+    "ruku_in_surah": 8,
+    "global_ruku": 49
+  },
+  "3:91": {
+    "surah": 3,
+    "ayah": 91,
+    "ruku_in_surah": 9,
+    "global_ruku": 50
+  },
+  "3:101": {
+    "surah": 3,
+    "ayah": 101,
+    "ruku_in_surah": 10,
+    "global_ruku": 51
+  },
+  "3:109": {
+    "surah": 3,
+    "ayah": 109,
+    "ruku_in_surah": 11,
+    "global_ruku": 52
+  },
+  "3:120": {
+    "surah": 3,
+    "ayah": 120,
+    "ruku_in_surah": 12,
+    "global_ruku": 53
+  },
+  "3:129": {
+    "surah": 3,
+    "ayah": 129,
+    "ruku_in_surah": 13,
+    "global_ruku": 54
+  },
+  "3:143": {
+    "surah": 3,
+    "ayah": 143,
+    "ruku_in_surah": 14,
+    "global_ruku": 55
+  },
+  "3:148": {
+    "surah": 3,
+    "ayah": 148,
+    "ruku_in_surah": 15,
+    "global_ruku": 56
+  },
+  "3:155": {
+    "surah": 3,
+    "ayah": 155,
+    "ruku_in_surah": 16,
+    "global_ruku": 57
+  },
+  "3:171": {
+    "surah": 3,
+    "ayah": 171,
+    "ruku_in_surah": 17,
+    "global_ruku": 58
+  },
+  "3:180": {
+    "surah": 3,
+    "ayah": 180,
+    "ruku_in_surah": 18,
+    "global_ruku": 59
+  },
+  "3:189": {
+    "surah": 3,
+    "ayah": 189,
+    "ruku_in_surah": 19,
+    "global_ruku": 60
+  },
+  "3:200": {
+    "surah": 3,
+    "ayah": 200,
+    "ruku_in_surah": 20,
+    "global_ruku": 61
+  },
+  "4:10": {
+    "surah": 4,
+    "ayah": 10,
+    "ruku_in_surah": 1,
+    "global_ruku": 62
+  },
+  "4:14": {
+    "surah": 4,
+    "ayah": 14,
+    "ruku_in_surah": 2,
+    "global_ruku": 63
+  },
+  "4:22": {
+    "surah": 4,
+    "ayah": 22,
+    "ruku_in_surah": 3,
+    "global_ruku": 64
+  },
+  "4:25": {
+    "surah": 4,
+    "ayah": 25,
+    "ruku_in_surah": 4,
+    "global_ruku": 65
+  },
+  "4:33": {
+    "surah": 4,
+    "ayah": 33,
+    "ruku_in_surah": 5,
+    "global_ruku": 66
+  },
+  "4:42": {
+    "surah": 4,
+    "ayah": 42,
+    "ruku_in_surah": 6,
+    "global_ruku": 67
+  },
+  "4:50": {
+    "surah": 4,
+    "ayah": 50,
+    "ruku_in_surah": 7,
+    "global_ruku": 68
+  },
+  "4:59": {
+    "surah": 4,
+    "ayah": 59,
+    "ruku_in_surah": 8,
+    "global_ruku": 69
+  },
+  "4:70": {
+    "surah": 4,
+    "ayah": 70,
+    "ruku_in_surah": 9,
+    "global_ruku": 70
+  },
+  "4:76": {
+    "surah": 4,
+    "ayah": 76,
+    "ruku_in_surah": 10,
+    "global_ruku": 71
+  },
+  "4:87": {
+    "surah": 4,
+    "ayah": 87,
+    "ruku_in_surah": 11,
+    "global_ruku": 72
+  },
+  "4:91": {
+    "surah": 4,
+    "ayah": 91,
+    "ruku_in_surah": 12,
+    "global_ruku": 73
+  },
+  "4:96": {
+    "surah": 4,
+    "ayah": 96,
+    "ruku_in_surah": 13,
+    "global_ruku": 74
+  },
+  "4:100": {
+    "surah": 4,
+    "ayah": 100,
+    "ruku_in_surah": 14,
+    "global_ruku": 75
+  },
+  "4:104": {
+    "surah": 4,
+    "ayah": 104,
+    "ruku_in_surah": 15,
+    "global_ruku": 76
+  },
+  "4:112": {
+    "surah": 4,
+    "ayah": 112,
+    "ruku_in_surah": 16,
+    "global_ruku": 77
+  },
+  "4:115": {
+    "surah": 4,
+    "ayah": 115,
+    "ruku_in_surah": 17,
+    "global_ruku": 78
+  },
+  "4:126": {
+    "surah": 4,
+    "ayah": 126,
+    "ruku_in_surah": 18,
+    "global_ruku": 79
+  },
+  "4:134": {
+    "surah": 4,
+    "ayah": 134,
+    "ruku_in_surah": 19,
+    "global_ruku": 80
+  },
+  "4:141": {
+    "surah": 4,
+    "ayah": 141,
+    "ruku_in_surah": 20,
+    "global_ruku": 81
+  },
+  "4:152": {
+    "surah": 4,
+    "ayah": 152,
+    "ruku_in_surah": 21,
+    "global_ruku": 82
+  },
+  "4:162": {
+    "surah": 4,
+    "ayah": 162,
+    "ruku_in_surah": 22,
+    "global_ruku": 83
+  },
+  "4:171": {
+    "surah": 4,
+    "ayah": 171,
+    "ruku_in_surah": 23,
+    "global_ruku": 84
+  },
+  "4:176": {
+    "surah": 4,
+    "ayah": 176,
+    "ruku_in_surah": 24,
+    "global_ruku": 85
+  },
+  "5:5": {
+    "surah": 5,
+    "ayah": 5,
+    "ruku_in_surah": 1,
+    "global_ruku": 86
+  },
+  "5:11": {
+    "surah": 5,
+    "ayah": 11,
+    "ruku_in_surah": 2,
+    "global_ruku": 87
+  },
+  "5:19": {
+    "surah": 5,
+    "ayah": 19,
+    "ruku_in_surah": 3,
+    "global_ruku": 88
+  },
+  "5:26": {
+    "surah": 5,
+    "ayah": 26,
+    "ruku_in_surah": 4,
+    "global_ruku": 89
+  },
+  "5:34": {
+    "surah": 5,
+    "ayah": 34,
+    "ruku_in_surah": 5,
+    "global_ruku": 90
+  },
+  "5:43": {
+    "surah": 5,
+    "ayah": 43,
+    "ruku_in_surah": 6,
+    "global_ruku": 91
+  },
+  "5:50": {
+    "surah": 5,
+    "ayah": 50,
+    "ruku_in_surah": 7,
+    "global_ruku": 92
+  },
+  "5:56": {
+    "surah": 5,
+    "ayah": 56,
+    "ruku_in_surah": 8,
+    "global_ruku": 93
+  },
+  "5:66": {
+    "surah": 5,
+    "ayah": 66,
+    "ruku_in_surah": 9,
+    "global_ruku": 94
+  },
+  "5:77": {
+    "surah": 5,
+    "ayah": 77,
+    "ruku_in_surah": 10,
+    "global_ruku": 95
+  },
+  "5:86": {
+    "surah": 5,
+    "ayah": 86,
+    "ruku_in_surah": 11,
+    "global_ruku": 96
+  },
+  "5:93": {
+    "surah": 5,
+    "ayah": 93,
+    "ruku_in_surah": 12,
+    "global_ruku": 97
+  },
+  "5:100": {
+    "surah": 5,
+    "ayah": 100,
+    "ruku_in_surah": 13,
+    "global_ruku": 98
+  },
+  "5:108": {
+    "surah": 5,
+    "ayah": 108,
+    "ruku_in_surah": 14,
+    "global_ruku": 99
+  },
+  "5:115": {
+    "surah": 5,
+    "ayah": 115,
+    "ruku_in_surah": 15,
+    "global_ruku": 100
+  },
+  "5:120": {
+    "surah": 5,
+    "ayah": 120,
+    "ruku_in_surah": 16,
+    "global_ruku": 101
+  },
+  "6:10": {
+    "surah": 6,
+    "ayah": 10,
+    "ruku_in_surah": 1,
+    "global_ruku": 102
+  },
+  "6:20": {
+    "surah": 6,
+    "ayah": 20,
+    "ruku_in_surah": 2,
+    "global_ruku": 103
+  },
+  "6:30": {
+    "surah": 6,
+    "ayah": 30,
+    "ruku_in_surah": 3,
+    "global_ruku": 104
+  },
+  "6:41": {
+    "surah": 6,
+    "ayah": 41,
+    "ruku_in_surah": 4,
+    "global_ruku": 105
+  },
+  "6:50": {
+    "surah": 6,
+    "ayah": 50,
+    "ruku_in_surah": 5,
+    "global_ruku": 106
+  },
+  "6:55": {
+    "surah": 6,
+    "ayah": 55,
+    "ruku_in_surah": 6,
+    "global_ruku": 107
+  },
+  "6:60": {
+    "surah": 6,
+    "ayah": 60,
+    "ruku_in_surah": 7,
+    "global_ruku": 108
+  },
+  "6:70": {
+    "surah": 6,
+    "ayah": 70,
+    "ruku_in_surah": 8,
+    "global_ruku": 109
+  },
+  "6:82": {
+    "surah": 6,
+    "ayah": 82,
+    "ruku_in_surah": 9,
+    "global_ruku": 110
+  },
+  "6:90": {
+    "surah": 6,
+    "ayah": 90,
+    "ruku_in_surah": 10,
+    "global_ruku": 111
+  },
+  "6:94": {
+    "surah": 6,
+    "ayah": 94,
+    "ruku_in_surah": 11,
+    "global_ruku": 112
+  },
+  "6:100": {
+    "surah": 6,
+    "ayah": 100,
+    "ruku_in_surah": 12,
+    "global_ruku": 113
+  },
+  "6:110": {
+    "surah": 6,
+    "ayah": 110,
+    "ruku_in_surah": 13,
+    "global_ruku": 114
+  },
+  "6:121": {
+    "surah": 6,
+    "ayah": 121,
+    "ruku_in_surah": 14,
+    "global_ruku": 115
+  },
+  "6:129": {
+    "surah": 6,
+    "ayah": 129,
+    "ruku_in_surah": 15,
+    "global_ruku": 116
+  },
+  "6:140": {
+    "surah": 6,
+    "ayah": 140,
+    "ruku_in_surah": 16,
+    "global_ruku": 117
+  },
+  "6:144": {
+    "surah": 6,
+    "ayah": 144,
+    "ruku_in_surah": 17,
+    "global_ruku": 118
+  },
+  "6:150": {
+    "surah": 6,
+    "ayah": 150,
+    "ruku_in_surah": 18,
+    "global_ruku": 119
+  },
+  "6:154": {
+    "surah": 6,
+    "ayah": 154,
+    "ruku_in_surah": 19,
+    "global_ruku": 120
+  },
+  "6:165": {
+    "surah": 6,
+    "ayah": 165,
+    "ruku_in_surah": 20,
+    "global_ruku": 121
+  },
+  "7:10": {
+    "surah": 7,
+    "ayah": 10,
+    "ruku_in_surah": 1,
+    "global_ruku": 122
+  },
+  "7:25": {
+    "surah": 7,
+    "ayah": 25,
+    "ruku_in_surah": 2,
+    "global_ruku": 123
+  },
+  "7:31": {
+    "surah": 7,
+    "ayah": 31,
+    "ruku_in_surah": 3,
+    "global_ruku": 124
+  },
+  "7:39": {
+    "surah": 7,
+    "ayah": 39,
+    "ruku_in_surah": 4,
+    "global_ruku": 125
+  },
+  "7:47": {
+    "surah": 7,
+    "ayah": 47,
+    "ruku_in_surah": 5,
+    "global_ruku": 126
+  },
+  "7:53": {
+    "surah": 7,
+    "ayah": 53,
+    "ruku_in_surah": 6,
+    "global_ruku": 127
+  },
+  "7:58": {
+    "surah": 7,
+    "ayah": 58,
+    "ruku_in_surah": 7,
+    "global_ruku": 128
+  },
+  "7:64": {
+    "surah": 7,
+    "ayah": 64,
+    "ruku_in_surah": 8,
+    "global_ruku": 129
+  },
+  "7:72": {
+    "surah": 7,
+    "ayah": 72,
+    "ruku_in_surah": 9,
+    "global_ruku": 130
+  },
+  "7:84": {
+    "surah": 7,
+    "ayah": 84,
+    "ruku_in_surah": 10,
+    "global_ruku": 131
+  },
+  "7:93": {
+    "surah": 7,
+    "ayah": 93,
+    "ruku_in_surah": 11,
+    "global_ruku": 132
+  },
+  "7:99": {
+    "surah": 7,
+    "ayah": 99,
+    "ruku_in_surah": 12,
+    "global_ruku": 133
+  },
+  "7:108": {
+    "surah": 7,
+    "ayah": 108,
+    "ruku_in_surah": 13,
+    "global_ruku": 134
+  },
+  "7:126": {
+    "surah": 7,
+    "ayah": 126,
+    "ruku_in_surah": 14,
+    "global_ruku": 135
+  },
+  "7:129": {
+    "surah": 7,
+    "ayah": 129,
+    "ruku_in_surah": 15,
+    "global_ruku": 136
+  },
+  "7:141": {
+    "surah": 7,
+    "ayah": 141,
+    "ruku_in_surah": 16,
+    "global_ruku": 137
+  },
+  "7:147": {
+    "surah": 7,
+    "ayah": 147,
+    "ruku_in_surah": 17,
+    "global_ruku": 138
+  },
+  "7:151": {
+    "surah": 7,
+    "ayah": 151,
+    "ruku_in_surah": 18,
+    "global_ruku": 139
+  },
+  "7:157": {
+    "surah": 7,
+    "ayah": 157,
+    "ruku_in_surah": 19,
+    "global_ruku": 140
+  },
+  "7:162": {
+    "surah": 7,
+    "ayah": 162,
+    "ruku_in_surah": 20,
+    "global_ruku": 141
+  },
+  "7:171": {
+    "surah": 7,
+    "ayah": 171,
+    "ruku_in_surah": 21,
+    "global_ruku": 142
+  },
+  "7:181": {
+    "surah": 7,
+    "ayah": 181,
+    "ruku_in_surah": 22,
+    "global_ruku": 143
+  },
+  "7:188": {
+    "surah": 7,
+    "ayah": 188,
+    "ruku_in_surah": 23,
+    "global_ruku": 144
+  },
+  "7:206": {
+    "surah": 7,
+    "ayah": 206,
+    "ruku_in_surah": 24,
+    "global_ruku": 145
+  },
+  "8:10": {
+    "surah": 8,
+    "ayah": 10,
+    "ruku_in_surah": 1,
+    "global_ruku": 146
+  },
+  "8:19": {
+    "surah": 8,
+    "ayah": 19,
+    "ruku_in_surah": 2,
+    "global_ruku": 147
+  },
+  "8:28": {
+    "surah": 8,
+    "ayah": 28,
+    "ruku_in_surah": 3,
+    "global_ruku": 148
+  },
+  "8:37": {
+    "surah": 8,
+    "ayah": 37,
+    "ruku_in_surah": 4,
+    "global_ruku": 149
+  },
+  "8:44": {
+    "surah": 8,
+    "ayah": 44,
+    "ruku_in_surah": 5,
+    "global_ruku": 150
+  },
+  "8:48": {
+    "surah": 8,
+    "ayah": 48,
+    "ruku_in_surah": 6,
+    "global_ruku": 151
+  },
+  "8:58": {
+    "surah": 8,
+    "ayah": 58,
+    "ruku_in_surah": 7,
+    "global_ruku": 152
+  },
+  "8:64": {
+    "surah": 8,
+    "ayah": 64,
+    "ruku_in_surah": 8,
+    "global_ruku": 153
+  },
+  "8:69": {
+    "surah": 8,
+    "ayah": 69,
+    "ruku_in_surah": 9,
+    "global_ruku": 154
+  },
+  "8:75": {
+    "surah": 8,
+    "ayah": 75,
+    "ruku_in_surah": 10,
+    "global_ruku": 155
+  },
+  "9:6": {
+    "surah": 9,
+    "ayah": 6,
+    "ruku_in_surah": 1,
+    "global_ruku": 156
+  },
+  "9:16": {
+    "surah": 9,
+    "ayah": 16,
+    "ruku_in_surah": 2,
+    "global_ruku": 157
+  },
+  "9:24": {
+    "surah": 9,
+    "ayah": 24,
+    "ruku_in_surah": 3,
+    "global_ruku": 158
+  },
+  "9:29": {
+    "surah": 9,
+    "ayah": 29,
+    "ruku_in_surah": 4,
+    "global_ruku": 159
+  },
+  "9:37": {
+    "surah": 9,
+    "ayah": 37,
+    "ruku_in_surah": 5,
+    "global_ruku": 160
+  },
+  "9:42": {
+    "surah": 9,
+    "ayah": 42,
+    "ruku_in_surah": 6,
+    "global_ruku": 161
+  },
+  "9:59": {
+    "surah": 9,
+    "ayah": 59,
+    "ruku_in_surah": 7,
+    "global_ruku": 162
+  },
+  "9:66": {
+    "surah": 9,
+    "ayah": 66,
+    "ruku_in_surah": 8,
+    "global_ruku": 163
+  },
+  "9:72": {
+    "surah": 9,
+    "ayah": 72,
+    "ruku_in_surah": 9,
+    "global_ruku": 164
+  },
+  "9:80": {
+    "surah": 9,
+    "ayah": 80,
+    "ruku_in_surah": 10,
+    "global_ruku": 165
+  },
+  "9:89": {
+    "surah": 9,
+    "ayah": 89,
+    "ruku_in_surah": 11,
+    "global_ruku": 166
+  },
+  "9:99": {
+    "surah": 9,
+    "ayah": 99,
+    "ruku_in_surah": 12,
+    "global_ruku": 167
+  },
+  "9:110": {
+    "surah": 9,
+    "ayah": 110,
+    "ruku_in_surah": 13,
+    "global_ruku": 168
+  },
+  "9:118": {
+    "surah": 9,
+    "ayah": 118,
+    "ruku_in_surah": 14,
+    "global_ruku": 169
+  },
+  "9:122": {
+    "surah": 9,
+    "ayah": 122,
+    "ruku_in_surah": 15,
+    "global_ruku": 170
+  },
+  "9:129": {
+    "surah": 9,
+    "ayah": 129,
+    "ruku_in_surah": 16,
+    "global_ruku": 171
+  },
+  "10:10": {
+    "surah": 10,
+    "ayah": 10,
+    "ruku_in_surah": 1,
+    "global_ruku": 172
+  },
+  "10:20": {
+    "surah": 10,
+    "ayah": 20,
+    "ruku_in_surah": 2,
+    "global_ruku": 173
+  },
+  "10:30": {
+    "surah": 10,
+    "ayah": 30,
+    "ruku_in_surah": 3,
+    "global_ruku": 174
+  },
+  "10:40": {
+    "surah": 10,
+    "ayah": 40,
+    "ruku_in_surah": 4,
+    "global_ruku": 175
+  },
+  "10:53": {
+    "surah": 10,
+    "ayah": 53,
+    "ruku_in_surah": 5,
+    "global_ruku": 176
+  },
+  "10:60": {
+    "surah": 10,
+    "ayah": 60,
+    "ruku_in_surah": 6,
+    "global_ruku": 177
+  },
+  "10:70": {
+    "surah": 10,
+    "ayah": 70,
+    "ruku_in_surah": 7,
+    "global_ruku": 178
+  },
+  "10:82": {
+    "surah": 10,
+    "ayah": 82,
+    "ruku_in_surah": 8,
+    "global_ruku": 179
+  },
+  "10:92": {
+    "surah": 10,
+    "ayah": 92,
+    "ruku_in_surah": 9,
+    "global_ruku": 180
+  },
+  "10:103": {
+    "surah": 10,
+    "ayah": 103,
+    "ruku_in_surah": 10,
+    "global_ruku": 181
+  },
+  "10:109": {
+    "surah": 10,
+    "ayah": 109,
+    "ruku_in_surah": 11,
+    "global_ruku": 182
+  },
+  "11:8": {
+    "surah": 11,
+    "ayah": 8,
+    "ruku_in_surah": 1,
+    "global_ruku": 183
+  },
+  "11:24": {
+    "surah": 11,
+    "ayah": 24,
+    "ruku_in_surah": 2,
+    "global_ruku": 184
+  },
+  "11:35": {
+    "surah": 11,
+    "ayah": 35,
+    "ruku_in_surah": 3,
+    "global_ruku": 185
+  },
+  "11:49": {
+    "surah": 11,
+    "ayah": 49,
+    "ruku_in_surah": 4,
+    "global_ruku": 186
+  },
+  "11:60": {
+    "surah": 11,
+    "ayah": 60,
+    "ruku_in_surah": 5,
+    "global_ruku": 187
+  },
+  "11:68": {
+    "surah": 11,
+    "ayah": 68,
+    "ruku_in_surah": 6,
+    "global_ruku": 188
+  },
+  "11:83": {
+    "surah": 11,
+    "ayah": 83,
+    "ruku_in_surah": 7,
+    "global_ruku": 189
+  },
+  "11:95": {
+    "surah": 11,
+    "ayah": 95,
+    "ruku_in_surah": 8,
+    "global_ruku": 190
+  },
+  "11:109": {
+    "surah": 11,
+    "ayah": 109,
+    "ruku_in_surah": 9,
+    "global_ruku": 191
+  },
+  "11:123": {
+    "surah": 11,
+    "ayah": 123,
+    "ruku_in_surah": 10,
+    "global_ruku": 192
+  },
+  "12:6": {
+    "surah": 12,
+    "ayah": 6,
+    "ruku_in_surah": 1,
+    "global_ruku": 193
+  },
+  "12:20": {
+    "surah": 12,
+    "ayah": 20,
+    "ruku_in_surah": 2,
+    "global_ruku": 194
+  },
+  "12:29": {
+    "surah": 12,
+    "ayah": 29,
+    "ruku_in_surah": 3,
+    "global_ruku": 195
+  },
+  "12:35": {
+    "surah": 12,
+    "ayah": 35,
+    "ruku_in_surah": 4,
+    "global_ruku": 196
+  },
+  "12:42": {
+    "surah": 12,
+    "ayah": 42,
+    "ruku_in_surah": 5,
+    "global_ruku": 197
+  },
+  "12:49": {
+    "surah": 12,
+    "ayah": 49,
+    "ruku_in_surah": 6,
+    "global_ruku": 198
+  },
+  "12:57": {
+    "surah": 12,
+    "ayah": 57,
+    "ruku_in_surah": 7,
+    "global_ruku": 199
+  },
+  "12:68": {
+    "surah": 12,
+    "ayah": 68,
+    "ruku_in_surah": 8,
+    "global_ruku": 200
+  },
+  "12:79": {
+    "surah": 12,
+    "ayah": 79,
+    "ruku_in_surah": 9,
+    "global_ruku": 201
+  },
+  "12:93": {
+    "surah": 12,
+    "ayah": 93,
+    "ruku_in_surah": 10,
+    "global_ruku": 202
+  },
+  "12:104": {
+    "surah": 12,
+    "ayah": 104,
+    "ruku_in_surah": 11,
+    "global_ruku": 203
+  },
+  "12:111": {
+    "surah": 12,
+    "ayah": 111,
+    "ruku_in_surah": 12,
+    "global_ruku": 204
+  },
+  "13:7": {
+    "surah": 13,
+    "ayah": 7,
+    "ruku_in_surah": 1,
+    "global_ruku": 205
+  },
+  "13:18": {
+    "surah": 13,
+    "ayah": 18,
+    "ruku_in_surah": 2,
+    "global_ruku": 206
+  },
+  "13:26": {
+    "surah": 13,
+    "ayah": 26,
+    "ruku_in_surah": 3,
+    "global_ruku": 207
+  },
+  "13:31": {
+    "surah": 13,
+    "ayah": 31,
+    "ruku_in_surah": 4,
+    "global_ruku": 208
+  },
+  "13:37": {
+    "surah": 13,
+    "ayah": 37,
+    "ruku_in_surah": 5,
+    "global_ruku": 209
+  },
+  "13:43": {
+    "surah": 13,
+    "ayah": 43,
+    "ruku_in_surah": 6,
+    "global_ruku": 210
+  },
+  "14:6": {
+    "surah": 14,
+    "ayah": 6,
+    "ruku_in_surah": 1,
+    "global_ruku": 211
+  },
+  "14:12": {
+    "surah": 14,
+    "ayah": 12,
+    "ruku_in_surah": 2,
+    "global_ruku": 212
+  },
+  "14:21": {
+    "surah": 14,
+    "ayah": 21,
+    "ruku_in_surah": 3,
+    "global_ruku": 213
+  },
+  "14:27": {
+    "surah": 14,
+    "ayah": 27,
+    "ruku_in_surah": 4,
+    "global_ruku": 214
+  },
+  "14:34": {
+    "surah": 14,
+    "ayah": 34,
+    "ruku_in_surah": 5,
+    "global_ruku": 215
+  },
+  "14:41": {
+    "surah": 14,
+    "ayah": 41,
+    "ruku_in_surah": 6,
+    "global_ruku": 216
+  },
+  "14:52": {
+    "surah": 14,
+    "ayah": 52,
+    "ruku_in_surah": 7,
+    "global_ruku": 217
+  },
+  "15:15": {
+    "surah": 15,
+    "ayah": 15,
+    "ruku_in_surah": 1,
+    "global_ruku": 218
+  },
+  "15:25": {
+    "surah": 15,
+    "ayah": 25,
+    "ruku_in_surah": 2,
+    "global_ruku": 219
+  },
+  "15:44": {
+    "surah": 15,
+    "ayah": 44,
+    "ruku_in_surah": 3,
+    "global_ruku": 220
+  },
+  "15:60": {
+    "surah": 15,
+    "ayah": 60,
+    "ruku_in_surah": 4,
+    "global_ruku": 221
+  },
+  "15:79": {
+    "surah": 15,
+    "ayah": 79,
+    "ruku_in_surah": 5,
+    "global_ruku": 222
+  },
+  "15:99": {
+    "surah": 15,
+    "ayah": 99,
+    "ruku_in_surah": 6,
+    "global_ruku": 223
+  },
+  "16:9": {
+    "surah": 16,
+    "ayah": 9,
+    "ruku_in_surah": 1,
+    "global_ruku": 224
+  },
+  "16:21": {
+    "surah": 16,
+    "ayah": 21,
+    "ruku_in_surah": 2,
+    "global_ruku": 225
+  },
+  "16:25": {
+    "surah": 16,
+    "ayah": 25,
+    "ruku_in_surah": 3,
+    "global_ruku": 226
+  },
+  "16:34": {
+    "surah": 16,
+    "ayah": 34,
+    "ruku_in_surah": 4,
+    "global_ruku": 227
+  },
+  "16:40": {
+    "surah": 16,
+    "ayah": 40,
+    "ruku_in_surah": 5,
+    "global_ruku": 228
+  },
+  "16:50": {
+    "surah": 16,
+    "ayah": 50,
+    "ruku_in_surah": 6,
+    "global_ruku": 229
+  },
+  "16:60": {
+    "surah": 16,
+    "ayah": 60,
+    "ruku_in_surah": 7,
+    "global_ruku": 230
+  },
+  "16:65": {
+    "surah": 16,
+    "ayah": 65,
+    "ruku_in_surah": 8,
+    "global_ruku": 231
+  },
+  "16:70": {
+    "surah": 16,
+    "ayah": 70,
+    "ruku_in_surah": 9,
+    "global_ruku": 232
+  },
+  "16:76": {
+    "surah": 16,
+    "ayah": 76,
+    "ruku_in_surah": 10,
+    "global_ruku": 233
+  },
+  "16:83": {
+    "surah": 16,
+    "ayah": 83,
+    "ruku_in_surah": 11,
+    "global_ruku": 234
+  },
+  "16:89": {
+    "surah": 16,
+    "ayah": 89,
+    "ruku_in_surah": 12,
+    "global_ruku": 235
+  },
+  "16:100": {
+    "surah": 16,
+    "ayah": 100,
+    "ruku_in_surah": 13,
+    "global_ruku": 236
+  },
+  "16:110": {
+    "surah": 16,
+    "ayah": 110,
+    "ruku_in_surah": 14,
+    "global_ruku": 237
+  },
+  "16:119": {
+    "surah": 16,
+    "ayah": 119,
+    "ruku_in_surah": 15,
+    "global_ruku": 238
+  },
+  "16:128": {
+    "surah": 16,
+    "ayah": 128,
+    "ruku_in_surah": 16,
+    "global_ruku": 239
+  },
+  "17:10": {
+    "surah": 17,
+    "ayah": 10,
+    "ruku_in_surah": 1,
+    "global_ruku": 240
+  },
+  "17:22": {
+    "surah": 17,
+    "ayah": 22,
+    "ruku_in_surah": 2,
+    "global_ruku": 241
+  },
+  "17:30": {
+    "surah": 17,
+    "ayah": 30,
+    "ruku_in_surah": 3,
+    "global_ruku": 242
+  },
+  "17:40": {
+    "surah": 17,
+    "ayah": 40,
+    "ruku_in_surah": 4,
+    "global_ruku": 243
+  },
+  "17:52": {
+    "surah": 17,
+    "ayah": 52,
+    "ruku_in_surah": 5,
+    "global_ruku": 244
+  },
+  "17:60": {
+    "surah": 17,
+    "ayah": 60,
+    "ruku_in_surah": 6,
+    "global_ruku": 245
+  },
+  "17:70": {
+    "surah": 17,
+    "ayah": 70,
+    "ruku_in_surah": 7,
+    "global_ruku": 246
+  },
+  "17:77": {
+    "surah": 17,
+    "ayah": 77,
+    "ruku_in_surah": 8,
+    "global_ruku": 247
+  },
+  "17:84": {
+    "surah": 17,
+    "ayah": 84,
+    "ruku_in_surah": 9,
+    "global_ruku": 248
+  },
+  "17:93": {
+    "surah": 17,
+    "ayah": 93,
+    "ruku_in_surah": 10,
+    "global_ruku": 249
+  },
+  "17:100": {
+    "surah": 17,
+    "ayah": 100,
+    "ruku_in_surah": 11,
+    "global_ruku": 250
+  },
+  "17:111": {
+    "surah": 17,
+    "ayah": 111,
+    "ruku_in_surah": 12,
+    "global_ruku": 251
+  },
+  "18:12": {
+    "surah": 18,
+    "ayah": 12,
+    "ruku_in_surah": 1,
+    "global_ruku": 252
+  },
+  "18:17": {
+    "surah": 18,
+    "ayah": 17,
+    "ruku_in_surah": 2,
+    "global_ruku": 253
+  },
+  "18:22": {
+    "surah": 18,
+    "ayah": 22,
+    "ruku_in_surah": 3,
+    "global_ruku": 254
+  },
+  "18:31": {
+    "surah": 18,
+    "ayah": 31,
+    "ruku_in_surah": 4,
+    "global_ruku": 255
+  },
+  "18:44": {
+    "surah": 18,
+    "ayah": 44,
+    "ruku_in_surah": 5,
+    "global_ruku": 256
+  },
+  "18:49": {
+    "surah": 18,
+    "ayah": 49,
+    "ruku_in_surah": 6,
+    "global_ruku": 257
+  },
+  "18:53": {
+    "surah": 18,
+    "ayah": 53,
+    "ruku_in_surah": 7,
+    "global_ruku": 258
+  },
+  "18:59": {
+    "surah": 18,
+    "ayah": 59,
+    "ruku_in_surah": 8,
+    "global_ruku": 259
+  },
+  "18:70": {
+    "surah": 18,
+    "ayah": 70,
+    "ruku_in_surah": 9,
+    "global_ruku": 260
+  },
+  "18:82": {
+    "surah": 18,
+    "ayah": 82,
+    "ruku_in_surah": 10,
+    "global_ruku": 261
+  },
+  "18:101": {
+    "surah": 18,
+    "ayah": 101,
+    "ruku_in_surah": 11,
+    "global_ruku": 262
+  },
+  "18:110": {
+    "surah": 18,
+    "ayah": 110,
+    "ruku_in_surah": 12,
+    "global_ruku": 263
+  },
+  "19:15": {
+    "surah": 19,
+    "ayah": 15,
+    "ruku_in_surah": 1,
+    "global_ruku": 264
+  },
+  "19:40": {
+    "surah": 19,
+    "ayah": 40,
+    "ruku_in_surah": 2,
+    "global_ruku": 265
+  },
+  "19:50": {
+    "surah": 19,
+    "ayah": 50,
+    "ruku_in_surah": 3,
+    "global_ruku": 266
+  },
+  "19:65": {
+    "surah": 19,
+    "ayah": 65,
+    "ruku_in_surah": 4,
+    "global_ruku": 267
+  },
+  "19:82": {
+    "surah": 19,
+    "ayah": 82,
+    "ruku_in_surah": 5,
+    "global_ruku": 268
+  },
+  "19:98": {
+    "surah": 19,
+    "ayah": 98,
+    "ruku_in_surah": 6,
+    "global_ruku": 269
+  },
+  "20:24": {
+    "surah": 20,
+    "ayah": 24,
+    "ruku_in_surah": 1,
+    "global_ruku": 270
+  },
+  "20:54": {
+    "surah": 20,
+    "ayah": 54,
+    "ruku_in_surah": 2,
+    "global_ruku": 271
+  },
+  "20:76": {
+    "surah": 20,
+    "ayah": 76,
+    "ruku_in_surah": 3,
+    "global_ruku": 272
+  },
+  "20:89": {
+    "surah": 20,
+    "ayah": 89,
+    "ruku_in_surah": 4,
+    "global_ruku": 273
+  },
+  "20:104": {
+    "surah": 20,
+    "ayah": 104,
+    "ruku_in_surah": 5,
+    "global_ruku": 274
+  },
+  "20:115": {
+    "surah": 20,
+    "ayah": 115,
+    "ruku_in_surah": 6,
+    "global_ruku": 275
+  },
+  "20:128": {
+    "surah": 20,
+    "ayah": 128,
+    "ruku_in_surah": 7,
+    "global_ruku": 276
+  },
+  "20:135": {
+    "surah": 20,
+    "ayah": 135,
+    "ruku_in_surah": 8,
+    "global_ruku": 277
+  },
+  "21:10": {
+    "surah": 21,
+    "ayah": 10,
+    "ruku_in_surah": 1,
+    "global_ruku": 278
+  },
+  "21:29": {
+    "surah": 21,
+    "ayah": 29,
+    "ruku_in_surah": 2,
+    "global_ruku": 279
+  },
+  "21:41": {
+    "surah": 21,
+    "ayah": 41,
+    "ruku_in_surah": 3,
+    "global_ruku": 280
+  },
+  "21:50": {
+    "surah": 21,
+    "ayah": 50,
+    "ruku_in_surah": 4,
+    "global_ruku": 281
+  },
+  "21:75": {
+    "surah": 21,
+    "ayah": 75,
+    "ruku_in_surah": 5,
+    "global_ruku": 282
+  },
+  "21:93": {
+    "surah": 21,
+    "ayah": 93,
+    "ruku_in_surah": 6,
+    "global_ruku": 283
+  },
+  "21:112": {
+    "surah": 21,
+    "ayah": 112,
+    "ruku_in_surah": 7,
+    "global_ruku": 284
+  },
+  "22:10": {
+    "surah": 22,
+    "ayah": 10,
+    "ruku_in_surah": 1,
+    "global_ruku": 285
+  },
+  "22:22": {
+    "surah": 22,
+    "ayah": 22,
+    "ruku_in_surah": 2,
+    "global_ruku": 286
+  },
+  "22:25": {
+    "surah": 22,
+    "ayah": 25,
+    "ruku_in_surah": 3,
+    "global_ruku": 287
+  },
+  "22:33": {
+    "surah": 22,
+    "ayah": 33,
+    "ruku_in_surah": 4,
+    "global_ruku": 288
+  },
+  "22:38": {
+    "surah": 22,
+    "ayah": 38,
+    "ruku_in_surah": 5,
+    "global_ruku": 289
+  },
+  "22:48": {
+    "surah": 22,
+    "ayah": 48,
+    "ruku_in_surah": 6,
+    "global_ruku": 290
+  },
+  "22:57": {
+    "surah": 22,
+    "ayah": 57,
+    "ruku_in_surah": 7,
+    "global_ruku": 291
+  },
+  "22:64": {
+    "surah": 22,
+    "ayah": 64,
+    "ruku_in_surah": 8,
+    "global_ruku": 292
+  },
+  "22:72": {
+    "surah": 22,
+    "ayah": 72,
+    "ruku_in_surah": 9,
+    "global_ruku": 293
+  },
+  "22:78": {
+    "surah": 22,
+    "ayah": 78,
+    "ruku_in_surah": 10,
+    "global_ruku": 294
+  },
+  "23:22": {
+    "surah": 23,
+    "ayah": 22,
+    "ruku_in_surah": 1,
+    "global_ruku": 295
+  },
+  "23:32": {
+    "surah": 23,
+    "ayah": 32,
+    "ruku_in_surah": 2,
+    "global_ruku": 296
+  },
+  "23:50": {
+    "surah": 23,
+    "ayah": 50,
+    "ruku_in_surah": 3,
+    "global_ruku": 297
+  },
+  "23:77": {
+    "surah": 23,
+    "ayah": 77,
+    "ruku_in_surah": 4,
+    "global_ruku": 298
+  },
+  "23:92": {
+    "surah": 23,
+    "ayah": 92,
+    "ruku_in_surah": 5,
+    "global_ruku": 299
+  },
+  "23:118": {
+    "surah": 23,
+    "ayah": 118,
+    "ruku_in_surah": 6,
+    "global_ruku": 300
+  },
+  "24:10": {
+    "surah": 24,
+    "ayah": 10,
+    "ruku_in_surah": 1,
+    "global_ruku": 301
+  },
+  "24:20": {
+    "surah": 24,
+    "ayah": 20,
+    "ruku_in_surah": 2,
+    "global_ruku": 302
+  },
+  "24:26": {
+    "surah": 24,
+    "ayah": 26,
+    "ruku_in_surah": 3,
+    "global_ruku": 303
+  },
+  "24:34": {
+    "surah": 24,
+    "ayah": 34,
+    "ruku_in_surah": 4,
+    "global_ruku": 304
+  },
+  "24:40": {
+    "surah": 24,
+    "ayah": 40,
+    "ruku_in_surah": 5,
+    "global_ruku": 305
+  },
+  "24:50": {
+    "surah": 24,
+    "ayah": 50,
+    "ruku_in_surah": 6,
+    "global_ruku": 306
+  },
+  "24:57": {
+    "surah": 24,
+    "ayah": 57,
+    "ruku_in_surah": 7,
+    "global_ruku": 307
+  },
+  "24:61": {
+    "surah": 24,
+    "ayah": 61,
+    "ruku_in_surah": 8,
+    "global_ruku": 308
+  },
+  "24:64": {
+    "surah": 24,
+    "ayah": 64,
+    "ruku_in_surah": 9,
+    "global_ruku": 309
+  },
+  "25:9": {
+    "surah": 25,
+    "ayah": 9,
+    "ruku_in_surah": 1,
+    "global_ruku": 310
+  },
+  "25:20": {
+    "surah": 25,
+    "ayah": 20,
+    "ruku_in_surah": 2,
+    "global_ruku": 311
+  },
+  "25:34": {
+    "surah": 25,
+    "ayah": 34,
+    "ruku_in_surah": 3,
+    "global_ruku": 312
+  },
+  "25:44": {
+    "surah": 25,
+    "ayah": 44,
+    "ruku_in_surah": 4,
+    "global_ruku": 313
+  },
+  "25:60": {
+    "surah": 25,
+    "ayah": 60,
+    "ruku_in_surah": 5,
+    "global_ruku": 314
+  },
+  "25:77": {
+    "surah": 25,
+    "ayah": 77,
+    "ruku_in_surah": 6,
+    "global_ruku": 315
+  },
+  "26:9": {
+    "surah": 26,
+    "ayah": 9,
+    "ruku_in_surah": 1,
+    "global_ruku": 316
+  },
+  "26:33": {
+    "surah": 26,
+    "ayah": 33,
+    "ruku_in_surah": 2,
+    "global_ruku": 317
+  },
+  "26:52": {
+    "surah": 26,
+    "ayah": 52,
+    "ruku_in_surah": 3,
+    "global_ruku": 318
+  },
+  "26:69": {
+    "surah": 26,
+    "ayah": 69,
+    "ruku_in_surah": 4,
+    "global_ruku": 319
+  },
+  "26:104": {
+    "surah": 26,
+    "ayah": 104,
+    "ruku_in_surah": 5,
+    "global_ruku": 320
+  },
+  "26:122": {
+    "surah": 26,
+    "ayah": 122,
+    "ruku_in_surah": 6,
+    "global_ruku": 321
+  },
+  "26:140": {
+    "surah": 26,
+    "ayah": 140,
+    "ruku_in_surah": 7,
+    "global_ruku": 322
+  },
+  "26:159": {
+    "surah": 26,
+    "ayah": 159,
+    "ruku_in_surah": 8,
+    "global_ruku": 323
+  },
+  "26:175": {
+    "surah": 26,
+    "ayah": 175,
+    "ruku_in_surah": 9,
+    "global_ruku": 324
+  },
+  "26:191": {
+    "surah": 26,
+    "ayah": 191,
+    "ruku_in_surah": 10,
+    "global_ruku": 325
+  },
+  "26:227": {
+    "surah": 26,
+    "ayah": 227,
+    "ruku_in_surah": 11,
+    "global_ruku": 326
+  },
+  "27:14": {
+    "surah": 27,
+    "ayah": 14,
+    "ruku_in_surah": 1,
+    "global_ruku": 327
+  },
+  "27:31": {
+    "surah": 27,
+    "ayah": 31,
+    "ruku_in_surah": 2,
+    "global_ruku": 328
+  },
+  "27:44": {
+    "surah": 27,
+    "ayah": 44,
+    "ruku_in_surah": 3,
+    "global_ruku": 329
+  },
+  "27:58": {
+    "surah": 27,
+    "ayah": 58,
+    "ruku_in_surah": 4,
+    "global_ruku": 330
+  },
+  "27:66": {
+    "surah": 27,
+    "ayah": 66,
+    "ruku_in_surah": 5,
+    "global_ruku": 331
+  },
+  "27:82": {
+    "surah": 27,
+    "ayah": 82,
+    "ruku_in_surah": 6,
+    "global_ruku": 332
+  },
+  "27:93": {
+    "surah": 27,
+    "ayah": 93,
+    "ruku_in_surah": 7,
+    "global_ruku": 333
+  },
+  "28:13": {
+    "surah": 28,
+    "ayah": 13,
+    "ruku_in_surah": 1,
+    "global_ruku": 334
+  },
+  "28:21": {
+    "surah": 28,
+    "ayah": 21,
+    "ruku_in_surah": 2,
+    "global_ruku": 335
+  },
+  "28:28": {
+    "surah": 28,
+    "ayah": 28,
+    "ruku_in_surah": 3,
+    "global_ruku": 336
+  },
+  "28:42": {
+    "surah": 28,
+    "ayah": 42,
+    "ruku_in_surah": 4,
+    "global_ruku": 337
+  },
+  "28:50": {
+    "surah": 28,
+    "ayah": 50,
+    "ruku_in_surah": 5,
+    "global_ruku": 338
+  },
+  "28:60": {
+    "surah": 28,
+    "ayah": 60,
+    "ruku_in_surah": 6,
+    "global_ruku": 339
+  },
+  "28:75": {
+    "surah": 28,
+    "ayah": 75,
+    "ruku_in_surah": 7,
+    "global_ruku": 340
+  },
+  "28:88": {
+    "surah": 28,
+    "ayah": 88,
+    "ruku_in_surah": 8,
+    "global_ruku": 341
+  },
+  "29:13": {
+    "surah": 29,
+    "ayah": 13,
+    "ruku_in_surah": 1,
+    "global_ruku": 342
+  },
+  "29:22": {
+    "surah": 29,
+    "ayah": 22,
+    "ruku_in_surah": 2,
+    "global_ruku": 343
+  },
+  "29:30": {
+    "surah": 29,
+    "ayah": 30,
+    "ruku_in_surah": 3,
+    "global_ruku": 344
+  },
+  "29:44": {
+    "surah": 29,
+    "ayah": 44,
+    "ruku_in_surah": 4,
+    "global_ruku": 345
+  },
+  "29:51": {
+    "surah": 29,
+    "ayah": 51,
+    "ruku_in_surah": 5,
+    "global_ruku": 346
+  },
+  "29:63": {
+    "surah": 29,
+    "ayah": 63,
+    "ruku_in_surah": 6,
+    "global_ruku": 347
+  },
+  "29:69": {
+    "surah": 29,
+    "ayah": 69,
+    "ruku_in_surah": 7,
+    "global_ruku": 348
+  },
+  "30:10": {
+    "surah": 30,
+    "ayah": 10,
+    "ruku_in_surah": 1,
+    "global_ruku": 349
+  },
+  "30:19": {
+    "surah": 30,
+    "ayah": 19,
+    "ruku_in_surah": 2,
+    "global_ruku": 350
+  },
+  "30:27": {
+    "surah": 30,
+    "ayah": 27,
+    "ruku_in_surah": 3,
+    "global_ruku": 351
+  },
+  "30:40": {
+    "surah": 30,
+    "ayah": 40,
+    "ruku_in_surah": 4,
+    "global_ruku": 352
+  },
+  "30:53": {
+    "surah": 30,
+    "ayah": 53,
+    "ruku_in_surah": 5,
+    "global_ruku": 353
+  },
+  "30:60": {
+    "surah": 30,
+    "ayah": 60,
+    "ruku_in_surah": 6,
+    "global_ruku": 354
+  },
+  "31:11": {
+    "surah": 31,
+    "ayah": 11,
+    "ruku_in_surah": 1,
+    "global_ruku": 355
+  },
+  "31:19": {
+    "surah": 31,
+    "ayah": 19,
+    "ruku_in_surah": 2,
+    "global_ruku": 356
+  },
+  "31:34": {
+    "surah": 31,
+    "ayah": 34,
+    "ruku_in_surah": 3,
+    "global_ruku": 357
+  },
+  "32:11": {
+    "surah": 32,
+    "ayah": 11,
+    "ruku_in_surah": 1,
+    "global_ruku": 358
+  },
+  "32:22": {
+    "surah": 32,
+    "ayah": 22,
+    "ruku_in_surah": 2,
+    "global_ruku": 359
+  },
+  "32:30": {
+    "surah": 32,
+    "ayah": 30,
+    "ruku_in_surah": 3,
+    "global_ruku": 360
+  },
+  "33:8": {
+    "surah": 33,
+    "ayah": 8,
+    "ruku_in_surah": 1,
+    "global_ruku": 361
+  },
+  "33:20": {
+    "surah": 33,
+    "ayah": 20,
+    "ruku_in_surah": 2,
+    "global_ruku": 362
+  },
+  "33:27": {
+    "surah": 33,
+    "ayah": 27,
+    "ruku_in_surah": 3,
+    "global_ruku": 363
+  },
+  "33:34": {
+    "surah": 33,
+    "ayah": 34,
+    "ruku_in_surah": 4,
+    "global_ruku": 364
+  },
+  "33:40": {
+    "surah": 33,
+    "ayah": 40,
+    "ruku_in_surah": 5,
+    "global_ruku": 365
+  },
+  "33:52": {
+    "surah": 33,
+    "ayah": 52,
+    "ruku_in_surah": 6,
+    "global_ruku": 366
+  },
+  "33:58": {
+    "surah": 33,
+    "ayah": 58,
+    "ruku_in_surah": 7,
+    "global_ruku": 367
+  },
+  "33:68": {
+    "surah": 33,
+    "ayah": 68,
+    "ruku_in_surah": 8,
+    "global_ruku": 368
+  },
+  "33:73": {
+    "surah": 33,
+    "ayah": 73,
+    "ruku_in_surah": 9,
+    "global_ruku": 369
+  },
+  "34:9": {
+    "surah": 34,
+    "ayah": 9,
+    "ruku_in_surah": 1,
+    "global_ruku": 370
+  },
+  "34:21": {
+    "surah": 34,
+    "ayah": 21,
+    "ruku_in_surah": 2,
+    "global_ruku": 371
+  },
+  "34:30": {
+    "surah": 34,
+    "ayah": 30,
+    "ruku_in_surah": 3,
+    "global_ruku": 372
+  },
+  "34:36": {
+    "surah": 34,
+    "ayah": 36,
+    "ruku_in_surah": 4,
+    "global_ruku": 373
+  },
+  "34:45": {
+    "surah": 34,
+    "ayah": 45,
+    "ruku_in_surah": 5,
+    "global_ruku": 374
+  },
+  "34:54": {
+    "surah": 34,
+    "ayah": 54,
+    "ruku_in_surah": 6,
+    "global_ruku": 375
+  },
+  "35:7": {
+    "surah": 35,
+    "ayah": 7,
+    "ruku_in_surah": 1,
+    "global_ruku": 376
+  },
+  "35:14": {
+    "surah": 35,
+    "ayah": 14,
+    "ruku_in_surah": 2,
+    "global_ruku": 377
+  },
+  "35:26": {
+    "surah": 35,
+    "ayah": 26,
+    "ruku_in_surah": 3,
+    "global_ruku": 378
+  },
+  "35:37": {
+    "surah": 35,
+    "ayah": 37,
+    "ruku_in_surah": 4,
+    "global_ruku": 379
+  },
+  "35:45": {
+    "surah": 35,
+    "ayah": 45,
+    "ruku_in_surah": 5,
+    "global_ruku": 380
+  },
+  "36:12": {
+    "surah": 36,
+    "ayah": 12,
+    "ruku_in_surah": 1,
+    "global_ruku": 381
+  },
+  "36:32": {
+    "surah": 36,
+    "ayah": 32,
+    "ruku_in_surah": 2,
+    "global_ruku": 382
+  },
+  "36:50": {
+    "surah": 36,
+    "ayah": 50,
+    "ruku_in_surah": 3,
+    "global_ruku": 383
+  },
+  "36:67": {
+    "surah": 36,
+    "ayah": 67,
+    "ruku_in_surah": 4,
+    "global_ruku": 384
+  },
+  "36:83": {
+    "surah": 36,
+    "ayah": 83,
+    "ruku_in_surah": 5,
+    "global_ruku": 385
+  },
+  "37:21": {
+    "surah": 37,
+    "ayah": 21,
+    "ruku_in_surah": 1,
+    "global_ruku": 386
+  },
+  "37:74": {
+    "surah": 37,
+    "ayah": 74,
+    "ruku_in_surah": 2,
+    "global_ruku": 387
+  },
+  "37:113": {
+    "surah": 37,
+    "ayah": 113,
+    "ruku_in_surah": 3,
+    "global_ruku": 388
+  },
+  "37:138": {
+    "surah": 37,
+    "ayah": 138,
+    "ruku_in_surah": 4,
+    "global_ruku": 389
+  },
+  "37:182": {
+    "surah": 37,
+    "ayah": 182,
+    "ruku_in_surah": 5,
+    "global_ruku": 390
+  },
+  "38:14": {
+    "surah": 38,
+    "ayah": 14,
+    "ruku_in_surah": 1,
+    "global_ruku": 391
+  },
+  "38:26": {
+    "surah": 38,
+    "ayah": 26,
+    "ruku_in_surah": 2,
+    "global_ruku": 392
+  },
+  "38:40": {
+    "surah": 38,
+    "ayah": 40,
+    "ruku_in_surah": 3,
+    "global_ruku": 393
+  },
+  "38:64": {
+    "surah": 38,
+    "ayah": 64,
+    "ruku_in_surah": 4,
+    "global_ruku": 394
+  },
+  "38:88": {
+    "surah": 38,
+    "ayah": 88,
+    "ruku_in_surah": 5,
+    "global_ruku": 395
+  },
+  "39:9": {
+    "surah": 39,
+    "ayah": 9,
+    "ruku_in_surah": 1,
+    "global_ruku": 396
+  },
+  "39:21": {
+    "surah": 39,
+    "ayah": 21,
+    "ruku_in_surah": 2,
+    "global_ruku": 397
+  },
+  "39:31": {
+    "surah": 39,
+    "ayah": 31,
+    "ruku_in_surah": 3,
+    "global_ruku": 398
+  },
+  "39:41": {
+    "surah": 39,
+    "ayah": 41,
+    "ruku_in_surah": 4,
+    "global_ruku": 399
+  },
+  "39:52": {
+    "surah": 39,
+    "ayah": 52,
+    "ruku_in_surah": 5,
+    "global_ruku": 400
+  },
+  "39:63": {
+    "surah": 39,
+    "ayah": 63,
+    "ruku_in_surah": 6,
+    "global_ruku": 401
+  },
+  "39:70": {
+    "surah": 39,
+    "ayah": 70,
+    "ruku_in_surah": 7,
+    "global_ruku": 402
+  },
+  "39:75": {
+    "surah": 39,
+    "ayah": 75,
+    "ruku_in_surah": 8,
+    "global_ruku": 403
+  },
+  "40:9": {
+    "surah": 40,
+    "ayah": 9,
+    "ruku_in_surah": 1,
+    "global_ruku": 404
+  },
+  "40:20": {
+    "surah": 40,
+    "ayah": 20,
+    "ruku_in_surah": 2,
+    "global_ruku": 405
+  },
+  "40:27": {
+    "surah": 40,
+    "ayah": 27,
+    "ruku_in_surah": 3,
+    "global_ruku": 406
+  },
+  "40:37": {
+    "surah": 40,
+    "ayah": 37,
+    "ruku_in_surah": 4,
+    "global_ruku": 407
+  },
+  "40:50": {
+    "surah": 40,
+    "ayah": 50,
+    "ruku_in_surah": 5,
+    "global_ruku": 408
+  },
+  "40:60": {
+    "surah": 40,
+    "ayah": 60,
+    "ruku_in_surah": 6,
+    "global_ruku": 409
+  },
+  "40:68": {
+    "surah": 40,
+    "ayah": 68,
+    "ruku_in_surah": 7,
+    "global_ruku": 410
+  },
+  "40:78": {
+    "surah": 40,
+    "ayah": 78,
+    "ruku_in_surah": 8,
+    "global_ruku": 411
+  },
+  "40:85": {
+    "surah": 40,
+    "ayah": 85,
+    "ruku_in_surah": 9,
+    "global_ruku": 412
+  },
+  "41:8": {
+    "surah": 41,
+    "ayah": 8,
+    "ruku_in_surah": 1,
+    "global_ruku": 413
+  },
+  "41:18": {
+    "surah": 41,
+    "ayah": 18,
+    "ruku_in_surah": 2,
+    "global_ruku": 414
+  },
+  "41:25": {
+    "surah": 41,
+    "ayah": 25,
+    "ruku_in_surah": 3,
+    "global_ruku": 415
+  },
+  "41:32": {
+    "surah": 41,
+    "ayah": 32,
+    "ruku_in_surah": 4,
+    "global_ruku": 416
+  },
+  "41:44": {
+    "surah": 41,
+    "ayah": 44,
+    "ruku_in_surah": 5,
+    "global_ruku": 417
+  },
+  "41:54": {
+    "surah": 41,
+    "ayah": 54,
+    "ruku_in_surah": 6,
+    "global_ruku": 418
+  },
+  "42:9": {
+    "surah": 42,
+    "ayah": 9,
+    "ruku_in_surah": 1,
+    "global_ruku": 419
+  },
+  "42:19": {
+    "surah": 42,
+    "ayah": 19,
+    "ruku_in_surah": 2,
+    "global_ruku": 420
+  },
+  "42:29": {
+    "surah": 42,
+    "ayah": 29,
+    "ruku_in_surah": 3,
+    "global_ruku": 421
+  },
+  "42:43": {
+    "surah": 42,
+    "ayah": 43,
+    "ruku_in_surah": 4,
+    "global_ruku": 422
+  },
+  "42:53": {
+    "surah": 42,
+    "ayah": 53,
+    "ruku_in_surah": 5,
+    "global_ruku": 423
+  },
+  "43:15": {
+    "surah": 43,
+    "ayah": 15,
+    "ruku_in_surah": 1,
+    "global_ruku": 424
+  },
+  "43:25": {
+    "surah": 43,
+    "ayah": 25,
+    "ruku_in_surah": 2,
+    "global_ruku": 425
+  },
+  "43:35": {
+    "surah": 43,
+    "ayah": 35,
+    "ruku_in_surah": 3,
+    "global_ruku": 426
+  },
+  "43:45": {
+    "surah": 43,
+    "ayah": 45,
+    "ruku_in_surah": 4,
+    "global_ruku": 427
+  },
+  "43:56": {
+    "surah": 43,
+    "ayah": 56,
+    "ruku_in_surah": 5,
+    "global_ruku": 428
+  },
+  "43:67": {
+    "surah": 43,
+    "ayah": 67,
+    "ruku_in_surah": 6,
+    "global_ruku": 429
+  },
+  "43:89": {
+    "surah": 43,
+    "ayah": 89,
+    "ruku_in_surah": 7,
+    "global_ruku": 430
+  },
+  "44:29": {
+    "surah": 44,
+    "ayah": 29,
+    "ruku_in_surah": 1,
+    "global_ruku": 431
+  },
+  "44:42": {
+    "surah": 44,
+    "ayah": 42,
+    "ruku_in_surah": 2,
+    "global_ruku": 432
+  },
+  "44:59": {
+    "surah": 44,
+    "ayah": 59,
+    "ruku_in_surah": 3,
+    "global_ruku": 433
+  },
+  "45:11": {
+    "surah": 45,
+    "ayah": 11,
+    "ruku_in_surah": 1,
+    "global_ruku": 434
+  },
+  "45:21": {
+    "surah": 45,
+    "ayah": 21,
+    "ruku_in_surah": 2,
+    "global_ruku": 435
+  },
+  "45:26": {
+    "surah": 45,
+    "ayah": 26,
+    "ruku_in_surah": 3,
+    "global_ruku": 436
+  },
+  "45:37": {
+    "surah": 45,
+    "ayah": 37,
+    "ruku_in_surah": 4,
+    "global_ruku": 437
+  },
+  "46:10": {
+    "surah": 46,
+    "ayah": 10,
+    "ruku_in_surah": 1,
+    "global_ruku": 438
+  },
+  "46:20": {
+    "surah": 46,
+    "ayah": 20,
+    "ruku_in_surah": 2,
+    "global_ruku": 439
+  },
+  "46:26": {
+    "surah": 46,
+    "ayah": 26,
+    "ruku_in_surah": 3,
+    "global_ruku": 440
+  },
+  "46:35": {
+    "surah": 46,
+    "ayah": 35,
+    "ruku_in_surah": 4,
+    "global_ruku": 441
+  },
+  "47:11": {
+    "surah": 47,
+    "ayah": 11,
+    "ruku_in_surah": 1,
+    "global_ruku": 442
+  },
+  "47:19": {
+    "surah": 47,
+    "ayah": 19,
+    "ruku_in_surah": 2,
+    "global_ruku": 443
+  },
+  "47:28": {
+    "surah": 47,
+    "ayah": 28,
+    "ruku_in_surah": 3,
+    "global_ruku": 444
+  },
+  "47:38": {
+    "surah": 47,
+    "ayah": 38,
+    "ruku_in_surah": 4,
+    "global_ruku": 445
+  },
+  "48:10": {
+    "surah": 48,
+    "ayah": 10,
+    "ruku_in_surah": 1,
+    "global_ruku": 446
+  },
+  "48:17": {
+    "surah": 48,
+    "ayah": 17,
+    "ruku_in_surah": 2,
+    "global_ruku": 447
+  },
+  "48:26": {
+    "surah": 48,
+    "ayah": 26,
+    "ruku_in_surah": 3,
+    "global_ruku": 448
+  },
+  "48:29": {
+    "surah": 48,
+    "ayah": 29,
+    "ruku_in_surah": 4,
+    "global_ruku": 449
+  },
+  "49:10": {
+    "surah": 49,
+    "ayah": 10,
+    "ruku_in_surah": 1,
+    "global_ruku": 450
+  },
+  "49:18": {
+    "surah": 49,
+    "ayah": 18,
+    "ruku_in_surah": 2,
+    "global_ruku": 451
+  },
+  "50:15": {
+    "surah": 50,
+    "ayah": 15,
+    "ruku_in_surah": 1,
+    "global_ruku": 452
+  },
+  "50:29": {
+    "surah": 50,
+    "ayah": 29,
+    "ruku_in_surah": 2,
+    "global_ruku": 453
+  },
+  "50:45": {
+    "surah": 50,
+    "ayah": 45,
+    "ruku_in_surah": 3,
+    "global_ruku": 454
+  },
+  "51:23": {
+    "surah": 51,
+    "ayah": 23,
+    "ruku_in_surah": 1,
+    "global_ruku": 455
+  },
+  "51:46": {
+    "surah": 51,
+    "ayah": 46,
+    "ruku_in_surah": 2,
+    "global_ruku": 456
+  },
+  "51:60": {
+    "surah": 51,
+    "ayah": 60,
+    "ruku_in_surah": 3,
+    "global_ruku": 457
+  },
+  "52:28": {
+    "surah": 52,
+    "ayah": 28,
+    "ruku_in_surah": 1,
+    "global_ruku": 458
+  },
+  "52:49": {
+    "surah": 52,
+    "ayah": 49,
+    "ruku_in_surah": 2,
+    "global_ruku": 459
+  },
+  "53:25": {
+    "surah": 53,
+    "ayah": 25,
+    "ruku_in_surah": 1,
+    "global_ruku": 460
+  },
+  "53:32": {
+    "surah": 53,
+    "ayah": 32,
+    "ruku_in_surah": 2,
+    "global_ruku": 461
+  },
+  "53:62": {
+    "surah": 53,
+    "ayah": 62,
+    "ruku_in_surah": 3,
+    "global_ruku": 462
+  },
+  "54:22": {
+    "surah": 54,
+    "ayah": 22,
+    "ruku_in_surah": 1,
+    "global_ruku": 463
+  },
+  "54:40": {
+    "surah": 54,
+    "ayah": 40,
+    "ruku_in_surah": 2,
+    "global_ruku": 464
+  },
+  "54:55": {
+    "surah": 54,
+    "ayah": 55,
+    "ruku_in_surah": 3,
+    "global_ruku": 465
+  },
+  "55:25": {
+    "surah": 55,
+    "ayah": 25,
+    "ruku_in_surah": 1,
+    "global_ruku": 466
+  },
+  "55:45": {
+    "surah": 55,
+    "ayah": 45,
+    "ruku_in_surah": 2,
+    "global_ruku": 467
+  },
+  "55:78": {
+    "surah": 55,
+    "ayah": 78,
+    "ruku_in_surah": 3,
+    "global_ruku": 468
+  },
+  "56:38": {
+    "surah": 56,
+    "ayah": 38,
+    "ruku_in_surah": 1,
+    "global_ruku": 469
+  },
+  "56:74": {
+    "surah": 56,
+    "ayah": 74,
+    "ruku_in_surah": 2,
+    "global_ruku": 470
+  },
+  "56:96": {
+    "surah": 56,
+    "ayah": 96,
+    "ruku_in_surah": 3,
+    "global_ruku": 471
+  },
+  "57:10": {
+    "surah": 57,
+    "ayah": 10,
+    "ruku_in_surah": 1,
+    "global_ruku": 472
+  },
+  "57:19": {
+    "surah": 57,
+    "ayah": 19,
+    "ruku_in_surah": 2,
+    "global_ruku": 473
+  },
+  "57:25": {
+    "surah": 57,
+    "ayah": 25,
+    "ruku_in_surah": 3,
+    "global_ruku": 474
+  },
+  "57:29": {
+    "surah": 57,
+    "ayah": 29,
+    "ruku_in_surah": 4,
+    "global_ruku": 475
+  },
+  "58:6": {
+    "surah": 58,
+    "ayah": 6,
+    "ruku_in_surah": 1,
+    "global_ruku": 476
+  },
+  "58:13": {
+    "surah": 58,
+    "ayah": 13,
+    "ruku_in_surah": 2,
+    "global_ruku": 477
+  },
+  "58:22": {
+    "surah": 58,
+    "ayah": 22,
+    "ruku_in_surah": 3,
+    "global_ruku": 478
+  },
+  "59:10": {
+    "surah": 59,
+    "ayah": 10,
+    "ruku_in_surah": 1,
+    "global_ruku": 479
+  },
+  "59:17": {
+    "surah": 59,
+    "ayah": 17,
+    "ruku_in_surah": 2,
+    "global_ruku": 480
+  },
+  "59:24": {
+    "surah": 59,
+    "ayah": 24,
+    "ruku_in_surah": 3,
+    "global_ruku": 481
+  },
+  "60:6": {
+    "surah": 60,
+    "ayah": 6,
+    "ruku_in_surah": 1,
+    "global_ruku": 482
+  },
+  "60:13": {
+    "surah": 60,
+    "ayah": 13,
+    "ruku_in_surah": 2,
+    "global_ruku": 483
+  },
+  "61:9": {
+    "surah": 61,
+    "ayah": 9,
+    "ruku_in_surah": 1,
+    "global_ruku": 484
+  },
+  "61:14": {
+    "surah": 61,
+    "ayah": 14,
+    "ruku_in_surah": 2,
+    "global_ruku": 485
+  },
+  "62:8": {
+    "surah": 62,
+    "ayah": 8,
+    "ruku_in_surah": 1,
+    "global_ruku": 486
+  },
+  "62:11": {
+    "surah": 62,
+    "ayah": 11,
+    "ruku_in_surah": 2,
+    "global_ruku": 487
+  },
+  "63:8": {
+    "surah": 63,
+    "ayah": 8,
+    "ruku_in_surah": 1,
+    "global_ruku": 488
+  },
+  "63:11": {
+    "surah": 63,
+    "ayah": 11,
+    "ruku_in_surah": 2,
+    "global_ruku": 489
+  },
+  "64:10": {
+    "surah": 64,
+    "ayah": 10,
+    "ruku_in_surah": 1,
+    "global_ruku": 490
+  },
+  "64:18": {
+    "surah": 64,
+    "ayah": 18,
+    "ruku_in_surah": 2,
+    "global_ruku": 491
+  },
+  "65:7": {
+    "surah": 65,
+    "ayah": 7,
+    "ruku_in_surah": 1,
+    "global_ruku": 492
+  },
+  "65:12": {
+    "surah": 65,
+    "ayah": 12,
+    "ruku_in_surah": 2,
+    "global_ruku": 493
+  },
+  "66:7": {
+    "surah": 66,
+    "ayah": 7,
+    "ruku_in_surah": 1,
+    "global_ruku": 494
+  },
+  "66:12": {
+    "surah": 66,
+    "ayah": 12,
+    "ruku_in_surah": 2,
+    "global_ruku": 495
+  },
+  "67:14": {
+    "surah": 67,
+    "ayah": 14,
+    "ruku_in_surah": 1,
+    "global_ruku": 496
+  },
+  "67:30": {
+    "surah": 67,
+    "ayah": 30,
+    "ruku_in_surah": 2,
+    "global_ruku": 497
+  },
+  "68:33": {
+    "surah": 68,
+    "ayah": 33,
+    "ruku_in_surah": 1,
+    "global_ruku": 498
+  },
+  "68:52": {
+    "surah": 68,
+    "ayah": 52,
+    "ruku_in_surah": 2,
+    "global_ruku": 499
+  },
+  "69:37": {
+    "surah": 69,
+    "ayah": 37,
+    "ruku_in_surah": 1,
+    "global_ruku": 500
+  },
+  "69:52": {
+    "surah": 69,
+    "ayah": 52,
+    "ruku_in_surah": 2,
+    "global_ruku": 501
+  },
+  "70:35": {
+    "surah": 70,
+    "ayah": 35,
+    "ruku_in_surah": 1,
+    "global_ruku": 502
+  },
+  "70:44": {
+    "surah": 70,
+    "ayah": 44,
+    "ruku_in_surah": 2,
+    "global_ruku": 503
+  },
+  "71:20": {
+    "surah": 71,
+    "ayah": 20,
+    "ruku_in_surah": 1,
+    "global_ruku": 504
+  },
+  "71:28": {
+    "surah": 71,
+    "ayah": 28,
+    "ruku_in_surah": 2,
+    "global_ruku": 505
+  },
+  "72:19": {
+    "surah": 72,
+    "ayah": 19,
+    "ruku_in_surah": 1,
+    "global_ruku": 506
+  },
+  "72:28": {
+    "surah": 72,
+    "ayah": 28,
+    "ruku_in_surah": 2,
+    "global_ruku": 507
+  },
+  "73:19": {
+    "surah": 73,
+    "ayah": 19,
+    "ruku_in_surah": 1,
+    "global_ruku": 508
+  },
+  "73:20": {
+    "surah": 73,
+    "ayah": 20,
+    "ruku_in_surah": 2,
+    "global_ruku": 509
+  },
+  "74:31": {
+    "surah": 74,
+    "ayah": 31,
+    "ruku_in_surah": 1,
+    "global_ruku": 510
+  },
+  "74:56": {
+    "surah": 74,
+    "ayah": 56,
+    "ruku_in_surah": 2,
+    "global_ruku": 511
+  },
+  "75:30": {
+    "surah": 75,
+    "ayah": 30,
+    "ruku_in_surah": 1,
+    "global_ruku": 512
+  },
+  "75:40": {
+    "surah": 75,
+    "ayah": 40,
+    "ruku_in_surah": 2,
+    "global_ruku": 513
+  },
+  "76:22": {
+    "surah": 76,
+    "ayah": 22,
+    "ruku_in_surah": 1,
+    "global_ruku": 514
+  },
+  "76:31": {
+    "surah": 76,
+    "ayah": 31,
+    "ruku_in_surah": 2,
+    "global_ruku": 515
+  },
+  "77:40": {
+    "surah": 77,
+    "ayah": 40,
+    "ruku_in_surah": 1,
+    "global_ruku": 516
+  },
+  "77:50": {
+    "surah": 77,
+    "ayah": 50,
+    "ruku_in_surah": 2,
+    "global_ruku": 517
+  },
+  "78:30": {
+    "surah": 78,
+    "ayah": 30,
+    "ruku_in_surah": 1,
+    "global_ruku": 518
+  },
+  "78:40": {
+    "surah": 78,
+    "ayah": 40,
+    "ruku_in_surah": 2,
+    "global_ruku": 519
+  },
+  "79:26": {
+    "surah": 79,
+    "ayah": 26,
+    "ruku_in_surah": 1,
+    "global_ruku": 520
+  },
+  "79:46": {
+    "surah": 79,
+    "ayah": 46,
+    "ruku_in_surah": 2,
+    "global_ruku": 521
+  },
+  "80:42": {
+    "surah": 80,
+    "ayah": 42,
+    "ruku_in_surah": 1,
+    "global_ruku": 522
+  },
+  "81:29": {
+    "surah": 81,
+    "ayah": 29,
+    "ruku_in_surah": 1,
+    "global_ruku": 523
+  },
+  "82:19": {
+    "surah": 82,
+    "ayah": 19,
+    "ruku_in_surah": 1,
+    "global_ruku": 524
+  },
+  "83:36": {
+    "surah": 83,
+    "ayah": 36,
+    "ruku_in_surah": 1,
+    "global_ruku": 525
+  },
+  "84:25": {
+    "surah": 84,
+    "ayah": 25,
+    "ruku_in_surah": 1,
+    "global_ruku": 526
+  },
+  "85:22": {
+    "surah": 85,
+    "ayah": 22,
+    "ruku_in_surah": 1,
+    "global_ruku": 527
+  },
+  "86:17": {
+    "surah": 86,
+    "ayah": 17,
+    "ruku_in_surah": 1,
+    "global_ruku": 528
+  },
+  "87:19": {
+    "surah": 87,
+    "ayah": 19,
+    "ruku_in_surah": 1,
+    "global_ruku": 529
+  },
+  "88:26": {
+    "surah": 88,
+    "ayah": 26,
+    "ruku_in_surah": 1,
+    "global_ruku": 530
+  },
+  "89:30": {
+    "surah": 89,
+    "ayah": 30,
+    "ruku_in_surah": 1,
+    "global_ruku": 531
+  },
+  "90:20": {
+    "surah": 90,
+    "ayah": 20,
+    "ruku_in_surah": 1,
+    "global_ruku": 532
+  },
+  "91:15": {
+    "surah": 91,
+    "ayah": 15,
+    "ruku_in_surah": 1,
+    "global_ruku": 533
+  },
+  "92:21": {
+    "surah": 92,
+    "ayah": 21,
+    "ruku_in_surah": 1,
+    "global_ruku": 534
+  },
+  "93:11": {
+    "surah": 93,
+    "ayah": 11,
+    "ruku_in_surah": 1,
+    "global_ruku": 535
+  },
+  "94:8": {
+    "surah": 94,
+    "ayah": 8,
+    "ruku_in_surah": 1,
+    "global_ruku": 536
+  },
+  "95:8": {
+    "surah": 95,
+    "ayah": 8,
+    "ruku_in_surah": 1,
+    "global_ruku": 537
+  },
+  "96:19": {
+    "surah": 96,
+    "ayah": 19,
+    "ruku_in_surah": 1,
+    "global_ruku": 538
+  },
+  "97:5": {
+    "surah": 97,
+    "ayah": 5,
+    "ruku_in_surah": 1,
+    "global_ruku": 539
+  },
+  "98:8": {
+    "surah": 98,
+    "ayah": 8,
+    "ruku_in_surah": 1,
+    "global_ruku": 540
+  },
+  "99:8": {
+    "surah": 99,
+    "ayah": 8,
+    "ruku_in_surah": 1,
+    "global_ruku": 541
+  },
+  "100:11": {
+    "surah": 100,
+    "ayah": 11,
+    "ruku_in_surah": 1,
+    "global_ruku": 542
+  },
+  "101:11": {
+    "surah": 101,
+    "ayah": 11,
+    "ruku_in_surah": 1,
+    "global_ruku": 543
+  },
+  "102:8": {
+    "surah": 102,
+    "ayah": 8,
+    "ruku_in_surah": 1,
+    "global_ruku": 544
+  },
+  "103:3": {
+    "surah": 103,
+    "ayah": 3,
+    "ruku_in_surah": 1,
+    "global_ruku": 545
+  },
+  "104:9": {
+    "surah": 104,
+    "ayah": 9,
+    "ruku_in_surah": 1,
+    "global_ruku": 546
+  },
+  "105:5": {
+    "surah": 105,
+    "ayah": 5,
+    "ruku_in_surah": 1,
+    "global_ruku": 547
+  },
+  "106:4": {
+    "surah": 106,
+    "ayah": 4,
+    "ruku_in_surah": 1,
+    "global_ruku": 548
+  },
+  "107:7": {
+    "surah": 107,
+    "ayah": 7,
+    "ruku_in_surah": 1,
+    "global_ruku": 549
+  },
+  "108:3": {
+    "surah": 108,
+    "ayah": 3,
+    "ruku_in_surah": 1,
+    "global_ruku": 550
+  },
+  "109:6": {
+    "surah": 109,
+    "ayah": 6,
+    "ruku_in_surah": 1,
+    "global_ruku": 551
+  },
+  "110:3": {
+    "surah": 110,
+    "ayah": 3,
+    "ruku_in_surah": 1,
+    "global_ruku": 552
+  },
+  "111:5": {
+    "surah": 111,
+    "ayah": 5,
+    "ruku_in_surah": 1,
+    "global_ruku": 553
+  },
+  "112:4": {
+    "surah": 112,
+    "ayah": 4,
+    "ruku_in_surah": 1,
+    "global_ruku": 554
+  },
+  "113:5": {
+    "surah": 113,
+    "ayah": 5,
+    "ruku_in_surah": 1,
+    "global_ruku": 555
+  },
+  "114:6": {
+    "surah": 114,
+    "ayah": 6,
+    "ruku_in_surah": 1,
+    "global_ruku": 556
+  }
+}

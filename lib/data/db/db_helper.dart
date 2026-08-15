@@ -38,16 +38,25 @@ class DatabaseHelper {
       onConfigure: (db) async => await db.execute('PRAGMA foreign_keys = ON'),
     );
 
-    // Auto-cleanup any invalid audio entries or bad Arabic text saved under non-Arabic Tafseers
-    await db.rawDelete(
-      "DELETE FROM ayah_content WHERE edition_id IN (SELECT id FROM editions WHERE api_key LIKE '%taqi%' OR api_key IN ('ur.tariqmasood', 'quran-uthmani'))",
-    );
-    await db.rawDelete(
-      "DELETE FROM ayah_content WHERE edition_id IN (SELECT id FROM editions WHERE type = 'tafseer' AND language != 'ar') AND (text LIKE '%بِسۡمِ ٱللَّهِ%' OR text LIKE '%اهْدِنَا الصِّرَاطَ%')",
-    );
-    await db.rawDelete(
-      "DELETE FROM editions WHERE api_key LIKE '%taqi%' OR api_key IN ('ur.tariqmasood', 'quran-uthmani')",
-    );
+    // Create marked_mistakes and last_read if they don't exist
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS marked_mistakes (
+        word_id    TEXT,
+        section    TEXT,
+        marked_at  INTEGER,
+        PRIMARY KEY (word_id, section)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS last_read (
+        section    TEXT PRIMARY KEY,
+        surah      INTEGER,
+        ayah       INTEGER,
+        page       INTEGER,
+        updated_at INTEGER
+      )
+    ''');
 
     return db;
   }
@@ -161,6 +170,27 @@ class DatabaseHelper {
         word_id    TEXT    NOT NULL,
         glyph_code TEXT    NOT NULL,
         font_file  TEXT    NOT NULL
+      )
+    ''');
+
+    // 10. marked_mistakes
+    batch.execute('''
+      CREATE TABLE marked_mistakes (
+        word_id    TEXT,
+        section    TEXT,
+        marked_at  INTEGER,
+        PRIMARY KEY (word_id, section)
+      )
+    ''');
+
+    // 11. last_read
+    batch.execute('''
+      CREATE TABLE last_read (
+        section    TEXT PRIMARY KEY,
+        surah      INTEGER,
+        ayah       INTEGER,
+        page       INTEGER,
+        updated_at INTEGER
       )
     ''');
 

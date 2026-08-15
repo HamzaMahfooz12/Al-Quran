@@ -76,6 +76,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       title: const Text('Al Quran'),
       actions: [
         IconButton(
+          icon: const Icon(Icons.assessment_outlined),
+          tooltip: 'Mistakes Analytics & Report',
+          onPressed: () => context.goNamed('mistakes-report'),
+        ),
+        IconButton(
           icon: const Icon(Icons.bookmarks_outlined),
           tooltip: 'Bookmarks',
           onPressed: () => context.goNamed('bookmarks'),
@@ -148,12 +153,62 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     }
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-      itemCount: surahs.length,
-      itemBuilder: (ctx, i) => _SurahTile(
-        surah: surahs[i],
-        onTap: () => context.goNamed('verse-by-verse',
-            pathParameters: {'surahNumber': surahs[i].number.toString()}),
-      ),
+      itemCount: surahs.length + 1,
+      itemBuilder: (ctx, i) {
+        if (i == 0) {
+          return Card(
+            elevation: 2,
+            margin: const EdgeInsets.only(bottom: 12),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            color: const Color(0xFF1B4332),
+            child: InkWell(
+              onTap: () => context.goNamed('mistakes-report'),
+              borderRadius: BorderRadius.circular(14),
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Row(
+                  children: [
+                    const CircleAvatar(
+                      backgroundColor: Color(0xFFD4A843),
+                      child: Icon(Icons.assessment, color: Colors.white),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Mistakes Analytics & Report',
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            'View mistakes by Para/Surah, timeline & accuracy score',
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white70),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+        final surah = surahs[i - 1];
+        return _SurahTile(
+          surah: surah,
+          onTap: () => context.goNamed('verse-by-verse',
+              pathParameters: {'surahNumber': surah.number.toString()}),
+        );
+      },
     );
   }
 
