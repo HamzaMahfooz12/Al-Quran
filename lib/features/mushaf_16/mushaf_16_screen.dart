@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/repositories/quran_repository.dart';
+import '../../services/settings_service.dart';
 import '../mushaf_shared/widgets/mushaf_page_widget.dart';
 import '../shared/jump_navigation_dialog.dart';
 
@@ -19,6 +21,10 @@ class _Mushaf16ScreenState extends ConsumerState<Mushaf16Screen> {
   bool _isMarkMistakesMode = false;
   Set<String> _markedWordIds = {};
   bool _loadingLastRead = true;
+
+  // Auto-scroll
+  Timer? _scrollTimer;
+  bool _autoScrollActive = false;
 
   @override
   void initState() {
@@ -44,8 +50,31 @@ class _Mushaf16ScreenState extends ConsumerState<Mushaf16Screen> {
 
   @override
   void dispose() {
+    _scrollTimer?.cancel();
     _pageCtrl?.dispose();
     super.dispose();
+  }
+
+  void _toggleAutoScroll() {
+    if (_autoScrollActive) {
+      _scrollTimer?.cancel();
+      setState(() => _autoScrollActive = false);
+    } else {
+      final speed = ref.read(settingsServiceProvider).autoScrollSpeed;
+      final pxPerStep = speed * 0.8;
+      setState(() => _autoScrollActive = true);
+
+      _scrollTimer = Timer.periodic(const Duration(milliseconds: 16), (_) {
+        if (_pageCtrl == null || !_pageCtrl!.hasClients) return;
+        final newOffset = _pageCtrl!.offset + pxPerStep;
+        if (newOffset >= _pageCtrl!.position.maxScrollExtent) {
+          _scrollTimer?.cancel();
+          setState(() => _autoScrollActive = false);
+          return;
+        }
+        _pageCtrl!.jumpTo(newOffset);
+      });
+    }
   }
 
   Future<void> _loadMarkedMistakes() async {
@@ -95,6 +124,18 @@ class _Mushaf16ScreenState extends ConsumerState<Mushaf16Screen> {
           style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         actions: [
+          // Auto-scroll Play / Pause button
+          IconButton(
+            icon: Icon(
+              _autoScrollActive ? Icons.pause_circle_filled : Icons.play_circle_outline,
+              color: _autoScrollActive ? const Color(0xFFFFD54F) : Colors.white,
+              size: 24,
+            ),
+            tooltip: 'Auto-scroll',
+            onPressed: _toggleAutoScroll,
+          ),
+
+          // Jump Navigation Dialog Button
           IconButton(
             icon: const Icon(Icons.explore_outlined, color: Colors.white),
             tooltip: 'Jump to Location',
@@ -106,6 +147,8 @@ class _Mushaf16ScreenState extends ConsumerState<Mushaf16Screen> {
               },
             ),
           ),
+
+          // Mark Mistakes Mode Toggle Button
           IconButton(
             icon: Icon(
               _isMarkMistakesMode ? Icons.edit_off_rounded : Icons.edit_note_rounded,
@@ -130,9 +173,13 @@ class _Mushaf16ScreenState extends ConsumerState<Mushaf16Screen> {
       ),
       body: Column(
         children: [
+          // Vertical Page View (1 to 548)
           Expanded(
             child: PageView.builder(
               controller: _pageCtrl,
+              scrollDirection: Axis.vertical,
+              pageSnapping: !_autoScrollActive,
+              physics: _autoScrollActive ? const ClampingScrollPhysics() : const PageScrollPhysics(),
               itemCount: 548,
               onPageChanged: (pageIndex) {
                 final pageNum = pageIndex + 1;

@@ -318,17 +318,49 @@ class _JumpNavigationDialogState extends ConsumerState<JumpNavigationDialog>
 
   // ── 4. Manzil Jump Tab ──────────────────────────────────────────────────────
   Widget _buildManzilJumpTab() {
+    const manzilInfo = [
+      {'num': 1, 'surah': 1, 'title': 'Manzil 1 (منزل ۱)', 'range': 'Surah 1 (Al-Fatihah) – Surah 4 (An-Nisa)'},
+      {'num': 2, 'surah': 5, 'title': 'Manzil 2 (منزل ۲)', 'range': "Surah 5 (Al-Ma'idah) – Surah 9 (At-Tawbah)"},
+      {'num': 3, 'surah': 10, 'title': 'Manzil 3 (منزل ۳)', 'range': 'Surah 10 (Yunus) – Surah 16 (An-Nahl)'},
+      {'num': 4, 'surah': 17, 'title': 'Manzil 4 (منزل ۴)', 'range': "Surah 17 (Al-Isra') – Surah 25 (Al-Furqan)"},
+      {'num': 5, 'surah': 26, 'title': 'Manzil 5 (منزل ۵)', 'range': "Surah 26 (Ash-Shu'ara) – Surah 36 (Ya-Sin)"},
+      {'num': 6, 'surah': 37, 'title': 'Manzil 6 (منزل ۶)', 'range': 'Surah 37 (As-Saffat) – Surah 49 (Al-Hujurat)'},
+      {'num': 7, 'surah': 50, 'title': 'Manzil 7 (منزل ۷)', 'range': 'Surah 50 (Qaf) – Surah 114 (An-Nas)'},
+    ];
+
     return ListView.builder(
       padding: const EdgeInsets.all(14),
       itemCount: 7,
       itemBuilder: (ctx, idx) {
-        final manzilNum = idx + 1;
+        final info = manzilInfo[idx];
+        final manzilNum = info['num'] as int;
+        final startSurah = info['surah'] as int;
+        final title = info['title'] as String;
+        final range = info['range'] as String;
+
         return Card(
+          elevation: 0.5,
+          margin: const EdgeInsets.only(bottom: 8),
           child: ListTile(
-            title: Text('Manzil $manzilNum', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
-            subtitle: Text('Phase $manzilNum of 7', style: GoogleFonts.inter(fontSize: 11, color: Colors.grey)),
-            onTap: () {
-              Navigator.pop(context);
+            leading: CircleAvatar(
+              backgroundColor: const Color(0xFFE8F5E9),
+              child: Text(
+                '$manzilNum',
+                style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF1B4332)),
+              ),
+            ),
+            title: Text(title, style: GoogleFonts.inter(fontSize: 13.5, fontWeight: FontWeight.w600)),
+            subtitle: Text(range, style: GoogleFonts.inter(fontSize: 10.5, color: Colors.grey[600])),
+            trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+            onTap: () async {
+              if (widget.onJumpToPage != null && widget.mushafType != null) {
+                final repo = ref.read(quranRepositoryProvider);
+                final page = await repo.getSurahStartPage(startSurah, widget.mushafType!);
+                _executeJumpToPage(page);
+              } else {
+                Navigator.pop(context);
+                context.push('/home/surah/$startSurah');
+              }
             },
           ),
         );
