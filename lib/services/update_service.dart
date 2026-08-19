@@ -4,6 +4,7 @@
 // Checks https://raw.githubusercontent.com/HamzaMahfooz12/Al-Quran/main/version.json
 // for the latest version and downloads APK from GitHub Releases.
 // ─────────────────────────────────────────────────────────────────────────────
+import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -43,8 +44,14 @@ class UpdateService {
     final currentBuild = int.tryParse(packageInfo.buildNumber) ?? 1;
 
     try {
-      final response = await _dio.get(_versionJsonUrl);
-      final data = response.data as Map<String, dynamic>;
+      // Append cache-busting timestamp so GitHub raw CDN is never stale
+      final url = '$_versionJsonUrl?t=${DateTime.now().millisecondsSinceEpoch}';
+      final response = await _dio.get(url);
+
+      final dynamic rawData = response.data;
+      final Map<String, dynamic> data = (rawData is String)
+          ? (jsonDecode(rawData) as Map<String, dynamic>)
+          : (rawData as Map<String, dynamic>);
 
       final latestVersion = data['version'] as String? ?? currentVersion;
       final latestBuild = data['build_number'] as int? ?? currentBuild;
