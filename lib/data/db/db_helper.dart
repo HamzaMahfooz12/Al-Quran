@@ -3,7 +3,9 @@
 // SQLite helper — schema creation for all 9 tables + first-launch seeding
 // ─────────────────────────────────────────────────────────────────────────────
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -29,7 +31,19 @@ class DatabaseHelper {
       );
     }
     final dbsPath = await getDatabasesPath();
+    await Directory(dbsPath).create(recursive: true);
     final path = join(dbsPath, _dbName);
+
+    // Copy/decompress pre-seeded database from assets if not present or empty
+    final dbFile = File(path);
+    if (!await dbFile.exists() || await dbFile.length() < 100000) {
+      try {
+        final gzBytes = await rootBundle.load('assets/app_database.sqlite.gz');
+        final gzList = gzBytes.buffer.asUint8List();
+        final rawBytes = GZipCodec().decode(gzList);
+        await dbFile.writeAsBytes(rawBytes, flush: true);
+      } catch (_) {}
+    }
 
     final db = await openDatabase(
       path,

@@ -18,14 +18,12 @@ import 'data/db/tafseer_import_service.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize media_kit backend for just_audio on Windows/Linux/macOS
-  JustAudioMediaKit.ensureInitialized();
-
-  // Initialize FFI for Desktop (Windows / Linux / macOS)
+  // Initialize Desktop-specific FFI and MediaKit (Windows / Linux / macOS)
   if (!kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.windows ||
           defaultTargetPlatform == TargetPlatform.linux ||
           defaultTargetPlatform == TargetPlatform.macOS)) {
+    JustAudioMediaKit.ensureInitialized();
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
@@ -44,10 +42,6 @@ Future<void> main() async {
     ),
   );
 
-  // Pre-initialize DB helper (will seed on first launch inside)
-  final dbHelper = DatabaseHelper.instance;
-  final mainDb = await dbHelper.database; // triggers onCreate if first launch
-
   final prefs = await SharedPreferences.getInstance();
 
   runApp(
@@ -59,7 +53,9 @@ Future<void> main() async {
     ),
   );
 
-  // One-time: import bundled tafseer AFTER UI is up (non-blocking)
+  // Initialize DB & import bundled datasets asynchronously after UI is launched
+  final dbHelper = DatabaseHelper.instance;
+  final mainDb = await dbHelper.database;
   TafseerImportService.importOnce(mainDb);
 }
 

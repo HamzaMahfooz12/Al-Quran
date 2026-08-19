@@ -197,7 +197,7 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
 
     return Container(
       color: const Color(0xFFFBF9F4), // Authentic warm antique paper
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
       child: LayoutBuilder(
         builder: (context, constraints) {
           return Column(
@@ -270,6 +270,7 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
                         ),
                         padding: const EdgeInsets.all(2.5), // Frame Gutter
                         child: Container(
+                          clipBehavior: Clip.hardEdge,
                           decoration: BoxDecoration(
                             border: Border.all(color: const Color(0xFF1F1F1F), width: 1.6), // Inner solid border
                           ),
@@ -331,10 +332,10 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
                               Expanded(
                                 child: LayoutBuilder(
                                   builder: (ctx, textConstraints) {
-                                    final double availableWidth = textConstraints.maxWidth - 8;
+                                    final double availableWidth = textConstraints.maxWidth - 20;
 
                                     return Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                                       child: Column(
                                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                         children: _lines.map((line) {
@@ -543,7 +544,7 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
 
     final hasFontFile = word.fontFile.isNotEmpty && word.fontFile != 'Amiri';
     final fontFamily = hasFontFile ? word.fontFile : (word.glyphCode.contains('﴿') ? 'Amiri' : 'Scheherazade New');
-    final double fontSize = hasFontFile ? 26 : (word.glyphCode.contains('﴿') ? 18 : 22.5);
+    final double fontSize = hasFontFile ? 22 : (word.glyphCode.contains('﴿') ? 14 : (widget.mushafType == '16_line' ? 17.0 : 18.5));
 
     // Sanitize non-standard PUA ligature glyphs so they render cleanly in standard fonts without tofu [] boxes
     final sanitizedText = hasFontFile ? word.glyphCode : _sanitizeWordText(word.glyphCode);
@@ -559,7 +560,7 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
           fontSize: fontSize,
           fontWeight: word.glyphCode.contains('﴿') ? FontWeight.bold : FontWeight.normal,
           color: isMarked ? const Color(0xFFD32F2F) : const Color(0xFF111111),
-          height: 1.35,
+          height: 1.30,
         ),
       );
     } else {
@@ -577,7 +578,7 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
               fontSize: fontSize,
               fontWeight: word.glyphCode.contains('﴿') ? FontWeight.bold : FontWeight.normal,
               color: isMarked ? const Color(0xFFD32F2F) : const Color(0xFF111111),
-              height: 1.35,
+              height: 1.30,
             ),
           ),
           // Waqf stop sign exactly centered within the same line
@@ -588,10 +589,10 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
               textDirection: TextDirection.rtl,
               style: const TextStyle(
                 fontFamily: 'Scheherazade New',
-                fontSize: 20.0,
+                fontSize: 17.0,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF111111),
-                height: 1.60,
+                height: 1.30,
               ),
             ),
           ),

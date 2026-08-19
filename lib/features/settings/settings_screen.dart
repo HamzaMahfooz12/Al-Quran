@@ -8,6 +8,8 @@ import '../../data/models/reciter.dart';
 import '../../data/repositories/quran_repository.dart';
 import '../../data/repositories/reciter_repository.dart';
 import '../../services/settings_service.dart';
+import '../../services/update_service.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -136,6 +138,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               )),
 
           const SizedBox(height: 32),
+
+          // ── App Update ──────────────────────────────────────────────────
+          _sectionHeader('App Update'),
+          _UpdateCheckTile(),
+
+          const SizedBox(height: 32),
         ],
       ),
     );
@@ -243,3 +251,228 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 }
+
+// ── Self-contained OTA Update Check Tile ──────────────────────────────────────
+class _UpdateCheckTile extends StatefulWidget {
+  @override
+  State<_UpdateCheckTile> createState() => _UpdateCheckTileState();
+}
+
+class _UpdateCheckTileState extends State<_UpdateCheckTile> {
+  bool _checking = false;
+  bool _downloading = false;
+  double _downloadProgress = 0;
+  String _statusMessage = '';
+  AppUpdateInfo? _updateInfo;
+  String _currentVersion = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentVersion();
+  }
+
+  Future<void> _loadCurrentVersion() async {
+    final info = await PackageInfo.fromPlatform();
+    if (mounted) {
+      setState(() => _currentVersion = '${info.version}+${info.buildNumber}');
+    }
+  }
+
+  Future<void> _checkForUpdate() async {
+    setState(() {
+      _checking = true;
+      _statusMessage = '';
+      _updateInfo = null;
+    });
+
+    final result = await UpdateService.checkForUpdate();
+
+    if (mounted) {
+      setState(() {
+        _checking = false;
+        _updateInfo = result;
+        if (result.isUpdateAvailable) {
+          _statusMessage = 'Update available: v${result.latestVersion}';
+        } else {
+          _statusMessage = 'You are on the latest version!';
+        }
+      });
+    }
+  }
+
+  Future<void> _downloadUpdate() async {
+    if (_updateInfo == null || _updateInfo!.downloadUrl.isEmpty) return;
+
+    setState(() {
+      _downloading = true;
+      _downloadProgress = 0;
+      _statusMessage = 'Downloading update...';
+    });
+
+    await UpdateService.downloadAndInstall(
+      _updateInfo!.downloadUrl,
+      onProgress: (progress) {
+        if (mounted) {
+          setState(() => _downloadProgress = progress);
+        }
+      },
+      onError: (error) {
+        if (mounted) {
+          setState(() {
+            _downloading = false;
+            _statusMessage = error;
+          });
+        }
+      },
+      onComplete: () {
+        if (mounted) {
+          setState(() {
+            _downloading = false;
+            _statusMessage = 'Download complete! Installing...';
+          });
+        }
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.cardBg,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Current version display
+          Row(
+            children: [
+              const Icon(Icons.info_outline, color: AppTheme.primary, size: 20),
+              const SizedBox(width: 10),
+              Text('Current Version: $_currentVersion',
+                  style: GoogleFonts.inter(
+                      fontSize: 13, color: AppTheme.textMuted)),
+            ],
+          ),
+          const SizedBox(height: 14),
+
+          // Check for Updates button
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: (_checking || _downloading) ? null : _checkForUpdate,
+              icon: _checking
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white))
+                  : const Icon(Icons.refresh, size: 20),
+              label: Text(_checking ? 'Checking...' : 'Check for Updates'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+              ),
+            ),
+          ),
+
+          // Status message
+          if (_statusMessage.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Text(
+              _statusMessage,
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: (_updateInfo?.isUpdateAvailable ?? false)
+                    ? AppTheme.primary
+                    : AppTheme.textMuted,
+              ),
+            ),
+          ],
+
+          // Changelog
+          if (_updateInfo != null &&
+              _updateInfo!.isUpdateAvailable &&
+              _updateInfo!.changelog.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppTheme.primarySurface,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("What's New:",
+                      style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.primary)),
+                  const SizedBox(height: 4),
+                  Text(_updateInfo!.changelog,
+                      style: GoogleFonts.inter(
+                          fontSize: 12, color: AppTheme.textPrimary)),
+                ],
+              ),
+            ),
+          ],
+
+          // Download progress bar
+          if (_downloading) ...[
+            const SizedBox(height: 12),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: LinearProgressIndicator(
+                value: _downloadProgress,
+                minHeight: 8,
+                backgroundColor: AppTheme.primarySurface,
+                valueColor:
+                    const AlwaysStoppedAnimation<Color>(AppTheme.primary),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              '${(_downloadProgress * 100).toStringAsFixed(0)}%',
+              style: GoogleFonts.inter(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.primary),
+            ),
+          ],
+
+          // Download & Install button
+          if (_updateInfo != null &&
+              _updateInfo!.isUpdateAvailable &&
+              !_downloading) ...[
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _downloadUpdate,
+                icon: const Icon(Icons.download, size: 20),
+                label: const Text('Download & Install Update'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2E7D32),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+

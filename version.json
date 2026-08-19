@@ -1,0 +1,6 @@
+{
+  "version": "1.0.0",
+  "build_number": 1,
+  "download_url": "https://github.com/HamzaMahfooz12/Al-Quran/releases/download/v1.0.0/app-arm64-v8a-release.apk",
+  "changelog": "Initial release of Al Quran app.\n• 15-line and 16-line Mushaf views\n• Verse-by-verse reading with translations\n• Audio recitation with multiple reciters\n• Mistake marking and analytics\n• Bookmarks and last-read tracking\n• 100% offline-first"
+}

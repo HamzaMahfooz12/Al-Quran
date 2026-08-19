@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite/sqflite.dart';
 
 class TafseerImportService {
   /// Key stored in prefs-like flag file to skip re-import on subsequent launches.
@@ -37,10 +37,10 @@ class TafseerImportService {
       final tmpFile = File(p.join(tmpDir.path, 'bundled_tafseer_tmp.sqlite'));
       await tmpFile.writeAsBytes(rawBytes, flush: true);
 
-      // 4. Open the temp SQLite file with sqflite_common_ffi (works on all platforms)
-      final srcDb = await databaseFactoryFfi.openDatabase(
+      // 4. Open the temp SQLite file (works on all platforms)
+      final srcDb = await openDatabase(
         tmpFile.path,
-        options: OpenDatabaseOptions(readOnly: true),
+        readOnly: true,
       );
 
       await _mergeEditions(srcDb, mainDb);
@@ -48,6 +48,16 @@ class TafseerImportService {
 
       await srcDb.close();
       await tmpFile.delete();
+
+      // 4b. Decompress & merge word_layout dataset if mainDb layout is empty
+      await _importWordLayoutIfNeeded(mainDb);
+
+      // 4c. Reclaim database page fragmentation to keep phone storage small (~90MB)
+      try {
+        await mainDb.execute('VACUUM;');
+        // ignore: avoid_print
+        print('[TafseerImport] 🧹 Database VACUUM complete');
+      } catch (_) {}
 
       // 5. Write flag so we never import again
       await flag.create(recursive: true);
@@ -172,5 +182,94 @@ class TafseerImportService {
 
     // ignore: avoid_print
     print('[TafseerImport] Merged $total ayah_content rows');
+  }
+
+  static Future<void> _importWordLayoutIfNeeded(Database mainDb) async {
+    final countRes = await mainDb.rawQuery('SELECT COUNT(*) as cnt FROM word_layout');
+    final count = (countRes.isNotEmpty ? countRes.first['cnt'] as int? : null) ?? 0;
+    if (count > 0) return;
+
+    try {
+      final gzBytes = await rootBundle.load('assets/word_layout.sqlite.gz');
+      final gzList = gzBytes.buffer.asUint8List();
+      final rawBytes = GZipCodec().decode(gzList);
+
+      final tmpDir = await getTemporaryDirectory();
+      final tmpFile = File(p.join(tmpDir.path, 'word_layout_tmp.sqlite'));
+      await tmpFile.writeAsBytes(rawBytes, flush: true);
+
+      final srcDb = await openDatabase(
+        tmpFile.path,
+        readOnly: true,
+      );
+
+      // Merge ayahs table if mainDb does not have full 6236 ayahs yet
+      final ayahsCountRes = await mainDb.rawQuery('SELECT COUNT(*) as cnt FROM ayahs');
+      final ayahsCount = (ayahsCountRes.isNotEmpty ? ayahsCountRes.first['cnt'] as int? : null) ?? 0;
+      if (ayahsCount < 6000) {
+        final ayahsRows = await srcDb.query('ayahs');
+        final batch = mainDb.batch();
+        for (final row in ayahsRows) {
+          batch.rawInsert('''
+            INSERT OR REPLACE INTO ayahs (id, surah, ayah_number, juz, hizb, ruku, manzil, page, is_sajda, arabic_text)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          ''', [
+            row['id'],
+            row['surah'],
+            row['ayah_number'],
+            row['juz'],
+            row['hizb'],
+            row['ruku'],
+            row['manzil'],
+            row['page'],
+            row['is_sajda'],
+            row['arabic_text'],
+          ]);
+        }
+        await batch.commit(noResult: true);
+        // ignore: avoid_print
+        print('[WordLayoutImport] ✅ Merged ${ayahsRows.length} ayahs rows');
+      }
+
+      const chunkSize = 1000;
+      int offset = 0;
+      int total = 0;
+
+      while (true) {
+        final rows = await srcDb.query('word_layout', limit: chunkSize, offset: offset);
+        if (rows.isEmpty) break;
+
+        final batch = mainDb.batch();
+        for (final row in rows) {
+          batch.rawInsert('''
+            INSERT OR REPLACE INTO word_layout (mushaf, page, line, surah, ayah, word_pos, word_id, glyph_code, font_file)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+          ''', [
+            row['mushaf'],
+            row['page'],
+            row['line'],
+            row['surah'],
+            row['ayah'],
+            row['word_pos'],
+            row['word_id'],
+            row['glyph_code'],
+            row['font_file'],
+          ]);
+        }
+        await batch.commit(noResult: true);
+
+        total += rows.length;
+        offset += chunkSize;
+      }
+
+      await srcDb.close();
+      await tmpFile.delete();
+
+      // ignore: avoid_print
+      print('[WordLayoutImport] ✅ Merged $total word_layout rows');
+    } catch (e) {
+      // ignore: avoid_print
+      print('[WordLayoutImport] ❌ Failed: $e');
+    }
   }
 }

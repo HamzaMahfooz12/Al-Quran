@@ -53,6 +53,8 @@ dependencies:
   collection: ^1.19.1
   equatable: ^2.0.7
   connectivity_plus: ^6.1.4
+  package_info_plus: ^8.0.0
+  open_filex: ^4.5.0
 
 dev_dependencies:
   flutter_test:
@@ -68,23 +70,18 @@ flutter:
     - assets/db/
     - assets/images/
     - assets/lotties/
-    - assets/bundled_editions.sqlite.gz
+    - assets/fonts/
+    - assets/app_database.sqlite.gz
     - assets/downloadable_editions.json
 
-  # fonts:
-  #   - family: QCFPage1
-  #     fonts:
-  #       - asset: assets/fonts/QCF_P001.ttf
-  #   - family: QCFPage2
-  #     fonts:
-  #       - asset: assets/fonts/QCF_P002.ttf
-  #   - family: QCFPage3
-  #     fonts:
-  #       - asset: assets/fonts/QCF_P003.ttf
-  #   - family: QCFPage4
-  #     fonts:
-  #       - asset: assets/fonts/QCF_P004.ttf
-  #   - family: QCFPage5
-  #     fonts:
-  #       - asset: assets/fonts/QCF_P005.ttf
+  fonts:
+    - family: Scheherazade New
+      fonts:
+        - asset: assets/fonts/ScheherazadeNew-Regular.ttf
+    - family: Amiri
+      fonts:
+        - asset: assets/fonts/Amiri-Regular.ttf
+    - family: Noto Nastaliq Urdu
+      fonts:
+        - asset: assets/fonts/NotoNastaliqUrdu-Regular.ttf
  
