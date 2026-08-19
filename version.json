@@ -1,6 +1,6 @@
 {
-  "version": "1.0.1",
-  "build_number": 2,
-  "download_url": "https://github.com/HamzaMahfooz12/Al-Quran/releases/download/v1.0.1/app-arm64-v8a-release.apk",
-  "changelog": "• Improved 15-line and 16-line Mushaf text rendering and font fitting\n• Fixed audio play button visibility on all Ayah cards\n• Added in-app OTA update system"
+  "version": "1.0.2",
+  "build_number": 3,
+  "download_url": "https://github.com/HamzaMahfooz12/Al-Quran/releases/download/v1.0.2/app-arm64-v8a-release.apk",
+  "changelog": "• Fixed Mushaf bottom text clipping with full SafeArea protection\n• Dynamic bottom padding so verses never hide behind audio bar\n• Added App Navigation Drawer (Side bar)\n• Revamped Settings with compact searchable dropdown pickers"
 }

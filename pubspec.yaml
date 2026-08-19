@@ -2,7 +2,7 @@ name: al_quran
 description: "Al Quran — Read, Listen, Reflect. A complete Quran app with verse-by-verse reading, Mushaf view, audio recitation, and Tafseer."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.2+3
 
 environment:
   sdk: ^3.11.4
