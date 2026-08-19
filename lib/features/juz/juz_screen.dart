@@ -302,9 +302,12 @@ class _JuzScreenState extends ConsumerState<JuzScreen> {
                     playerState?.processingState == ProcessingState.buffering ||
                     playerState?.processingState == ProcessingState.loading;
 
+                final double bottomPadding = (audio.currentPlayingAyahId != null ? 220.0 : 30.0) +
+                    MediaQuery.paddingOf(context).bottom;
+
                 return ListView.builder(
                   controller: _scrollCtrl,
-                  padding: const EdgeInsets.fromLTRB(12, 8, 12, 120),
+                  padding: EdgeInsets.fromLTRB(12, 8, 12, bottomPadding),
                   itemCount: _buildItems().length,
                   itemBuilder: (ctx, i) {
                     final item = _buildItems()[i];

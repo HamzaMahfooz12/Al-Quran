@@ -636,9 +636,12 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                 final isBuffering = playerState?.processingState == ProcessingState.buffering ||
                     playerState?.processingState == ProcessingState.loading;
 
+                  final double bottomPadding = (audio.currentPlayingAyahId != null ? 220.0 : 30.0) +
+                      MediaQuery.paddingOf(context).bottom;
+
                   return ListView.builder(
                     controller: _scrollCtrl,
-                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 120),
+                    padding: EdgeInsets.fromLTRB(12, 0, 12, bottomPadding),
                     itemCount: _ayahs.length + 1,
                     itemBuilder: (ctx, i) {
                       // Index 0 → premium Surah Header Banner

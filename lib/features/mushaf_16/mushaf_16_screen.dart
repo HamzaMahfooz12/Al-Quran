@@ -171,33 +171,37 @@ class _Mushaf16ScreenState extends ConsumerState<Mushaf16Screen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Vertical Page View (1 to 548)
-          Expanded(
-            child: PageView.builder(
-              controller: _pageCtrl,
-              scrollDirection: Axis.vertical,
-              pageSnapping: !_autoScrollActive,
-              physics: _autoScrollActive ? const ClampingScrollPhysics() : const PageScrollPhysics(),
-              itemCount: 548,
-              onPageChanged: (pageIndex) {
-                final pageNum = pageIndex + 1;
-                _saveLastRead(pageNum);
-              },
-              itemBuilder: (ctx, idx) {
-                final pageNum = idx + 1;
-                return MushafPageWidget(
-                  pageNumber: pageNum,
-                  mushafType: '16_line',
-                  isMarkMistakesMode: _isMarkMistakesMode,
-                  markedWordIds: _markedWordIds,
-                  onToggleWordMistake: _toggleMistake,
-                );
-              },
+      body: SafeArea(
+        top: false,
+        bottom: true,
+        child: Column(
+          children: [
+            // Vertical Page View (1 to 548)
+            Expanded(
+              child: PageView.builder(
+                controller: _pageCtrl,
+                scrollDirection: Axis.vertical,
+                pageSnapping: !_autoScrollActive,
+                physics: _autoScrollActive ? const ClampingScrollPhysics() : const PageScrollPhysics(),
+                itemCount: 548,
+                onPageChanged: (pageIndex) {
+                  final pageNum = pageIndex + 1;
+                  _saveLastRead(pageNum);
+                },
+                itemBuilder: (ctx, idx) {
+                  final pageNum = idx + 1;
+                  return MushafPageWidget(
+                    pageNumber: pageNum,
+                    mushafType: '16_line',
+                    isMarkMistakesMode: _isMarkMistakesMode,
+                    markedWordIds: _markedWordIds,
+                    onToggleWordMistake: _toggleMistake,
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
