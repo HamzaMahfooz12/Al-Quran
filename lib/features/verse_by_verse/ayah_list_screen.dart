@@ -1233,99 +1233,101 @@ class _AyahCard extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
 
-              // Pill Container matching image layout
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFFD4E3D6)),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Tafseer Pill Button
-                    InkWell(
-                      onTap: onToggleTafseer,
-                      borderRadius: const BorderRadius.horizontal(left: Radius.circular(20)),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: showTafseer ? const Color(0xFFBBE2EC) : Colors.transparent,
-                          borderRadius: const BorderRadius.horizontal(left: Radius.circular(20)),
-                        ),
-                        child: Row(
-                          children: [
-                            Text(
-                              'Tafseer (تفسير)',
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: showTafseer ? const Color(0xFF1E5260) : AppTheme.textSecondary,
+              // Pill Container (Tafseer & Translation)
+              Flexible(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: const Color(0xFFD4E3D6)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Tafseer Pill Button
+                      InkWell(
+                        onTap: onToggleTafseer,
+                        borderRadius: const BorderRadius.horizontal(left: Radius.circular(18)),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: showTafseer ? const Color(0xFFBBE2EC) : Colors.transparent,
+                            borderRadius: const BorderRadius.horizontal(left: Radius.circular(18)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Tafseer',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: showTafseer ? const Color(0xFF1E5260) : AppTheme.textSecondary,
+                                ),
                               ),
-                            ),
-                            GestureDetector(
-                              onTap: onSelectTafseer,
-                              child: const Padding(
-                                padding: EdgeInsets.only(left: 2),
-                                child: Icon(Icons.arrow_drop_down, size: 16, color: AppTheme.textMuted),
+                              GestureDetector(
+                                onTap: onSelectTafseer,
+                                child: const Padding(
+                                  padding: EdgeInsets.only(left: 1),
+                                  child: Icon(Icons.arrow_drop_down, size: 15, color: AppTheme.textMuted),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
 
-                    Container(width: 1, height: 16, color: const Color(0xFFE0E0E0)),
+                      Container(width: 1, height: 14, color: const Color(0xFFE0E0E0)),
 
-                    // Translation Pill Button
-                    InkWell(
-                      onTap: onToggleTranslation,
-                      borderRadius: const BorderRadius.horizontal(right: Radius.circular(20)),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: showTranslation ? const Color(0xFFBCE1F5) : Colors.transparent,
-                          borderRadius: const BorderRadius.horizontal(right: Radius.circular(20)),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.translate, size: 14, color: Color(0xFF1B4E6B)),
-                            const SizedBox(width: 4),
-                            Text(
-                              translationName.contains('Urdu') || translationName.contains('Jalandhry') || translationName.contains('Taqi') || translationName.contains('Tariq')
-                                  ? 'Urdu Ttion'
-                                  : 'Translation',
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: showTranslation ? const Color(0xFF1B4E6B) : AppTheme.textSecondary,
+                      // Translation Pill Button
+                      InkWell(
+                        onTap: onToggleTranslation,
+                        borderRadius: const BorderRadius.horizontal(right: Radius.circular(18)),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: showTranslation ? const Color(0xFFBCE1F5) : Colors.transparent,
+                            borderRadius: const BorderRadius.horizontal(right: Radius.circular(18)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.translate, size: 12, color: Color(0xFF1B4E6B)),
+                              const SizedBox(width: 3),
+                              Text(
+                                'Translation',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: showTranslation ? const Color(0xFF1B4E6B) : AppTheme.textSecondary,
+                                ),
                               ),
-                            ),
-                            GestureDetector(
-                              onTap: onSelectTranslation,
-                              child: const Padding(
-                                padding: EdgeInsets.only(left: 2),
-                                child: Icon(Icons.arrow_drop_down, size: 16, color: AppTheme.textMuted),
+                              GestureDetector(
+                                onTap: onSelectTranslation,
+                                child: const Padding(
+                                  padding: EdgeInsets.only(left: 1),
+                                  child: Icon(Icons.arrow_drop_down, size: 15, color: AppTheme.textMuted),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
 
-              const Spacer(),
+              const SizedBox(width: 6),
 
               // Bookmark Button
               IconButton(
                 icon: const Icon(Icons.bookmark_border, size: 20, color: AppTheme.textSecondary),
                 onPressed: onBookmarkTap,
-                constraints: const BoxConstraints(),
-                padding: const EdgeInsets.symmetric(horizontal: 6),
+                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                padding: EdgeInsets.zero,
               ),
 
               const SizedBox(width: 4),
@@ -1334,8 +1336,8 @@ class _AyahCard extends StatelessWidget {
               GestureDetector(
                 onTap: onPlayTap,
                 child: Container(
-                  width: 34,
-                  height: 34,
+                  width: 32,
+                  height: 32,
                   decoration: const BoxDecoration(
                     color: Color(0xFFA5D6A7),
                     shape: BoxShape.circle,
@@ -1343,13 +1345,13 @@ class _AyahCard extends StatelessWidget {
                   child: Center(
                     child: isBuffering
                         ? const SizedBox(
-                            width: 16,
-                            height: 16,
+                            width: 14,
+                            height: 14,
                             child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF1B4332)),
                           )
                         : Icon(
                             isPlaying ? Icons.pause : Icons.play_arrow,
-                            size: 20,
+                            size: 18,
                             color: const Color(0xFF1B4332),
                           ),
                   ),

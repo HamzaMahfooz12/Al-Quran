@@ -328,27 +328,20 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
                                 ),
                               ),
 
-                              // ── Text Content Area (15 or 16 Lines: FULL JUSTIFIED) ──
+                              // ── Text Content Area (15 or 16 Lines: FULL JUSTIFIED with SCALE-DOWN PROTECTION) ──
                               Expanded(
                                 child: LayoutBuilder(
                                   builder: (ctx, textConstraints) {
-                                    final double availableWidth = textConstraints.maxWidth - 20;
+                                    final double availableWidth = textConstraints.maxWidth - 12;
 
                                     return Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                       child: Column(
                                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                         children: _lines.map((line) {
                                           return Expanded(
-                                            child: Align(
-                                              alignment: Alignment.center,
-                                              child: FittedBox(
-                                                fit: BoxFit.scaleDown,
-                                                child: SizedBox(
-                                                  width: availableWidth,
-                                                  child: _buildLine(line),
-                                                ),
-                                              ),
+                                            child: Center(
+                                              child: _buildLine(line, availableWidth),
                                             ),
                                           );
                                         }).toList(),
@@ -393,7 +386,7 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
     );
   }
 
-  Widget _buildLine(MushafLineData line) {
+  Widget _buildLine(MushafLineData line, double availableWidth) {
     final surahNameWord = line.words.where((w) => w.wordId.startsWith('surah_name:')).firstOrNull;
     final basmallahWord = line.words.where((w) => w.wordId.startsWith('basmallah:')).firstOrNull;
     final ayahWords = line.words.where((w) => !w.wordId.startsWith('surah_name:') && !w.wordId.startsWith('basmallah:')).toList();
@@ -421,20 +414,42 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
           if (surahNameWord != null) _buildSurahNameLine(surahNameWord),
           if (basmallahWord != null) _buildBasmallahLine(basmallahWord),
           if (ayahWords.isNotEmpty)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              textDirection: TextDirection.rtl,
-              children: ayahWords.map((word) => _buildWord(word)).toList(),
+            SizedBox(
+              width: availableWidth,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.center,
+                child: Container(
+                  constraints: BoxConstraints(minWidth: availableWidth),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: MainAxisSize.min,
+                    textDirection: TextDirection.rtl,
+                    children: ayahWords.map((word) => _buildWord(word)).toList(),
+                  ),
+                ),
+              ),
             ),
         ],
       );
     }
 
-    // Standard Quranic Line: 100% Full-Width Justified
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      textDirection: TextDirection.rtl,
-      children: line.words.map((word) => _buildWord(word)).toList(),
+    // Standard Quranic Line: 100% Full-Width Justified with automatic scale-down protection
+    return SizedBox(
+      width: availableWidth,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: Alignment.center,
+        child: Container(
+          constraints: BoxConstraints(minWidth: availableWidth),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.min,
+            textDirection: TextDirection.rtl,
+            children: line.words.map((word) => _buildWord(word)).toList(),
+          ),
+        ),
+      ),
     );
   }
 
@@ -544,7 +559,7 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
 
     final hasFontFile = word.fontFile.isNotEmpty && word.fontFile != 'Amiri';
     final fontFamily = hasFontFile ? word.fontFile : (word.glyphCode.contains('﴿') ? 'Amiri' : 'Scheherazade New');
-    final double fontSize = hasFontFile ? 22 : (word.glyphCode.contains('﴿') ? 14 : (widget.mushafType == '16_line' ? 17.0 : 18.5));
+    final double fontSize = hasFontFile ? 20 : (word.glyphCode.contains('﴿') ? 13 : (widget.mushafType == '16_line' ? 15.5 : 17.0));
 
     // Sanitize non-standard PUA ligature glyphs so they render cleanly in standard fonts without tofu [] boxes
     final sanitizedText = hasFontFile ? word.glyphCode : _sanitizeWordText(word.glyphCode);
@@ -560,7 +575,7 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
           fontSize: fontSize,
           fontWeight: word.glyphCode.contains('﴿') ? FontWeight.bold : FontWeight.normal,
           color: isMarked ? const Color(0xFFD32F2F) : const Color(0xFF111111),
-          height: 1.30,
+          height: 1.25,
         ),
       );
     } else {
@@ -578,21 +593,21 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
               fontSize: fontSize,
               fontWeight: word.glyphCode.contains('﴿') ? FontWeight.bold : FontWeight.normal,
               color: isMarked ? const Color(0xFFD32F2F) : const Color(0xFF111111),
-              height: 1.30,
+              height: 1.25,
             ),
           ),
           // Waqf stop sign exactly centered within the same line
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            padding: const EdgeInsets.symmetric(horizontal: 3.0),
             child: Text(
               waqfMark,
               textDirection: TextDirection.rtl,
               style: const TextStyle(
                 fontFamily: 'Scheherazade New',
-                fontSize: 17.0,
+                fontSize: 15.0,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF111111),
-                height: 1.30,
+                height: 1.25,
               ),
             ),
           ),

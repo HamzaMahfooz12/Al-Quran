@@ -49,11 +49,11 @@ class AyahEndSymbol extends StatelessWidget {
 
           // ── Circular Ayah End Ornament ──
           Container(
-            width: 21,
-            height: 21,
+            width: 18.5,
+            height: 18.5,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: color, width: 1.1),
+              border: Border.all(color: color, width: 1.0),
               color: Colors.transparent,
             ),
             child: Center(
@@ -64,7 +64,7 @@ class AyahEndSymbol extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'Amiri',
-                    fontSize: arabicNum.length > 2 ? 8.0 : 9.5,
+                    fontSize: arabicNum.length > 2 ? 7.5 : 8.5,
                     fontWeight: FontWeight.bold,
                     color: color,
                     height: 1.0,
