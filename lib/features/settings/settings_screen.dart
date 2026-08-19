@@ -35,21 +35,38 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final t = await repo.getAvailableEditions(type: 'translation');
     final tf = await repo.getAvailableEditions(type: 'tafseer');
     final r = await reciterRepo.getReciters();
-    if (mounted) setState(() { _translations = t; _tafseers = tf; _reciters = r; });
+    if (mounted) {
+      setState(() {
+        _translations = t;
+        _tafseers = tf;
+        _reciters = r;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsServiceProvider);
 
+    final currentTranslation = _translations
+        .where((e) => e.id == settings.selectedTranslationId)
+        .firstOrNull;
+    final currentTafseer = _tafseers
+        .where((e) => e.id == settings.selectedTafseerEditionId)
+        .firstOrNull;
+    final currentReciter = _reciters
+        .where((r) => r.id == settings.selectedReciterId)
+        .firstOrNull;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // ── Reading ────────────────────────────────────────────────────
-          _sectionHeader('Reading'),
-          // ── Font Size ──────────────────────────────────────────────────
+          // ── Reading & Display ──────────────────────────────────────────
+          _sectionHeader('Reading & Display'),
+
+          // Arabic Font Size
           Consumer(
             builder: (context, ref, child) {
               final fontSize = ref.watch(arabicFontSizeProvider);
@@ -79,6 +96,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               );
             },
           ),
+
+          // Auto-Scroll Speed
           _settingsTile(
             icon: Icons.speed,
             title: 'Auto-Scroll Speed',
@@ -97,47 +116,63 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
           ),
 
-          // ── Languages ──────────────────────────────────────────────────
-          _sectionHeader('Languages'),
-          ..._buildLanguageTiles(settings),
+          // ── Content & Recitation (Dropdown Pickers) ────────────────────
+          _sectionHeader('Content & Recitation'),
 
-          // ── Translation ────────────────────────────────────────────────
-          _sectionHeader('Default Translation'),
-          ..._translations.map((e) => _radioTile(
-                title: e.name,
-                subtitle: e.language.toUpperCase(),
-                selected: settings.selectedTranslationId == e.id,
-                onTap: () {
-                  settings.setSelectedTranslationId(e.id);
-                  setState(() {});
-                },
-              )),
+          // Default Translation Selector
+          _selectorTile(
+            icon: Icons.translate,
+            title: 'Default Translation',
+            selectedName: currentTranslation?.name ?? 'Fateh Muhammad Jalandhry',
+            selectedBadge: currentTranslation?.language.toUpperCase() ?? 'UR',
+            onTap: () => _openEditionPicker(
+              title: 'Select Default Translation',
+              items: _translations,
+              selectedId: settings.selectedTranslationId,
+              onSelected: (id) {
+                settings.setSelectedTranslationId(id);
+                setState(() {});
+              },
+            ),
+          ),
 
-          // ── Tafseer ────────────────────────────────────────────────────
-          _sectionHeader('Default Tafseer'),
-          ..._tafseers.map((e) => _radioTile(
-                title: e.name,
-                subtitle: e.language.toUpperCase(),
-                selected: settings.selectedTafseerEditionId == e.id,
-                onTap: () {
-                  settings.setSelectedTafseerEditionId(e.id);
-                  setState(() {});
-                },
-              )),
+          // Default Tafseer Selector
+          _selectorTile(
+            icon: Icons.menu_book,
+            title: 'Default Tafseer',
+            selectedName: currentTafseer?.name ?? 'Tafseer Ibn Kathir',
+            selectedBadge: currentTafseer?.language.toUpperCase() ?? 'EN',
+            onTap: () => _openEditionPicker(
+              title: 'Select Default Tafseer',
+              items: _tafseers,
+              selectedId: settings.selectedTafseerEditionId,
+              onSelected: (id) {
+                settings.setSelectedTafseerEditionId(id);
+                setState(() {});
+              },
+            ),
+          ),
 
-          // ── Reciter ────────────────────────────────────────────────────
-          _sectionHeader('Default Reciter'),
-          ..._reciters.map((r) => _radioTile(
-                title: r.name,
-                subtitle: r.style ?? '',
-                selected: settings.selectedReciterId == r.id,
-                onTap: () {
-                  settings.setSelectedReciterId(r.id);
-                  setState(() {});
-                },
-              )),
+          // Default Reciter Selector
+          _selectorTile(
+            icon: Icons.record_voice_over,
+            title: 'Default Reciter',
+            selectedName: currentReciter?.name ?? 'Mishary Rashid Alafasy',
+            selectedBadge: currentReciter?.style ?? 'Hafs',
+            onTap: () => _openReciterPicker(
+              selectedId: settings.selectedReciterId,
+              onSelected: (id) {
+                settings.setSelectedReciterId(id);
+                setState(() {});
+              },
+            ),
+          ),
 
-          const SizedBox(height: 32),
+          // ── Languages Multi-Select ──────────────────────────────────────
+          _sectionHeader('Preferred Languages'),
+          _buildLanguageChips(settings),
+
+          const SizedBox(height: 16),
 
           // ── App Update ──────────────────────────────────────────────────
           _sectionHeader('App Update'),
@@ -149,33 +184,171 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  List<Widget> _buildLanguageTiles(SettingsService settings) {
+  Widget _buildLanguageChips(SettingsService settings) {
     const langs = {
       'ur': 'Urdu', 'en': 'English', 'ar': 'Arabic',
       'fr': 'French', 'de': 'German', 'tr': 'Turkish',
       'id': 'Indonesian', 'ms': 'Malay', 'bn': 'Bengali', 'fa': 'Persian',
     };
-    return langs.entries.map((e) {
-      final selected = settings.selectedLanguages.contains(e.key);
-      return CheckboxListTile(
-        value: selected,
-        title: Text(e.value, style: GoogleFonts.inter(fontSize: 14, color: AppTheme.textPrimary)),
-        activeColor: AppTheme.primary,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-        onChanged: (v) {
-          final langs = List<String>.from(settings.selectedLanguages);
-          if (v == true) { langs.add(e.key); }
-          else if (langs.length > 1) { langs.remove(e.key); }
-          settings.setSelectedLanguages(langs);
-          setState(() {});
-        },
-      );
-    }).toList();
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppTheme.cardBg,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: langs.entries.map((e) {
+          final isSelected = settings.selectedLanguages.contains(e.key);
+          return FilterChip(
+            selected: isSelected,
+            label: Text(e.value),
+            selectedColor: AppTheme.primarySurface,
+            checkmarkColor: AppTheme.primary,
+            labelStyle: GoogleFonts.inter(
+              fontSize: 12.5,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+              color: isSelected ? AppTheme.primary : AppTheme.textPrimary,
+            ),
+            onSelected: (selected) {
+              final updated = List<String>.from(settings.selectedLanguages);
+              if (selected) {
+                updated.add(e.key);
+              } else if (updated.length > 1) {
+                updated.remove(e.key);
+              }
+              settings.setSelectedLanguages(updated);
+              setState(() {});
+            },
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _selectorTile({
+    required IconData icon,
+    required String title,
+    required String selectedName,
+    required String selectedBadge,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: AppTheme.cardBg,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0xFFE8ECE9)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: AppTheme.primarySurface,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: AppTheme.primary, size: 20),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        color: AppTheme.textMuted,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      selectedName,
+                      style: GoogleFonts.inter(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.textPrimary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              if (selectedBadge.isNotEmpty) ...[
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primarySurface,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    selectedBadge,
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.primary,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 6),
+              ],
+              const Icon(Icons.keyboard_arrow_down, color: AppTheme.textMuted, size: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _openEditionPicker({
+    required String title,
+    required List<Edition> items,
+    required int? selectedId,
+    required void Function(int id) onSelected,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => _SearchableEditionBottomSheet(
+        title: title,
+        items: items,
+        selectedId: selectedId,
+        onSelected: onSelected,
+      ),
+    );
+  }
+
+  void _openReciterPicker({
+    required String selectedId,
+    required void Function(String id) onSelected,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => _SearchableReciterBottomSheet(
+        items: _reciters,
+        selectedId: selectedId,
+        onSelected: onSelected,
+      ),
+    );
   }
 
   Widget _sectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 24, 0, 8),
+      padding: const EdgeInsets.fromLTRB(0, 20, 0, 8),
       child: Text(title,
           style: GoogleFonts.inter(
               fontSize: 12, fontWeight: FontWeight.w700,
@@ -195,10 +368,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       decoration: BoxDecoration(
         color: AppTheme.cardBg,
         borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFE8ECE9)),
       ),
       child: Row(
         children: [
-          Icon(icon, color: AppTheme.primary, size: 22),
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: AppTheme.primarySurface,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: AppTheme.primary, size: 20),
+          ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
@@ -214,39 +396,261 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ),
     );
   }
+}
 
-  Widget _radioTile({
-    required String title,
-    required String subtitle,
-    required bool selected,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: selected ? AppTheme.primarySurface : AppTheme.cardBg,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: selected ? AppTheme.primary : Colors.transparent, width: 1.5),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
-                  if (subtitle.isNotEmpty)
-                    Text(subtitle, style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textMuted)),
-                ],
-              ),
+// ── Searchable Edition Picker Bottom Sheet ────────────────────────────────────
+class _SearchableEditionBottomSheet extends StatefulWidget {
+  final String title;
+  final List<Edition> items;
+  final int? selectedId;
+  final void Function(int id) onSelected;
+
+  const _SearchableEditionBottomSheet({
+    required this.title,
+    required this.items,
+    required this.selectedId,
+    required this.onSelected,
+  });
+
+  @override
+  State<_SearchableEditionBottomSheet> createState() => _SearchableEditionBottomSheetState();
+}
+
+class _SearchableEditionBottomSheetState extends State<_SearchableEditionBottomSheet> {
+  final _searchCtrl = TextEditingController();
+  String _query = '';
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final filtered = widget.items.where((e) {
+      if (_query.isEmpty) return true;
+      final q = _query.toLowerCase();
+      return e.name.toLowerCase().contains(q) ||
+          e.language.toLowerCase().contains(q);
+    }).toList();
+
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.75,
+      decoration: const BoxDecoration(
+        color: AppTheme.background,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        children: [
+          // Drag handle & Title
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            child: Column(
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  widget.title,
+                  style: GoogleFonts.outfit(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _searchCtrl,
+                  onChanged: (v) => setState(() => _query = v),
+                  decoration: InputDecoration(
+                    hintText: 'Search by name or language...',
+                    prefixIcon: const Icon(Icons.search, size: 20),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            Icon(selected ? Icons.radio_button_checked : Icons.radio_button_off,
-                color: selected ? AppTheme.primary : AppTheme.textMuted),
-          ],
-        ),
+          ),
+
+          // Items List
+          Expanded(
+            child: ListView.separated(
+              itemCount: filtered.length,
+              separatorBuilder: (context, index) => const Divider(height: 1, indent: 16, endIndent: 16),
+              itemBuilder: (ctx, idx) {
+                final item = filtered[idx];
+                final isSelected = item.id == widget.selectedId;
+
+                return ListTile(
+                  title: Text(
+                    item.name,
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                      color: isSelected ? AppTheme.primary : AppTheme.textPrimary,
+                    ),
+                  ),
+                  subtitle: Text(
+                    item.language.toUpperCase(),
+                    style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textMuted),
+                  ),
+                  trailing: isSelected
+                      ? const Icon(Icons.check_circle, color: AppTheme.primary, size: 20)
+                      : null,
+                  onTap: () {
+                    widget.onSelected(item.id);
+                    Navigator.pop(context);
+                  },
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Searchable Reciter Picker Bottom Sheet ────────────────────────────────────
+class _SearchableReciterBottomSheet extends StatefulWidget {
+  final List<Reciter> items;
+  final String selectedId;
+  final void Function(String id) onSelected;
+
+  const _SearchableReciterBottomSheet({
+    required this.items,
+    required this.selectedId,
+    required this.onSelected,
+  });
+
+  @override
+  State<_SearchableReciterBottomSheet> createState() => _SearchableReciterBottomSheetState();
+}
+
+class _SearchableReciterBottomSheetState extends State<_SearchableReciterBottomSheet> {
+  final _searchCtrl = TextEditingController();
+  String _query = '';
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final filtered = widget.items.where((r) {
+      if (_query.isEmpty) return true;
+      final q = _query.toLowerCase();
+      return r.name.toLowerCase().contains(q) ||
+          (r.style?.toLowerCase().contains(q) ?? false);
+    }).toList();
+
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.75,
+      decoration: const BoxDecoration(
+        color: AppTheme.background,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        children: [
+          // Drag handle & Title
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            child: Column(
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Select Reciter',
+                  style: GoogleFonts.outfit(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _searchCtrl,
+                  onChanged: (v) => setState(() => _query = v),
+                  decoration: InputDecoration(
+                    hintText: 'Search reciter name or style...',
+                    prefixIcon: const Icon(Icons.search, size: 20),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Reciters List
+          Expanded(
+            child: ListView.separated(
+              itemCount: filtered.length,
+              separatorBuilder: (context, index) => const Divider(height: 1, indent: 16, endIndent: 16),
+              itemBuilder: (ctx, idx) {
+                final r = filtered[idx];
+                final isSelected = r.id == widget.selectedId;
+
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: isSelected ? AppTheme.primary : AppTheme.primarySurface,
+                    child: Icon(
+                      Icons.person,
+                      color: isSelected ? Colors.white : AppTheme.primary,
+                      size: 18,
+                    ),
+                  ),
+                  title: Text(
+                    r.name,
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                      color: isSelected ? AppTheme.primary : AppTheme.textPrimary,
+                    ),
+                  ),
+                  subtitle: Text(
+                    r.style ?? 'Hafs',
+                    style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textMuted),
+                  ),
+                  trailing: isSelected
+                      ? const Icon(Icons.check_circle, color: AppTheme.primary, size: 20)
+                      : null,
+                  onTap: () {
+                    widget.onSelected(r.id);
+                    Navigator.pop(context);
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -475,4 +879,3 @@ class _UpdateCheckTileState extends State<_UpdateCheckTile> {
     );
   }
 }
-

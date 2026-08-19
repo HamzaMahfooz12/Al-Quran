@@ -52,6 +52,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: _buildAppBar(),
+      drawer: _buildDrawer(),
       body: Column(
         children: [
           _buildSearchBar(),
@@ -68,6 +69,183 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         ],
       ),
       bottomNavigationBar: _buildBottomNav(),
+    );
+  }
+
+  Widget _buildDrawer() {
+    return Drawer(
+      backgroundColor: AppTheme.background,
+      child: Column(
+        children: [
+          // ── Islamic Green Header ──
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(20, 48, 20, 20),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFF1B4332), Color(0xFF2D5A34)],
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0xFFD4AF37), width: 1.2),
+                  ),
+                  child: const Center(
+                    child: Icon(Icons.menu_book, color: Color(0xFFD4AF37), size: 26),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  'Al Quran',
+                  style: GoogleFonts.outfit(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'القرآن الكريم • Read, Listen, Reflect',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFFD4AF37),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // ── Navigation List ──
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              children: [
+                _drawerTile(
+                  icon: Icons.format_list_bulleted,
+                  title: 'Surah & Juz Index',
+                  subtitle: 'Verse by verse reading',
+                  onTap: () => Navigator.pop(context),
+                ),
+                _drawerTile(
+                  icon: Icons.auto_stories,
+                  title: '15-Line Mushaf',
+                  subtitle: 'Saudi standard format',
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.goNamed('mushaf-15', pathParameters: {'page': '1'});
+                  },
+                ),
+                _drawerTile(
+                  icon: Icons.menu_book,
+                  title: '16-Line Indo-Pak Mushaf',
+                  subtitle: 'South Asian standard format',
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.goNamed('mushaf-16', pathParameters: {'page': '1'});
+                  },
+                ),
+                const Divider(height: 20, indent: 8, endIndent: 8),
+                _drawerTile(
+                  icon: Icons.bookmarks_outlined,
+                  title: 'Bookmarks',
+                  subtitle: 'Saved verses',
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.goNamed('bookmarks');
+                  },
+                ),
+                _drawerTile(
+                  icon: Icons.assessment_outlined,
+                  title: 'Mistakes Report',
+                  subtitle: 'Hifz tracking analytics',
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.goNamed('mistakes-report');
+                  },
+                ),
+                const Divider(height: 20, indent: 8, endIndent: 8),
+                _drawerTile(
+                  icon: Icons.settings_outlined,
+                  title: 'Settings',
+                  subtitle: 'Translations, reciters, font size',
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.goNamed('settings');
+                  },
+                ),
+                _drawerTile(
+                  icon: Icons.system_update_outlined,
+                  title: 'Check for Updates',
+                  subtitle: 'OTA update system',
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.goNamed('settings');
+                  },
+                ),
+              ],
+            ),
+          ),
+
+          // ── Footer ──
+          Container(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              'Al Quran v1.0.1 • 100% Offline',
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                color: AppTheme.textMuted,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _drawerTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: Container(
+        width: 38,
+        height: 38,
+        decoration: BoxDecoration(
+          color: AppTheme.primarySurface,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(icon, color: AppTheme.primary, size: 20),
+      ),
+      title: Text(
+        title,
+        style: GoogleFonts.inter(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: AppTheme.textPrimary,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: GoogleFonts.inter(
+          fontSize: 12,
+          color: AppTheme.textMuted,
+        ),
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      onTap: onTap,
     );
   }
 
