@@ -174,6 +174,7 @@ class _Mushaf15ScreenState extends ConsumerState<Mushaf15Screen> {
       body: SafeArea(
         top: false,
         bottom: true,
+        minimum: const EdgeInsets.only(bottom: 12),
         child: Column(
           children: [
             // Vertical Page View (1 to 610)

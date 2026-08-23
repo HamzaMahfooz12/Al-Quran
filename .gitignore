@@ -62,8 +62,18 @@ migrate_working_dir/
 app.*.symbols
 app.*.map.json
 
-# SQLite & Large Database files
-# (The app uses compressed bundled_editions.sqlite.gz for version control)
+# Keys, keystores, and secret credentials
+*.jks
+*.keystore
+*.key
+key.properties
+google-services.json
+GoogleService-Info.plist
+*.env
+*.env.*
+secrets.json
+
+# Large datasets & SQLite raw uncompressed databases
 *.sqlite
 *.db
 *.db-journal
@@ -71,6 +81,9 @@ app.*.map.json
 *.db-shm
 *.sqlite3
 
-# Temporary & backup files
+# Temporary, scratch & backup files
 *.tmp
 *.bak
+*.orig
+*~
+

@@ -61,7 +61,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.fromLTRB(16, 16, 16, 32 + MediaQuery.paddingOf(context).bottom),
         children: [
           // ── Reading & Display ──────────────────────────────────────────
           _sectionHeader('Reading & Display'),
@@ -171,6 +171,186 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           // ── Languages Multi-Select ──────────────────────────────────────
           _sectionHeader('Preferred Languages'),
           _buildLanguageChips(settings),
+
+          // ── Prayer Times & Fiqh ─────────────────────────────────────────
+          _sectionHeader('Prayer Times & Fiqh'),
+          Consumer(
+            builder: (context, ref, child) {
+              final selectedFiqh = ref.watch(selectedFiqhProvider);
+              final isHanafi = selectedFiqh == 'hanafi';
+
+              return Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppTheme.cardBg,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFFE8ECE9)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: AppTheme.primarySurface,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(Icons.account_balance_rounded, color: AppTheme.primary, size: 20),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Juristic Method (Fiqh / فقہ)',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.textPrimary,
+                                ),
+                              ),
+                              Text(
+                                'Determines Asr prayer calculation method',
+                                style: GoogleFonts.inter(fontSize: 11.5, color: AppTheme.textMuted),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Choice Card 1: Hanafi
+                    InkWell(
+                      onTap: () => ref.read(selectedFiqhProvider.notifier).setFiqh('hanafi'),
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: isHanafi ? AppTheme.primarySurface : const Color(0xFFFBFDFC),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: isHanafi ? AppTheme.primary : const Color(0xFFE2E8E4),
+                            width: isHanafi ? 1.5 : 1.0,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              isHanafi ? Icons.radio_button_checked : Icons.radio_button_off,
+                              color: isHanafi ? AppTheme.primary : AppTheme.textMuted,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Hanafi',
+                                        style: GoogleFonts.inter(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: isHanafi ? AppTheme.primary : AppTheme.textPrimary,
+                                        ),
+                                      ),
+                                      const Text(
+                                        'حَنَفِي',
+                                        style: TextStyle(
+                                          fontFamily: 'Scheherazade New',
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppTheme.gold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    'Later Asr time (Shadow factor = 2x)',
+                                    style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    // Choice Card 2: Shafi'i / Standard
+                    InkWell(
+                      onTap: () => ref.read(selectedFiqhProvider.notifier).setFiqh('standard'),
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: !isHanafi ? AppTheme.primarySurface : const Color(0xFFFBFDFC),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: !isHanafi ? AppTheme.primary : const Color(0xFFE2E8E4),
+                            width: !isHanafi ? 1.5 : 1.0,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              !isHanafi ? Icons.radio_button_checked : Icons.radio_button_off,
+                              color: !isHanafi ? AppTheme.primary : AppTheme.textMuted,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Shafi\'i / Hanbali / Maliki',
+                                        style: GoogleFonts.inter(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: !isHanafi ? AppTheme.primary : AppTheme.textPrimary,
+                                        ),
+                                      ),
+                                      const Text(
+                                        'شَافِعِي • جُمْهُور',
+                                        style: TextStyle(
+                                          fontFamily: 'Scheherazade New',
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppTheme.gold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    'Standard earlier Asr time (Shadow factor = 1x)',
+                                    style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
 
           const SizedBox(height: 16),
 

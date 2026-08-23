@@ -250,7 +250,7 @@ class _JumpNavigationDialogState extends ConsumerState<JumpNavigationDialog>
         ),
         Expanded(
           child: ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            padding: EdgeInsets.fromLTRB(14, 6, 14, 20 + MediaQuery.paddingOf(context).bottom),
             itemCount: filtered.length,
             separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (ctx, i) {
@@ -287,7 +287,7 @@ class _JumpNavigationDialogState extends ConsumerState<JumpNavigationDialog>
   // ── 3. Juz Jump Tab ─────────────────────────────────────────────────────────
   Widget _buildJuzJumpTab() {
     return ListView.builder(
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.fromLTRB(14, 14, 14, 20 + MediaQuery.paddingOf(context).bottom),
       itemCount: 30,
       itemBuilder: (ctx, idx) {
         final juzNum = idx + 1;
@@ -329,7 +329,7 @@ class _JumpNavigationDialogState extends ConsumerState<JumpNavigationDialog>
     ];
 
     return ListView.builder(
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.fromLTRB(14, 14, 14, 20 + MediaQuery.paddingOf(context).bottom),
       itemCount: 7,
       itemBuilder: (ctx, idx) {
         final info = manzilInfo[idx];

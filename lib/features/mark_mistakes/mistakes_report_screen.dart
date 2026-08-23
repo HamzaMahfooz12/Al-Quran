@@ -163,7 +163,7 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
   // ── Tab 1: Para (Juz) Breakdown (1–30) ──────────────────────────────────
   Widget _buildJuzTab() {
     return ListView.separated(
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.fromLTRB(14, 14, 14, 28 + MediaQuery.paddingOf(context).bottom),
       itemCount: 30,
       separatorBuilder: (_, _) => const SizedBox(height: 8),
       itemBuilder: (ctx, idx) {
@@ -261,7 +261,7 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
       ..sort((a, b) => b.value.compareTo(a.value));
 
     return ListView.separated(
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.fromLTRB(14, 14, 14, 28 + MediaQuery.paddingOf(context).bottom),
       itemCount: sortedSurahs.length,
       separatorBuilder: (_, _) => const SizedBox(height: 8),
       itemBuilder: (ctx, idx) {
@@ -319,7 +319,7 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
     final dateFormat = DateFormat('MMM dd, yyyy — hh:mm a');
 
     return ListView.separated(
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.fromLTRB(14, 14, 14, 28 + MediaQuery.paddingOf(context).bottom),
       itemCount: _allMistakes.length,
       separatorBuilder: (_, _) => const SizedBox(height: 8),
       itemBuilder: (ctx, idx) {

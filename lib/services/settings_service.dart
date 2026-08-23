@@ -105,4 +105,27 @@ class SettingsService {
       _prefs.getDouble(_kArabicFontSize) ?? defaultFontSize;
   Future<void> setArabicFontSize(double size) =>
       _prefs.setDouble(_kArabicFontSize, size);
+
+  // ── Prayer Juristic Method (Fiqh) ──────────────────────────────────────────
+  static const _kPrayerJuristic = 'prayer_juristic_method';
+  String get prayerJuristicMethod =>
+      _prefs.getString(_kPrayerJuristic) ?? 'hanafi';
+  Future<void> setPrayerJuristicMethod(String method) =>
+      _prefs.setString(_kPrayerJuristic, method);
+}
+
+// Reactive provider for selected Fiqh (hanafi vs standard)
+final selectedFiqhProvider = StateNotifierProvider<SelectedFiqhNotifier, String>((ref) {
+  final settings = ref.watch(settingsServiceProvider);
+  return SelectedFiqhNotifier(settings);
+});
+
+class SelectedFiqhNotifier extends StateNotifier<String> {
+  final SettingsService _settings;
+  SelectedFiqhNotifier(this._settings) : super(_settings.prayerJuristicMethod);
+
+  Future<void> setFiqh(String fiqh) async {
+    state = fiqh;
+    await _settings.setPrayerJuristicMethod(fiqh);
+  }
 }

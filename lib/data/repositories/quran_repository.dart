@@ -7,6 +7,8 @@ import '../db/db_helper.dart';
 import '../models/ayah.dart';
 import '../models/edition.dart';
 import '../models/bookmark.dart';
+import '../models/mutashabiha.dart';
+import '../models/surah_info.dart';
 
 final quranRepositoryProvider = Provider<QuranRepository>(
   (ref) => QuranRepository(DatabaseHelper.instance),
@@ -108,6 +110,18 @@ class QuranRepository {
       where: 'is_sajda = 1',
     );
     return rows.map((r) => r['id'] as int).toList();
+  }
+
+  Future<List<Ayah>> searchAyahs(String query, {int limit = 60}) async {
+    final term = '%$query%';
+    final rows = await _db.rawQuery('''
+      SELECT DISTINCT a.* FROM ayahs a
+      LEFT JOIN ayah_content c ON a.id = c.ayah_id
+      WHERE a.arabic_text LIKE ? OR c.text LIKE ?
+      ORDER BY a.id ASC
+      LIMIT ?
+    ''', [term, term, limit]);
+    return rows.map(Ayah.fromMap).toList();
   }
 
   // ── Translations / Tafseer ────────────────────────────────────────────────
@@ -482,4 +496,85 @@ class QuranRepository {
     });
   }
 
+  // ── Mutashabihat (Similar Quranic Verses) ──────────────────────────────────
+  Future<List<Mutashabiha>> getMutashabihatByJuz(int juz) async {
+    final db = await _db.database;
+    final rows = await db.rawQuery('''
+      SELECT 
+        m.src_surah, m.src_ayah, m.similar_surah, m.similar_ayah, m.ctx, m.juz,
+        a1.arabic_text as src_arabic,
+        a2.arabic_text as similar_arabic
+      FROM mutashabihat m
+      LEFT JOIN ayahs a1 ON (a1.surah = m.src_surah AND a1.ayah_number = m.src_ayah)
+      LEFT JOIN ayahs a2 ON (a2.surah = m.similar_surah AND a2.ayah_number = m.similar_ayah)
+      WHERE m.juz = ?
+      ORDER BY m.src_surah ASC, m.src_ayah ASC, m.similar_surah ASC, m.similar_ayah ASC
+    ''', [juz]);
+
+    return rows.map((r) {
+      final sInfo1 = kSurahList.where((s) => s.number == r['src_surah']).firstOrNull;
+      final sInfo2 = kSurahList.where((s) => s.number == r['similar_surah']).firstOrNull;
+      return Mutashabiha(
+        srcSurah: r['src_surah'] as int,
+        srcAyah: r['src_ayah'] as int,
+        similarSurah: r['similar_surah'] as int,
+        similarAyah: r['similar_ayah'] as int,
+        ctx: r['ctx'] as int?,
+        juz: r['juz'] as int?,
+        srcArabic: r['src_arabic'] as String?,
+        similarArabic: r['similar_arabic'] as String?,
+        srcSurahName: sInfo1?.nameTransliteration ?? 'Surah ${r['src_surah']}',
+        similarSurahName: sInfo2?.nameTransliteration ?? 'Surah ${r['similar_surah']}',
+      );
+    }).toList();
+  }
+
+  Future<List<Mutashabiha>> getMutashabihatForAyah(int surah, int ayahNumber) async {
+    final db = await _db.database;
+    final rows = await db.rawQuery('''
+      SELECT 
+        m.src_surah, m.src_ayah, m.similar_surah, m.similar_ayah, m.ctx, m.juz,
+        a1.arabic_text as src_arabic,
+        a2.arabic_text as similar_arabic
+      FROM mutashabihat m
+      LEFT JOIN ayahs a1 ON (a1.surah = m.src_surah AND a1.ayah_number = m.src_ayah)
+      LEFT JOIN ayahs a2 ON (a2.surah = m.similar_surah AND a2.ayah_number = m.similar_ayah)
+      WHERE (m.src_surah = ? AND m.src_ayah = ?)
+         OR (m.similar_surah = ? AND m.similar_ayah = ?)
+      ORDER BY m.similar_surah ASC, m.similar_ayah ASC
+    ''', [surah, ayahNumber, surah, ayahNumber]);
+
+    return rows.map((r) {
+      final sInfo1 = kSurahList.where((s) => s.number == r['src_surah']).firstOrNull;
+      final sInfo2 = kSurahList.where((s) => s.number == r['similar_surah']).firstOrNull;
+      return Mutashabiha(
+        srcSurah: r['src_surah'] as int,
+        srcAyah: r['src_ayah'] as int,
+        similarSurah: r['similar_surah'] as int,
+        similarAyah: r['similar_ayah'] as int,
+        ctx: r['ctx'] as int?,
+        juz: r['juz'] as int?,
+        srcArabic: r['src_arabic'] as String?,
+        similarArabic: r['similar_arabic'] as String?,
+        srcSurahName: sInfo1?.nameTransliteration ?? 'Surah ${r['src_surah']}',
+        similarSurahName: sInfo2?.nameTransliteration ?? 'Surah ${r['similar_surah']}',
+      );
+    }).toList();
+  }
+
+  Future<Map<int, int>> getMutashabihatCountsByJuz() async {
+    final db = await _db.database;
+    final rows = await db.rawQuery('''
+      SELECT juz, COUNT(*) as cnt
+      FROM mutashabihat
+      WHERE juz IS NOT NULL
+      GROUP BY juz
+      ORDER BY juz ASC
+    ''');
+    final Map<int, int> counts = {};
+    for (final r in rows) {
+      counts[r['juz'] as int] = r['cnt'] as int;
+    }
+    return counts;
+  }
 }

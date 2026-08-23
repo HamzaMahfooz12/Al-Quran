@@ -306,7 +306,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   // ── Bottom Navigation Bar ─────────────────────────────────────────────────
   Widget _buildBottomBar() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+      padding: EdgeInsets.fromLTRB(24, 16, 24, 24 + MediaQuery.paddingOf(context).bottom),
       decoration: const BoxDecoration(
         color: AppTheme.background,
         border: Border(top: BorderSide(color: AppTheme.divider)),

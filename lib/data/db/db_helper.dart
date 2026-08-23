@@ -36,7 +36,29 @@ class DatabaseHelper {
 
     // Copy/decompress pre-seeded database from assets if not present or empty
     final dbFile = File(path);
-    if (!await dbFile.exists() || await dbFile.length() < 100000) {
+    bool shouldExtract = !await dbFile.exists() || await dbFile.length() < 100000;
+
+    // Check if previously extracted db is missing mutashabihat data
+    if (!shouldExtract) {
+      try {
+        final tempDb = await openReadOnlyDatabase(path);
+        final check = await tempDb.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='mutashabihat'");
+        if (check.isEmpty) {
+          shouldExtract = true;
+        } else {
+          final countRes = await tempDb.rawQuery("SELECT COUNT(*) as c FROM mutashabihat");
+          final count = (countRes.first['c'] as int?) ?? 0;
+          if (count == 0) {
+            shouldExtract = true;
+          }
+        }
+        await tempDb.close();
+      } catch (_) {
+        shouldExtract = true;
+      }
+    }
+
+    if (shouldExtract) {
       try {
         final gzBytes = await rootBundle.load('assets/app_database.sqlite.gz');
         final gzList = gzBytes.buffer.asUint8List();
@@ -71,6 +93,22 @@ class DatabaseHelper {
         updated_at INTEGER
       )
     ''');
+
+    // Mutashabihat (Similar verses) table
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS mutashabihat (
+        src_surah     INTEGER NOT NULL,
+        src_ayah      INTEGER NOT NULL,
+        similar_surah INTEGER NOT NULL,
+        similar_ayah  INTEGER NOT NULL,
+        ctx           INTEGER,
+        juz           INTEGER,
+        PRIMARY KEY (src_surah, src_ayah, similar_surah, similar_ayah)
+      )
+    ''');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_mutashabihat_src ON mutashabihat(src_surah, src_ayah)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_mutashabihat_juz ON mutashabihat(juz)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_mutashabihat_similar ON mutashabihat(similar_surah, similar_ayah)');
 
     return db;
   }

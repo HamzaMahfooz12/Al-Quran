@@ -8,6 +8,7 @@ import '../../../data/repositories/quran_repository.dart';
 import '../../../data/ruku_data.dart';
 import 'ayah_end_symbol.dart';
 import 'indopak_ruku_marginal_badge.dart';
+import 'indopak_sajda_marginal_badge.dart';
 
 class MushafPageWidget extends ConsumerStatefulWidget {
   final int pageNumber;
@@ -195,9 +196,11 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
         ? kJuzNamesArabic[_juzNumber - 1]
         : 'الجزء ${ArabicNumerals.format(_juzNumber)}';
 
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
+
     return Container(
       color: const Color(0xFFFBF9F4), // Authentic warm antique paper
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+      padding: EdgeInsets.fromLTRB(4, 3, 4, 8 + bottomInset),
       child: LayoutBuilder(
         builder: (context, constraints) {
           return Column(
@@ -221,8 +224,10 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: _lines.map((line) {
-                                  // Check if line contains a verse-end marker of a Ruku
+                                  // Check if line contains a verse-end marker of a Ruku or Sajda
                                   RukuInfo? rukuInfo;
+                                  bool isSajdaLine = false;
+
                                   for (final word in line.words) {
                                     if (word.ayah > 0) {
                                       final isVerseEnd = (word.wordId.endsWith(':end') ||
@@ -232,6 +237,15 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
                                           !word.glyphCode.contains(RegExp(r'[\u0621-\u064A\u0671-\u06D3]'));
 
                                       if (isVerseEnd) {
+                                        final key = '${word.surah}:${word.ayah}';
+                                        const sajdas = {
+                                          '7:206', '13:15', '16:50', '17:109', '19:58', '22:18', '22:77',
+                                          '25:60', '27:26', '32:15', '38:24', '41:38', '53:62', '84:21', '96:19'
+                                        };
+                                        if (sajdas.contains(key)) {
+                                          isSajdaLine = true;
+                                        }
+
                                         final info = RukuData.getRukuEndInfo(word.surah, word.ayah);
                                         if (info != null) {
                                           rukuInfo = info;
@@ -243,12 +257,17 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
 
                                   return Expanded(
                                     child: Center(
-                                      child: rukuInfo != null
-                                          ? FittedBox(
+                                      child: isSajdaLine
+                                          ? const FittedBox(
                                               fit: BoxFit.scaleDown,
-                                              child: IndoPakRukuMarginalBadge(rukuInfo: rukuInfo),
+                                              child: IndoPakSajdaMarginalBadge(),
                                             )
-                                          : null,
+                                          : (rukuInfo != null
+                                              ? FittedBox(
+                                                  fit: BoxFit.scaleDown,
+                                                  child: IndoPakRukuMarginalBadge(rukuInfo: rukuInfo),
+                                                )
+                                              : null),
                                     ),
                                   );
                                 }).toList(),

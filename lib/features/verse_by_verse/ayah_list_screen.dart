@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/models/ayah.dart';
 import '../../data/models/edition.dart';
@@ -16,6 +18,7 @@ import '../../data/repositories/quran_repository.dart';
 import '../../services/settings_service.dart';
 import '../../services/audio_service.dart';
 import '../audio/audio_control_bar.dart';
+import '../share/widgets/ayah_share_dialog.dart';
 
 class AyahListScreen extends ConsumerStatefulWidget {
   final int surahNumber;
@@ -598,6 +601,173 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
     return total + ayah;
   }
 
+  Future<void> _showMutashabihatBottomSheet(Ayah ayah) async {
+    final repo = ref.read(quranRepositoryProvider);
+    final pairs = await repo.getMutashabihatForAyah(ayah.surah, ayah.ayahNumber);
+
+    if (!mounted) return;
+
+    if (pairs.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('No Mutashabihat (similar verses) registered for Ayah ${ayah.ayahNumber}.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        height: MediaQuery.of(ctx).size.height * 0.82,
+        decoration: const BoxDecoration(
+          color: AppTheme.background,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 10),
+              child: Column(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.compare_arrows_rounded, color: Color(0xFFD84315), size: 22),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Mutashabihat • المتشابهات',
+                            style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close, color: AppTheme.textMuted),
+                        onPressed: () => Navigator.pop(ctx),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    'Similar verses for Surah ${_surahInfo.nameTransliteration} [${ayah.surah}:${ayah.ayahNumber}]',
+                    style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1),
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: pairs.length,
+                itemBuilder: (context, index) {
+                  final p = pairs[index];
+                  final isCurrentSource = p.srcSurah == ayah.surah && p.srcAyah == ayah.ayahNumber;
+                  final otherSurah = isCurrentSource ? p.similarSurah : p.srcSurah;
+                  final otherAyah = isCurrentSource ? p.similarAyah : p.srcAyah;
+                  final otherName = isCurrentSource ? p.similarSurahName : p.srcSurahName;
+                  final otherArabic = isCurrentSource ? p.similarArabic : p.srcArabic;
+
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 14),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppTheme.cardBg,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFE2E8E4)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.03),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFFF3E0),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                'Similar in Surah $otherName [$otherSurah:$otherAyah]',
+                                style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFFD84315)),
+                              ),
+                            ),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                Navigator.pop(ctx);
+                                context.goNamed(
+                                  'verse-by-verse',
+                                  pathParameters: {'surahNumber': '$otherSurah'},
+                                  queryParameters: {'ayah': '$otherAyah'},
+                                );
+                              },
+                              icon: const Icon(Icons.open_in_new, size: 14),
+                              label: const Text('Open'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppTheme.primary,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                textStyle: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.bold),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                elevation: 0,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFAFBF9),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: const Color(0xFFE8ECE9)),
+                          ),
+                          child: Text(
+                            otherArabic ?? '',
+                            style: const TextStyle(
+                              fontFamily: 'Scheherazade New',
+                              fontSize: 19,
+                              height: 1.85,
+                              color: AppTheme.textPrimary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            textAlign: TextAlign.right,
+                            textDirection: TextDirection.rtl,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final arabicFontSize = ref.watch(arabicFontSizeProvider);
@@ -718,6 +888,27 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                         onSelectTranslation: () => _showEditionSelector('translation'),
                         onSelectTafseer: () => _showEditionSelector('tafseer'),
                         onPlayTap: () => _playAyah(_ayahs[ayahIdx]),
+                        onShareTap: () {
+                          final trText = _translations[_ayahs[ayahIdx].id] ?? '';
+                          AyahShareDialog.show(
+                            context,
+                            surahName: _surahInfo.nameTransliteration,
+                            ayahNumber: _ayahs[ayahIdx].ayahNumber,
+                            arabicText: cleanAyahText(_ayahs[ayahIdx]),
+                            translationText: trText,
+                          );
+                        },
+                        onMutashabihatTap: () => _showMutashabihatBottomSheet(_ayahs[ayahIdx]),
+                        onCopyTap: () {
+                          final trText = _translations[_ayahs[ayahIdx].id] ?? '';
+                          final full = 'Surah ${_surahInfo.nameTransliteration} [${widget.surahNumber}:${_ayahs[ayahIdx].ayahNumber}]\n\n'
+                              '${cleanAyahText(_ayahs[ayahIdx])}\n\n'
+                              '$trText\n\n— Al Quran App';
+                          Clipboard.setData(ClipboardData(text: full));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Verse copied to clipboard!'), duration: Duration(seconds: 1), behavior: SnackBarBehavior.floating),
+                          );
+                        },
                         onBookmarkTap: () async {
                           final repo = ref.read(quranRepositoryProvider);
                           final messenger = ScaffoldMessenger.of(context);
@@ -1176,6 +1367,9 @@ class _AyahCard extends StatelessWidget {
   final VoidCallback onSelectTafseer;
   final VoidCallback onPlayTap;
   final VoidCallback onBookmarkTap;
+  final VoidCallback onShareTap;
+  final VoidCallback onMutashabihatTap;
+  final VoidCallback onCopyTap;
 
   const _AyahCard({
     required this.ayah,
@@ -1194,6 +1388,9 @@ class _AyahCard extends StatelessWidget {
     required this.onSelectTafseer,
     required this.onPlayTap,
     required this.onBookmarkTap,
+    required this.onShareTap,
+    required this.onMutashabihatTap,
+    required this.onCopyTap,
   });
 
   @override
