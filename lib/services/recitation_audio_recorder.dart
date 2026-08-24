@@ -29,11 +29,11 @@ class RecitationAudioRecorder {
     _isRecording = true;
 
     // Simulate realistic speech amplitude pulses for the visualizer
-    double _phase = 0.0;
+    double phase = 0.0;
     _amplitudeTimer =
         Timer.periodic(const Duration(milliseconds: 80), (_) {
-      _phase += 0.3;
-      final base = sin(_phase) * 0.35 + 0.45;
+      phase += 0.3;
+      final base = sin(phase) * 0.35 + 0.45;
       final noise = (_random.nextDouble() - 0.5) * 0.25;
       final amplitude = (base + noise).clamp(0.0, 1.0);
       _amplitudeController.add(amplitude);

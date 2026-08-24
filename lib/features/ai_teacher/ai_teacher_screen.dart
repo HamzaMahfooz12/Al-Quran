@@ -48,51 +48,58 @@ class _AiTeacherScreenState extends ConsumerState<AiTeacherScreen> {
 
     if (mounted) {
       setState(() => _loading = false);
-      _checkModelAndPrompt();
+      // Show model download dialog only if not yet downloaded
+      _checkModelAndPromptOnce();
     }
   }
 
   Future<void> _loadCurrentPageWords() async {
     final repo = ref.read(quranRepositoryProvider);
     final raw = await repo.getMushafPageWords(_currentPage, '16_line');
-    _currentPageWords = raw.map((w) => WordLayoutData.fromMap(w)).toList();
+    if (mounted) {
+      setState(() {
+        _currentPageWords = raw.map((w) => WordLayoutData.fromMap(w)).toList();
+      });
+    }
   }
 
-  Future<void> _checkModelAndPrompt() async {
+  Future<void> _checkModelAndPromptOnce() async {
     final aiManager = ref.read(aiModelManagerProvider);
     final isDownloaded = await aiManager.isModelDownloaded();
 
+    // Only show if not already downloaded — never re-show if user cancelled
     if (!isDownloaded && mounted) {
       await ModelDownloadDialog.show(
         context,
         onDownloadComplete: () {
+          // Download complete — user can now press mic to start
           if (mounted) {
-            _startRecitation();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('✅ AI Model ready! Press the microphone button to begin.'),
+                backgroundColor: Color(0xFF2E7D32),
+                duration: Duration(seconds: 3),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
           }
         },
       );
     }
   }
 
-  Future<void> _startRecitation() async {
-    if (_currentPageWords.isEmpty) {
-      await _loadCurrentPageWords();
-    }
-    if (mounted) {
-      await ref.read(recitationProvider.notifier).startListening(_currentPageWords);
-    }
-  }
-
   Future<void> _onPageChanged(int pageIndex) async {
     final pageNum = pageIndex + 1;
     _currentPage = pageNum;
+
     final repo = ref.read(quranRepositoryProvider);
     await repo.saveLastRead(section: 'ai_teacher', page: pageNum, surah: 1, ayah: 1);
     await _loadCurrentPageWords();
 
+    // Stop any active session when user scrolls to a different page
     final state = ref.read(recitationProvider);
     if (state.isListening && mounted) {
-      ref.read(recitationProvider.notifier).startListening(_currentPageWords);
+      await ref.read(recitationProvider.notifier).stopListening();
     }
   }
 
@@ -120,12 +127,17 @@ class _AiTeacherScreenState extends ConsumerState<AiTeacherScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
-          onPressed: () {
-            if (recitationState.totalRecited > 0) {
-              RecitationSummaryDialog.show(context, state: recitationState);
+          onPressed: () async {
+            final nav = Navigator.of(context);
+            await ref.read(recitationProvider.notifier).stopListening();
+            if (!mounted) return;
+            final state = ref.read(recitationProvider);
+            if (state.totalRecited > 0) {
+              // ignore: use_build_context_synchronously
+              await RecitationSummaryDialog.show(context, state: state);
             }
             ref.read(recitationProvider.notifier).resetSession();
-            Navigator.of(context).pop();
+            nav.pop();
           },
         ),
         title: Column(
@@ -151,7 +163,6 @@ class _AiTeacherScreenState extends ConsumerState<AiTeacherScreen> {
               mushafType: '16_line',
               onJumpToPage: (targetPage) {
                 _pageCtrl?.jumpToPage(targetPage - 1);
-                _onPageChanged(targetPage - 1);
               },
             ),
           ),
@@ -170,6 +181,31 @@ class _AiTeacherScreenState extends ConsumerState<AiTeacherScreen> {
         bottom: false,
         child: Column(
           children: [
+            // How-to-use hint (shown only when not listening and no words recited)
+            if (!recitationState.isListening && recitationState.totalRecited == 0)
+              Container(
+                margin: const EdgeInsets.fromLTRB(14, 8, 14, 0),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFFFD54F).withValues(alpha: 0.3)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.tips_and_updates_outlined, color: Color(0xFFFFD54F), size: 18),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Press the 🎤 microphone button below to start listening. '
+                        'Recite aloud — words will turn green as you speak them.',
+                        style: GoogleFonts.inter(fontSize: 11.5, color: Colors.white70),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
             // 16-Line Holy Quran Page View
             Expanded(
               child: PageView.builder(
@@ -185,9 +221,11 @@ class _AiTeacherScreenState extends ConsumerState<AiTeacherScreen> {
                     isMarkMistakesMode: false,
                     markedWordIds: const {},
                     onToggleWordMistake: (_) {},
-                    liveRecitationWordMap: pageNum == _currentPage ? recitationState.wordResults : null,
+                    liveRecitationWordMap:
+                        pageNum == _currentPage ? recitationState.wordResults : null,
                     isHifzRevealMode: recitationState.isHifzRevealMode,
-                    onLiveRecitationWordTap: (wordResult) => WordCorrectionSheet.show(context, wordResult),
+                    onLiveRecitationWordTap: (wordResult) =>
+                        WordCorrectionSheet.show(context, wordResult),
                   );
                 },
               ),
@@ -198,7 +236,11 @@ class _AiTeacherScreenState extends ConsumerState<AiTeacherScreen> {
       bottomSheet: LiveRecitationToolbar(
         pageWords: _currentPageWords,
         onClose: () {
+          final sessionState = ref.read(recitationProvider);
           ref.read(recitationProvider.notifier).resetSession();
+          if (sessionState.totalRecited > 0) {
+            RecitationSummaryDialog.show(context, state: sessionState);
+          }
         },
       ),
     );

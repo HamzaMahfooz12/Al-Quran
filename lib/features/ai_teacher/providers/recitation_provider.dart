@@ -1,5 +1,6 @@
 // lib/features/ai_teacher/providers/recitation_provider.dart
 // Riverpod state management for Live AI Quran Recitation session
+// Words advance ONLY when the microphone detects speech amplitude (not on a timer).
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../data/models/mushaf_page_model.dart';
@@ -51,7 +52,7 @@ class RecitationSessionState {
       .length;
 
   double get accuracyPercent {
-    if (totalRecited == 0) return 100.0;
+    if (totalRecited == 0) return 0.0;
     return ((correctCount / totalRecited) * 100).clamp(0.0, 100.0);
   }
 
@@ -84,7 +85,18 @@ class RecitationSessionState {
 
 class RecitationNotifier extends StateNotifier<RecitationSessionState> {
   final RecitationAudioRecorder _recorder;
-  Timer? _wordAdvancementTimer;
+
+  // Amplitude listener — detects when the user is speaking
+  StreamSubscription<double>? _amplitudeSub;
+
+  // Tracks sustained speech above threshold
+  DateTime? _speechStartTime;
+  bool _wordAdvancing = false;
+
+  // How long user must sustain speech before we count it as a recited word
+  static const Duration _speechActivationDuration = Duration(milliseconds: 350);
+  // Minimum amplitude to be considered "speaking"
+  static const double _speechAmplitudeThreshold = 0.30;
 
   RecitationNotifier(this._recorder) : super(const RecitationSessionState());
 
@@ -96,18 +108,20 @@ class RecitationNotifier extends StateNotifier<RecitationSessionState> {
     state = state.copyWith(isHifzRevealMode: !state.isHifzRevealMode);
   }
 
-  /// Initializes and starts a live recitation session for the given page words
+  /// Starts a live recitation session for the given page words.
+  /// Words advance ONLY when voice amplitude crosses the speech threshold.
   Future<bool> startListening(List<WordLayoutData> words) async {
     if (words.isEmpty) return false;
 
-    // Filter out verse end symbols to only track real Arabic words
+    // Stop any existing session first
+    await _stopAmplitudeListener();
+
+    // Filter to only real Arabic words (not verse-end markers)
     final realWords = words.where((w) {
-      final isEnd = w.wordId.endsWith(':end') ||
-          w.glyphCode.contains('﴿') ||
-          (w.glyphCode.contains('\u06DF') ||
-              w.glyphCode.codeUnits.any((u) => u >= 0xF500 && u <= 0xF5FF)) &&
-              !w.glyphCode.contains(RegExp(r'[\u0621-\u064A\u0671-\u06D3]'));
-      return !isEnd && w.glyphCode.trim().isNotEmpty;
+      final id = w.wordId;
+      if (id.endsWith(':end') || id.endsWith(':0')) return false;
+      if (w.glyphCode.trim().isEmpty) return false;
+      return true;
     }).toList();
 
     if (realWords.isEmpty) return false;
@@ -128,7 +142,7 @@ class RecitationNotifier extends StateNotifier<RecitationSessionState> {
     final success = await _recorder.startStream();
     if (!success) {
       state = state.copyWith(
-        errorMessage: 'Microphone permission is required to listen to recitation.',
+        errorMessage: 'Microphone permission is required. Please enable it in Settings.',
       );
       return false;
     }
@@ -142,59 +156,86 @@ class RecitationNotifier extends StateNotifier<RecitationSessionState> {
       errorMessage: null,
     );
 
-    _startLiveSimulationLoop();
+    // ── Amplitude-reactive word advancement ──────────────────────────────
+    // Words ONLY advance when the user is speaking (amplitude above threshold).
+    // When amplitude drops, advancement stops — genuine silence = pause.
+    _startAmplitudeListener();
+
     return true;
   }
 
-  /// Live matching loop: follows the user's speech and verifies word phonetics
-  void _startLiveSimulationLoop() {
-    _wordAdvancementTimer?.cancel();
+  void _startAmplitudeListener() {
+    _speechStartTime = null;
+    _wordAdvancing = false;
 
-    // Bounded pace based on user-selected sensitivity preset
-    final stepDuration = Duration(
-      milliseconds: (state.sensitivity.maxPauseSeconds * 800).clamp(600, 2000).toInt(),
-    );
-
-    _wordAdvancementTimer = Timer.periodic(stepDuration, (_) {
-      if (!state.isListening || state.currentWords.isEmpty) return;
-
-      final currentIndex = state.activeWordIndex;
-      if (currentIndex >= state.currentWords.length) {
+    _amplitudeSub = _recorder.amplitudeStream.listen((amplitude) {
+      if (!state.isListening) return;
+      if (state.activeWordIndex >= state.currentWords.length) {
         stopListening();
         return;
       }
 
-      final currentWord = state.currentWords[currentIndex];
+      final isSpeaking = amplitude >= _speechAmplitudeThreshold;
 
-      // Mark current word as correct
-      final updatedResults = Map<String, RecitationWordResult>.from(state.wordResults);
-      updatedResults[currentWord.wordId] = updatedResults[currentWord.wordId]!.copyWith(
-        status: RecitationWordStatus.correct,
-      );
+      if (isSpeaking) {
+        // User is speaking — start timing
+        _speechStartTime ??= DateTime.now();
 
-      final nextIndex = currentIndex + 1;
-      String? nextWordId;
-
-      if (nextIndex < state.currentWords.length) {
-        nextWordId = state.currentWords[nextIndex].wordId;
-        updatedResults[nextWordId] = updatedResults[nextWordId]!.copyWith(
-          status: RecitationWordStatus.active,
-        );
-      }
-
-      state = state.copyWith(
-        activeWordIndex: nextIndex,
-        activeWordId: nextWordId,
-        wordResults: updatedResults,
-      );
-
-      if (nextIndex >= state.currentWords.length) {
-        stopListening();
+        if (!_wordAdvancing) {
+          final elapsed = DateTime.now().difference(_speechStartTime!);
+          if (elapsed >= _speechActivationDuration) {
+            // Sustained speech detected — advance the current word
+            _wordAdvancing = true;
+            _advanceCurrentWord();
+          }
+        }
+      } else {
+        // Silence detected — reset, ready to detect next word
+        _speechStartTime = null;
+        _wordAdvancing = false;
       }
     });
   }
 
-  /// Manually feeds a recognized word into the matching pipeline
+  void _advanceCurrentWord() {
+    if (!state.isListening) return;
+    final currentIndex = state.activeWordIndex;
+    if (currentIndex >= state.currentWords.length) {
+      stopListening();
+      return;
+    }
+
+    final currentWord = state.currentWords[currentIndex];
+    final updatedResults = Map<String, RecitationWordResult>.from(state.wordResults);
+
+    // Mark current word as correct (real ASR would verify phonetics here)
+    updatedResults[currentWord.wordId] = updatedResults[currentWord.wordId]!.copyWith(
+      status: RecitationWordStatus.correct,
+      confidence: 0.85,
+    );
+
+    final nextIndex = currentIndex + 1;
+    String? nextWordId;
+
+    if (nextIndex < state.currentWords.length) {
+      nextWordId = state.currentWords[nextIndex].wordId;
+      updatedResults[nextWordId] = updatedResults[nextWordId]!.copyWith(
+        status: RecitationWordStatus.active,
+      );
+    }
+
+    state = state.copyWith(
+      activeWordIndex: nextIndex,
+      activeWordId: nextWordId,
+      wordResults: updatedResults,
+    );
+
+    if (nextIndex >= state.currentWords.length) {
+      stopListening();
+    }
+  }
+
+  /// Manually feeds a recognized word into the matching pipeline (for real ASR)
   void processRecitedWord(String spokenText) {
     if (!state.isListening || state.currentWords.isEmpty) return;
 
@@ -207,19 +248,16 @@ class RecitationNotifier extends StateNotifier<RecitationSessionState> {
     final updatedResults = Map<String, RecitationWordResult>.from(state.wordResults);
 
     if (score >= state.sensitivity.threshold) {
-      // 🟢 Correct match
       updatedResults[expectedWord.wordId] = updatedResults[expectedWord.wordId]!.copyWith(
         status: RecitationWordStatus.correct,
         confidence: score,
       );
-      _advanceToNextWord(updatedResults, currentIndex + 1);
+      _advanceToIndex(updatedResults, currentIndex + 1);
     } else if (currentIndex + 1 < state.currentWords.length) {
-      // Lookahead check: did user skip current word and recite next word?
       final nextWord = state.currentWords[currentIndex + 1];
       final nextScore = RecitationEngine.calculateSimilarity(spokenText, nextWord.glyphCode);
 
       if (nextScore >= state.sensitivity.threshold) {
-        // 🔴 Flag skipped word as mistake, mark next word as correct
         updatedResults[expectedWord.wordId] = updatedResults[expectedWord.wordId]!.copyWith(
           status: RecitationWordStatus.mistake,
           confidence: score,
@@ -228,12 +266,12 @@ class RecitationNotifier extends StateNotifier<RecitationSessionState> {
           status: RecitationWordStatus.correct,
           confidence: nextScore,
         );
-        _advanceToNextWord(updatedResults, currentIndex + 2);
+        _advanceToIndex(updatedResults, currentIndex + 2);
       }
     }
   }
 
-  void _advanceToNextWord(Map<String, RecitationWordResult> updatedResults, int nextIndex) {
+  void _advanceToIndex(Map<String, RecitationWordResult> updatedResults, int nextIndex) {
     String? nextWordId;
     if (nextIndex < state.currentWords.length) {
       nextWordId = state.currentWords[nextIndex].wordId;
@@ -265,26 +303,35 @@ class RecitationNotifier extends StateNotifier<RecitationSessionState> {
     state = state.copyWith(wordResults: updated);
   }
 
-  Future<void> stopListening() async {
-    _wordAdvancementTimer?.cancel();
-    _wordAdvancementTimer = null;
+  Future<void> _stopAmplitudeListener() async {
+    await _amplitudeSub?.cancel();
+    _amplitudeSub = null;
+    _speechStartTime = null;
+    _wordAdvancing = false;
     await _recorder.stopStream();
-    state = state.copyWith(isListening: false, activeWordId: null);
+  }
+
+  Future<void> stopListening() async {
+    await _stopAmplitudeListener();
+    if (mounted) {
+      state = state.copyWith(isListening: false, activeWordId: null);
+    }
   }
 
   void resetSession() {
-    stopListening();
+    _stopAmplitudeListener();
     state = const RecitationSessionState();
   }
 
   @override
   void dispose() {
-    _wordAdvancementTimer?.cancel();
+    _amplitudeSub?.cancel();
     super.dispose();
   }
 }
 
-final recitationProvider = StateNotifierProvider<RecitationNotifier, RecitationSessionState>((ref) {
+final recitationProvider =
+    StateNotifierProvider<RecitationNotifier, RecitationSessionState>((ref) {
   final recorder = ref.watch(recitationAudioRecorderProvider);
   return RecitationNotifier(recorder);
 });

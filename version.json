@@ -1,6 +1,6 @@
 {
-  "version": "1.0.4",
-  "build_number": 5,
-  "download_url": "https://github.com/HamzaMahfooz12/Al-Quran/releases/download/v1.0.4/app-arm64-v8a-release.apk",
-  "changelog": "• NEW: Dedicated AI Quran Teacher — Live Recitation Mistake Detection\n• Real-time Green/Red word-by-word evaluation using on-device AI (35MB, offline)\n• Hifz Reveal Mode: recite from memory, words reveal green as you speak\n• Sensitivity Presets: Beginner, Standard & Hafiz modes\n• Session Summary with accuracy score, mistakes list & Qari audio revision\n• On-Demand AI model download — base APK stays lightweight\n• Synchronized Word-by-Word Audio Highlighting in all 3 Quran views"
+  "version": "1.0.3",
+  "build_number": 4,
+  "download_url": "https://github.com/HamzaMahfooz12/Al-Quran/releases/download/v1.0.3/app-arm64-v8a-release.apk",
+  "changelog": "• Synchronized Word-by-Word Audio Highlighting in Simple Quran, 15-Line & 16-Line Mushafs\n• Sliding-Window 3-Ayah (N-1, N, N+1) Zero-Delay Audio Pre-Caching Engine\n• Seamless Auto Page-Turning during Mushaf recitation\n• Quranic End Ayah Stopping Marks & Waqf symbols\n• Storage & Audio Cache Manager in Settings"
 }
