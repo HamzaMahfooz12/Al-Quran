@@ -129,7 +129,6 @@ class _Mushaf16ScreenState extends ConsumerState<Mushaf16Screen> {
   }
 
   Future<void> _saveLastRead(int pageNum) async {
-    _currentPage = pageNum;
     final repo = ref.read(quranRepositoryProvider);
     final words = await repo.getMushafPageWords(pageNum, '16_line');
     int surah = 1;
@@ -139,6 +138,7 @@ class _Mushaf16ScreenState extends ConsumerState<Mushaf16Screen> {
       ayah = words.first['ayah'] as int? ?? 1;
     }
     await repo.saveLastRead(section: 'mushaf_16', surah: surah, ayah: ayah, page: pageNum);
+    _currentPage = pageNum;
   }
 
   Future<void> _playSurahAyah(int surah, int ayah) async {

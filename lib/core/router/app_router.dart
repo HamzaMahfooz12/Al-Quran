@@ -18,6 +18,7 @@ import '../../features/azkar/screens/azkar_screen.dart';
 import '../../features/search/screens/quran_search_screen.dart';
 import '../../features/mutashabihat/screens/mutashabihat_screen.dart';
 import '../../features/quran/simple_quran_index_screen.dart';
+import '../../features/ai_teacher/ai_teacher_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -93,6 +94,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             builder: (ctx, state) {
               final juz = int.tryParse(state.uri.queryParameters['juz'] ?? '') ?? 1;
               return MutashabihatScreen(initialJuz: juz);
+            },
+          ),
+          GoRoute(
+            path: 'ai-teacher',
+            name: 'ai-teacher',
+            builder: (ctx, state) {
+              final page = int.tryParse(state.uri.queryParameters['page'] ?? '') ?? 1;
+              return AiTeacherScreen(initialPage: page);
             },
           ),
         ],

@@ -6,6 +6,7 @@ import '../../../data/models/mushaf_page_model.dart';
 import '../../../data/models/surah_info.dart';
 import '../../../data/repositories/quran_repository.dart';
 import '../../../data/ruku_data.dart';
+import '../../../services/recitation_engine.dart';
 import 'ayah_end_symbol.dart';
 import 'indopak_ruku_marginal_badge.dart';
 import 'indopak_sajda_marginal_badge.dart';
@@ -19,6 +20,9 @@ class MushafPageWidget extends ConsumerStatefulWidget {
   final String? activePlayingWordId;
   final String? activePlayingVerseKey;
   final Function(int surah, int ayah)? onWordTap;
+  final Map<String, RecitationWordResult>? liveRecitationWordMap;
+  final bool isHifzRevealMode;
+  final Function(RecitationWordResult wordResult)? onLiveRecitationWordTap;
 
   const MushafPageWidget({
     super.key,
@@ -30,6 +34,9 @@ class MushafPageWidget extends ConsumerStatefulWidget {
     this.activePlayingWordId,
     this.activePlayingVerseKey,
     this.onWordTap,
+    this.liveRecitationWordMap,
+    this.isHifzRevealMode = false,
+    this.onLiveRecitationWordTap,
   });
 
   @override
@@ -645,11 +652,43 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
         widget.activePlayingVerseKey != null &&
         widget.activePlayingVerseKey == '${word.surah}:${word.ayah}');
 
+    final recitationResult = widget.liveRecitationWordMap?[word.wordId];
+
     Color containerBgColor = Colors.transparent;
     BoxBorder? border;
     List<BoxShadow>? shadows;
+    Widget currentWordChild = wordTextWidget;
 
-    if (isMarked) {
+    if (recitationResult != null) {
+      if (recitationResult.status == RecitationWordStatus.correct) {
+        containerBgColor = const Color(0xFFC8E6C9).withValues(alpha: 0.95); // Emerald Green
+        border = Border.all(color: const Color(0xFF4CAF50), width: 1.2);
+      } else if (recitationResult.status == RecitationWordStatus.mistake) {
+        containerBgColor = const Color(0xFFFFCDD2).withValues(alpha: 0.95); // Crimson Red
+        border = Border.all(color: const Color(0xFFE53935), width: 1.5);
+      } else if (recitationResult.status == RecitationWordStatus.active) {
+        containerBgColor = const Color(0xFFFFE082).withValues(alpha: 0.95); // Golden Amber
+        border = Border.all(color: const Color(0xFFFFB300), width: 1.2);
+        shadows = [
+          BoxShadow(
+            color: const Color(0xFFFFB300).withValues(alpha: 0.35),
+            blurRadius: 4,
+            spreadRadius: 0.5,
+          ),
+        ];
+      } else if (recitationResult.status == RecitationWordStatus.pending && widget.isHifzRevealMode) {
+        // Obscure in Hifz Reveal Mode
+        currentWordChild = Container(
+          width: (baseWord.length * 13.0).clamp(20.0, 75.0),
+          height: 16,
+          margin: const EdgeInsets.symmetric(horizontal: 2),
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(3),
+          ),
+        );
+      }
+    } else if (isMarked) {
       containerBgColor = Colors.red.withValues(alpha: 0.18);
       border = const Border(bottom: BorderSide(color: Color(0xFFD32F2F), width: 2.2));
     } else if (isWordActive) {
@@ -674,10 +713,18 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
         border: border,
         boxShadow: shadows,
       ),
-      child: wordTextWidget,
+      child: currentWordChild,
     );
 
-    if (widget.isMarkMistakesMode && !word.glyphCode.contains('﴿')) {
+    if (recitationResult != null &&
+        recitationResult.status == RecitationWordStatus.mistake &&
+        widget.onLiveRecitationWordTap != null) {
+      return InkWell(
+        onTap: () => widget.onLiveRecitationWordTap!(recitationResult),
+        borderRadius: BorderRadius.circular(3.5),
+        child: wordChild,
+      );
+    } else if (widget.isMarkMistakesMode && !word.glyphCode.contains('﴿')) {
       return InkWell(
         onTap: () => widget.onToggleWordMistake(word.wordId),
         borderRadius: BorderRadius.circular(3.5),

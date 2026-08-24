@@ -480,6 +480,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
           // Vertical Table of Utilities
           _verticalUtilityTile(
+            title: 'AI Quran Teacher',
+            subtitle: 'Live recitation listening, mistake detection & Hifz practice',
+            arabicTitle: 'المعلم الذكي للقرآن',
+            icon: Icons.psychology_rounded,
+            accentColor: const Color(0xFF2E7D32),
+            badgeText: 'AI Live',
+            onTap: () => context.goNamed('ai-teacher'),
+          ),
+          _verticalUtilityTile(
             title: 'Prayer Times & Adhan',
             subtitle: 'Accurate timetables with Fiqh schedule & notifications',
             arabicTitle: 'مواقيت الصلاة',
@@ -999,6 +1008,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   },
                 ),
                 const Divider(indent: 16, endIndent: 16),
+                _drawerTile(
+                  icon: Icons.psychology_rounded,
+                  title: 'AI Quran Teacher',
+                  subtitle: 'Live recitation & mistake analysis',
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.goNamed('ai-teacher');
+                  },
+                ),
                 _drawerTile(
                   icon: Icons.auto_stories,
                   title: '15-Line Mushaf',

@@ -2,7 +2,7 @@ name: al_quran
 description: "Al Quran — Read, Listen, Reflect. A complete Quran app with verse-by-verse reading, Mushaf view, audio recitation, and Tafseer."
 publish_to: 'none'
 
-version: 1.0.3+4
+version: 1.0.4+5
 
 environment:
   sdk: ^3.11.4
@@ -25,6 +25,7 @@ dependencies:
   media_kit_libs_windows_audio: ^1.0.9
   audio_service: ^0.18.15
   audio_session: ^0.1.21
+  # record: # Will be added back when AI model integration is complete
 
   # ── Networking & Caching ─────────────────────────────────
   dio: ^5.8.0+1
@@ -68,6 +69,7 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   riverpod_generator: ^2.6.2
   build_runner: ^2.4.14
+
 
 flutter:
   uses-material-design: true

@@ -7,9 +7,11 @@ import '../../data/models/edition.dart';
 import '../../data/models/reciter.dart';
 import '../../data/repositories/quran_repository.dart';
 import '../../data/repositories/reciter_repository.dart';
+import '../../services/ai_model_manager.dart';
 import '../../services/audio_cache_service.dart';
 import '../../services/settings_service.dart';
 import '../../services/update_service.dart';
+import '../ai_teacher/widgets/model_download_dialog.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -355,9 +357,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
           const SizedBox(height: 16),
 
-          // ── Storage & Audio Cache ───────────────────────────────────────
-          _sectionHeader('Storage & Audio Cache'),
+          // ── Storage & AI Models ─────────────────────────────────────────
+          _sectionHeader('Storage & AI Models'),
           const _AudioCacheTile(),
+          const _AiModelTile(),
 
           const SizedBox(height: 16),
 
@@ -1208,3 +1211,147 @@ class _AudioCacheTileState extends State<_AudioCacheTile> {
     );
   }
 }
+
+class _AiModelTile extends StatefulWidget {
+  const _AiModelTile();
+
+  @override
+  State<_AiModelTile> createState() => _AiModelTileState();
+}
+
+class _AiModelTileState extends State<_AiModelTile> {
+  final _aiManager = AiModelManager();
+  bool _isDownloaded = false;
+  int _modelSizeBytes = 0;
+  bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshModelStatus();
+  }
+
+  Future<void> _refreshModelStatus() async {
+    final downloaded = await _aiManager.isModelDownloaded();
+    final size = await _aiManager.getModelSizeBytes();
+    if (mounted) {
+      setState(() {
+        _isDownloaded = downloaded;
+        _modelSizeBytes = size;
+      });
+    }
+  }
+
+  Future<void> _deleteModel() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Delete AI Model?', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+        content: Text(
+          'This will delete the 35 MB on-device AI recitation teacher model. You can redownload it anytime.',
+          style: GoogleFonts.inter(fontSize: 13),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text('Cancel', style: GoogleFonts.inter(color: AppTheme.textMuted)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD32F2F)),
+            child: Text('Delete (35 MB)', style: GoogleFonts.inter(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      setState(() => _busy = true);
+      await _aiManager.deleteModel();
+      await _refreshModelStatus();
+      if (mounted) {
+        setState(() => _busy = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('AI Model deleted.'), behavior: SnackBarBehavior.floating),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mbStr = _isDownloaded
+        ? '${(_modelSizeBytes / 1048576).toStringAsFixed(1)} MB'
+        : 'Not Downloaded (35 MB)';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.cardBg,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: const Color(0xFFE8F5E9),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(Icons.psychology_rounded, color: Color(0xFF2E7D32), size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Live AI Recitation Model',
+                  style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+                ),
+                Text(
+                  _isDownloaded ? 'Installed: $mbStr (Offline ready)' : mbStr,
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: _isDownloaded ? const Color(0xFF2E7D32) : AppTheme.textMuted,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (_isDownloaded)
+            OutlinedButton.icon(
+              onPressed: _busy ? null : _deleteModel,
+              icon: const Icon(Icons.delete_outline_rounded, size: 16, color: Color(0xFFD32F2F)),
+              label: Text(
+                'Delete',
+                style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: const Color(0xFFD32F2F)),
+              ),
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: Color(0xFFFFCDD2)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              ),
+            )
+          else
+            ElevatedButton.icon(
+              onPressed: () {
+                ModelDownloadDialog.show(context, onDownloadComplete: _refreshModelStatus);
+              },
+              icon: const Icon(Icons.download_rounded, size: 16),
+              label: Text('Download', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2E7D32),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
