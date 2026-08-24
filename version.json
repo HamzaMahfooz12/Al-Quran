@@ -1,6 +1,6 @@
 {
-  "version": "1.0.2",
-  "build_number": 3,
-  "download_url": "https://github.com/HamzaMahfooz12/Al-Quran/releases/download/v1.0.2/app-arm64-v8a-release.apk",
-  "changelog": "• Fixed Mushaf bottom text clipping with full SafeArea protection\n• Dynamic bottom padding so verses never hide behind audio bar\n• Added App Navigation Drawer (Side bar)\n• Revamped Settings with compact searchable dropdown pickers"
+  "version": "1.0.3",
+  "build_number": 4,
+  "download_url": "https://github.com/HamzaMahfooz12/Al-Quran/releases/download/v1.0.3/app-arm64-v8a-release.apk",
+  "changelog": "• Synchronized Word-by-Word Audio Highlighting in Simple Quran, 15-Line & 16-Line Mushafs\n• Sliding-Window 3-Ayah (N-1, N, N+1) Zero-Delay Audio Pre-Caching Engine\n• Seamless Auto Page-Turning during Mushaf recitation\n• Quranic End Ayah Stopping Marks & Waqf symbols\n• Storage & Audio Cache Manager in Settings"
 }

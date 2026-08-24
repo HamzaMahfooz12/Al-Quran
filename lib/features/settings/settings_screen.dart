@@ -7,6 +7,7 @@ import '../../data/models/edition.dart';
 import '../../data/models/reciter.dart';
 import '../../data/repositories/quran_repository.dart';
 import '../../data/repositories/reciter_repository.dart';
+import '../../services/audio_cache_service.dart';
 import '../../services/settings_service.dart';
 import '../../services/update_service.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -351,6 +352,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               );
             },
           ),
+
+          const SizedBox(height: 16),
+
+          // ── Storage & Audio Cache ───────────────────────────────────────
+          _sectionHeader('Storage & Audio Cache'),
+          const _AudioCacheTile(),
 
           const SizedBox(height: 16),
 
@@ -1054,6 +1061,148 @@ class _UpdateCheckTileState extends State<_UpdateCheckTile> {
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+class _AudioCacheTile extends StatefulWidget {
+  const _AudioCacheTile();
+
+  @override
+  State<_AudioCacheTile> createState() => _AudioCacheTileState();
+}
+
+class _AudioCacheTileState extends State<_AudioCacheTile> {
+  final AudioCacheService _cacheService = AudioCacheService();
+  int _cacheSizeBytes = 0;
+  bool _clearing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCacheSize();
+  }
+
+  Future<void> _loadCacheSize() async {
+    final size = await _cacheService.getCacheSizeBytes();
+    if (mounted) {
+      setState(() => _cacheSizeBytes = size);
+    }
+  }
+
+  Future<void> _clearCache() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Clear Audio Cache?',
+          style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          'This will delete all temporarily cached recitation audio files (${_cacheService.formatBytes(_cacheSizeBytes)}) from your device. You can stream or download them again anytime.',
+          style: GoogleFonts.inter(fontSize: 13),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Cancel', style: GoogleFonts.inter(color: AppTheme.textMuted)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFD32F2F),
+              foregroundColor: Colors.white,
+            ),
+            child: Text('Clear Cache', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      setState(() => _clearing = true);
+      await _cacheService.clearAllCache();
+      await _loadCacheSize();
+      if (mounted) {
+        setState(() => _clearing = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Audio cache cleared successfully.'),
+            duration: Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final sizeStr = _cacheService.formatBytes(_cacheSizeBytes);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.cardBg,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: AppTheme.primarySurface,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.storage_rounded, color: AppTheme.primary, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Recitation Audio Storage',
+                      style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+                    ),
+                    Text(
+                      'Cached Audio: $sizeStr',
+                      style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textMuted),
+                    ),
+                  ],
+                ),
+              ),
+              OutlinedButton.icon(
+                onPressed: (_clearing || _cacheSizeBytes == 0) ? null : _clearCache,
+                icon: _clearing
+                    ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Icon(Icons.delete_outline_rounded, size: 16, color: Color(0xFFD32F2F)),
+                label: Text(
+                  'Clear Cache',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: _cacheSizeBytes == 0 ? AppTheme.textMuted : const Color(0xFFD32F2F),
+                  ),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(
+                    color: _cacheSizeBytes == 0 ? const Color(0xFFE0E0E0) : const Color(0xFFFFCDD2),
+                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

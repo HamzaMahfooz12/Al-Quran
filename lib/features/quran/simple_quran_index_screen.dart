@@ -218,7 +218,7 @@ class _SimpleQuranIndexScreenState extends State<SimpleQuranIndexScreen>
                 _filteredSurahs.isEmpty
                     ? _buildEmptyState('No matching Surah found for "$_query"')
                     : ListView.builder(
-                        padding: EdgeInsets.fromLTRB(16, 6, 16, 20 + bottomPad),
+                        padding: EdgeInsets.fromLTRB(16, 6, 16, 48 + bottomPad),
                         itemCount: _filteredSurahs.length,
                         itemBuilder: (ctx, idx) {
                           final surah = _filteredSurahs[idx];
@@ -299,7 +299,7 @@ class _SimpleQuranIndexScreenState extends State<SimpleQuranIndexScreen>
                 _filteredJuz.isEmpty
                     ? _buildEmptyState('No matching Juz found for "$_query"')
                     : ListView.builder(
-                        padding: EdgeInsets.fromLTRB(16, 6, 16, 20 + bottomPad),
+                        padding: EdgeInsets.fromLTRB(16, 6, 16, 48 + bottomPad),
                         itemCount: _filteredJuz.length,
                         itemBuilder: (ctx, idx) {
                           final j = _filteredJuz[idx];

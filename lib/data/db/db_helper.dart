@@ -38,18 +38,24 @@ class DatabaseHelper {
     final dbFile = File(path);
     bool shouldExtract = !await dbFile.exists() || await dbFile.length() < 100000;
 
-    // Check if previously extracted db is missing mutashabihat data
+    // Check if previously extracted db is missing mutashabihat data or end_waqf column
     if (!shouldExtract) {
       try {
         final tempDb = await openReadOnlyDatabase(path);
-        final check = await tempDb.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='mutashabihat'");
-        if (check.isEmpty) {
+        final ayahCols = await tempDb.rawQuery("PRAGMA table_info(ayahs)");
+        final hasEndWaqf = ayahCols.any((c) => c['name'] == 'end_waqf');
+        if (!hasEndWaqf) {
           shouldExtract = true;
         } else {
-          final countRes = await tempDb.rawQuery("SELECT COUNT(*) as c FROM mutashabihat");
-          final count = (countRes.first['c'] as int?) ?? 0;
-          if (count == 0) {
+          final check = await tempDb.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='mutashabihat'");
+          if (check.isEmpty) {
             shouldExtract = true;
+          } else {
+            final countRes = await tempDb.rawQuery("SELECT COUNT(*) as c FROM mutashabihat");
+            final count = (countRes.first['c'] as int?) ?? 0;
+            if (count == 0) {
+              shouldExtract = true;
+            }
           }
         }
         await tempDb.close();

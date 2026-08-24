@@ -378,6 +378,22 @@ class QuranRepository {
     return ayahs.isNotEmpty ? ayahs.first.page : 1;
   }
 
+  Future<int?> getMushafPageForAyah(int surah, int ayah, String mushaf) async {
+    final rows = await _db.query(
+      'word_layout',
+      where: 'mushaf = ? AND surah = ? AND ayah = ?',
+      whereArgs: [mushaf, surah, ayah],
+      orderBy: 'line ASC, word_pos ASC',
+      limit: 1,
+    );
+    if (rows.isNotEmpty) {
+      final val = rows.first['page'];
+      if (val is int) return val;
+      if (val != null) return int.tryParse(val.toString());
+    }
+    return null;
+  }
+
   Future<int> getJuzStartPage(int juz, String mushaf) async {
     final ayahs = await getAyahsByJuz(juz);
     if (ayahs.isNotEmpty) {

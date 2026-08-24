@@ -15,9 +15,11 @@ import '../../data/models/ayah.dart';
 import '../../data/models/edition.dart';
 import '../../data/models/surah_info.dart';
 import '../../data/repositories/quran_repository.dart';
+import '../../data/ruku_data.dart';
 import '../../services/settings_service.dart';
 import '../../services/audio_service.dart';
 import '../audio/audio_control_bar.dart';
+import '../mushaf_shared/widgets/ayah_end_symbol.dart';
 import '../share/widgets/ayah_share_dialog.dart';
 
 class AyahListScreen extends ConsumerStatefulWidget {
@@ -857,6 +859,8 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                       final isCurrentAyahPlaying = audio.currentPlayingAyahId == _ayahs[ayahIdx].id;
                       final isPlayingNow = isCurrentAyahPlaying && audio.isPlaying;
                       final isBufferingNow = isCurrentAyahPlaying && isBuffering;
+                      final activeWordAsync = ref.watch(activeWordIdProvider);
+                      final activeWordId = activeWordAsync.value ?? audio.currentActiveWordId;
 
                       return _AyahCard(
                         ayah: _ayahs[ayahIdx],
@@ -869,6 +873,7 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                         arabicFontSize: arabicFontSize,
                         isPlaying: isPlayingNow,
                         isBuffering: isBufferingNow,
+                        activeWordId: activeWordId,
                         onToggleTranslation: () => setState(() => _showTranslation = !_showTranslation),
                         onToggleTafseer: () async {
                           setState(() => _showTafseer = !_showTafseer);
@@ -1361,6 +1366,7 @@ class _AyahCard extends StatelessWidget {
   final double arabicFontSize;
   final bool isPlaying;
   final bool isBuffering;
+  final String? activeWordId;
   final VoidCallback onToggleTranslation;
   final VoidCallback onToggleTafseer;
   final VoidCallback onSelectTranslation;
@@ -1382,6 +1388,7 @@ class _AyahCard extends StatelessWidget {
     required this.arabicFontSize,
     required this.isPlaying,
     required this.isBuffering,
+    this.activeWordId,
     required this.onToggleTranslation,
     required this.onToggleTafseer,
     required this.onSelectTranslation,
@@ -1392,6 +1399,88 @@ class _AyahCard extends StatelessWidget {
     required this.onMutashabihatTap,
     required this.onCopyTap,
   });
+
+  Widget _buildArabicText() {
+    final rawText = cleanAyahText(ayah);
+    final words = rawText.trim().split(RegExp(r'\s+'));
+    final spans = <InlineSpan>[];
+
+    for (var i = 0; i < words.length; i++) {
+      final wordText = words[i];
+      final wordIndex = i + 1;
+      final wordKey = '${ayah.surah}:${ayah.ayahNumber}:$wordIndex';
+      final isWordActive = (isPlaying && activeWordId == wordKey);
+
+      if (isWordActive) {
+        spans.add(
+          WidgetSpan(
+            alignment: PlaceholderAlignment.middle,
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 1.0),
+              padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFE082).withValues(alpha: 0.95), // Warm Golden Amber
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: const Color(0xFFFFB300), width: 1),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFFFB300).withValues(alpha: 0.35),
+                    blurRadius: 4,
+                    spreadRadius: 0.5,
+                  ),
+                ],
+              ),
+              child: Text(
+                wordText,
+                textDirection: TextDirection.rtl,
+                style: GoogleFonts.amiri(
+                  fontSize: arabicFontSize,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF111111),
+                  height: 1.25,
+                ),
+              ),
+            ),
+          ),
+        );
+      } else {
+        spans.add(
+          TextSpan(
+            text: '$wordText ',
+            style: GoogleFonts.amiri(
+              fontSize: arabicFontSize,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF1A1A1A),
+              height: 2.1,
+            ),
+          ),
+        );
+      }
+    }
+
+    // Ayah End Symbol
+    spans.add(
+      WidgetSpan(
+        alignment: PlaceholderAlignment.middle,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 2.0, left: 3.0),
+          child: AyahEndSymbol(
+            ayahNumber: ayah.ayahNumber,
+            waqfMark: ayah.endWaqf ?? '',
+            isRukuEnd: RukuData.getRukuEndInfo(ayah.surah, ayah.ayahNumber) != null,
+            color: AppTheme.primary,
+            circleSize: (arabicFontSize * 0.84).clamp(21.0, 30.0),
+          ),
+        ),
+      ),
+    );
+
+    return Text.rich(
+      TextSpan(children: spans),
+      textAlign: TextAlign.right,
+      textDirection: TextDirection.rtl,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1562,18 +1651,8 @@ class _AyahCard extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          // Arabic Verse Text (Bismillah stripped on Ayah 1 for surahs != 1 since header shows Bismillah)
-          Text(
-            cleanAyahText(ayah),
-            textAlign: TextAlign.right,
-            textDirection: TextDirection.rtl,
-            style: GoogleFonts.amiri(
-              fontSize: arabicFontSize,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF1A1A1A),
-              height: 2.1,
-            ),
-          ),
+          // Arabic Verse Text with authentic Quranic End Ayah Symbol ۝ and Synchronized Word Highlighting
+          _buildArabicText(),
 
           // Translation Text
           if (showTranslation && translationText != null) ...[

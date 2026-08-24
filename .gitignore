@@ -73,17 +73,20 @@ GoogleService-Info.plist
 *.env.*
 secrets.json
 
-# Large datasets & SQLite raw uncompressed databases
+# Large datasets & SQLite raw uncompressed databases (excluding bundled gz)
 *.sqlite
 *.db
 *.db-journal
 *.db-wal
 *.db-shm
 *.sqlite3
+!assets/app_database.sqlite.gz
 
-# Temporary, scratch & backup files
+# Audio caches & temporary downloads
+audio_cache/
+word_timings/
+*.mp3
 *.tmp
 *.bak
 *.orig
 *~
-

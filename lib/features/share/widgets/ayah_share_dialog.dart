@@ -1,4 +1,4 @@
-﻿// lib/features/share/widgets/ayah_share_dialog.dart
+// lib/features/share/widgets/ayah_share_dialog.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -49,6 +49,36 @@ class AyahShareDialog extends StatefulWidget {
 class _AyahShareDialogState extends State<AyahShareDialog> {
   final ScreenshotController _screenshotCtrl = ScreenshotController();
   bool _sharing = false;
+  String? _selectedBackdrop;
+
+  static const List<Map<String, String>> _kBackdrops = [
+    {
+      'id': 'assets/images/quran_share_bg.jpg',
+      'name': 'Sanctuary',
+      'arabic': 'المصحف',
+    },
+    {
+      'id': 'assets/images/quran_share_celestial.jpg',
+      'name': 'Celestial',
+      'arabic': 'السماء',
+    },
+    {
+      'id': 'assets/images/quran_share_dawn.jpg',
+      'name': 'Dawn Light',
+      'arabic': 'الفجر والضحى',
+    },
+    {
+      'id': 'assets/images/quran_share_dark.jpg',
+      'name': 'Arabesque',
+      'arabic': 'الزخرفة',
+    },
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedBackdrop = _getDynamicBackdropAsset();
+  }
 
   /// Intelligent dynamic backdrop resolver based on Ayah content & Surah themes
   String _getDynamicBackdropAsset() {
@@ -90,11 +120,13 @@ class _AyahShareDialogState extends State<AyahShareDialog> {
     }
 
     // 3. Emerald Arabesque theme (covenant, law, wisdom, patience)
-    if (widget.ayahNumber % 3 == 0 ||
-        widget.surahName.contains('Baqarah') ||
-        widget.surahName.contains('Imran') ||
-        widget.surahName.contains('Nisa') ||
-        widget.surahName.contains('Kahf')) {
+    if (text.contains('صبر') ||
+        text.contains('حق') ||
+        text.contains('حكمة') ||
+        text.contains('patience') ||
+        text.contains('truth') ||
+        text.contains('wisdom') ||
+        widget.ayahNumber % 2 == 0) {
       return 'assets/images/quran_share_dark.jpg';
     }
 
@@ -192,6 +224,44 @@ class _AyahShareDialogState extends State<AyahShareDialog> {
             ),
           ),
 
+          // ── Background Wallpaper Selector Chips ────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: _kBackdrops.map((bd) {
+                  final isSelected = (_selectedBackdrop ?? _getDynamicBackdropAsset()) == bd['id'];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: ChoiceChip(
+                      selected: isSelected,
+                      onSelected: (val) {
+                        if (val) {
+                          setState(() => _selectedBackdrop = bd['id']);
+                        }
+                      },
+                      avatar: CircleAvatar(
+                        radius: 8,
+                        backgroundImage: AssetImage(bd['id']!),
+                      ),
+                      label: Text('${bd['name']} • ${bd['arabic']}'),
+                      labelStyle: GoogleFonts.inter(
+                        fontSize: 11.5,
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                        color: isSelected ? Colors.white : AppTheme.textPrimary,
+                      ),
+                      selectedColor: AppTheme.primary,
+                      backgroundColor: AppTheme.cardBg,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      side: BorderSide(color: isSelected ? AppTheme.primary : const Color(0xFFE2E8E4)),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+
           // ── Card Preview (Dynamically generated for this specific Ayah) ───
           Expanded(
             child: SingleChildScrollView(
@@ -247,7 +317,7 @@ class _AyahShareDialogState extends State<AyahShareDialog> {
   }
 
   Widget _buildShareCard() {
-    final bgAsset = _getDynamicBackdropAsset();
+    final bgAsset = _selectedBackdrop ?? _getDynamicBackdropAsset();
     const goldColor = Color(0xFFFFD54F);
     const transColor = Color(0xFFF1F8F3);
     const footerColor = Colors.white70;

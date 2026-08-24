@@ -14,6 +14,7 @@ class Ayah extends Equatable {
   final int page;
   final bool isSajda;
   final String arabicText;
+  final String? endWaqf;
 
   const Ayah({
     required this.id,
@@ -26,6 +27,7 @@ class Ayah extends Equatable {
     required this.page,
     required this.isSajda,
     required this.arabicText,
+    this.endWaqf,
   });
 
   factory Ayah.fromMap(Map<String, dynamic> map) {
@@ -40,6 +42,7 @@ class Ayah extends Equatable {
       page: map['page'] as int,
       isSajda: (map['is_sajda'] as int) == 1,
       arabicText: map['arabic_text'] as String,
+      endWaqf: map['end_waqf'] as String?,
     );
   }
 
@@ -54,8 +57,9 @@ class Ayah extends Equatable {
         'page': page,
         'is_sajda': isSajda ? 1 : 0,
         'arabic_text': arabicText,
+        'end_waqf': endWaqf,
       };
 
   @override
-  List<Object?> get props => [id];
+  List<Object?> get props => [id, endWaqf];
 }

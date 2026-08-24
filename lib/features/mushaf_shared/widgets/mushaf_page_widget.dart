@@ -16,6 +16,9 @@ class MushafPageWidget extends ConsumerStatefulWidget {
   final bool isMarkMistakesMode;
   final Set<String> markedWordIds;
   final Function(String wordId) onToggleWordMistake;
+  final String? activePlayingWordId;
+  final String? activePlayingVerseKey;
+  final Function(int surah, int ayah)? onWordTap;
 
   const MushafPageWidget({
     super.key,
@@ -24,6 +27,9 @@ class MushafPageWidget extends ConsumerStatefulWidget {
     required this.isMarkMistakesMode,
     required this.markedWordIds,
     required this.onToggleWordMistake,
+    this.activePlayingWordId,
+    this.activePlayingVerseKey,
+    this.onWordTap,
   });
 
   @override
@@ -561,7 +567,7 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
 
     if (isVerseEnd && word.ayah > 0) {
       String waqfMark = '';
-      final match = RegExp(r'[\u06D6-\u06DC\u06DF-\u06E8]').firstMatch(word.glyphCode);
+      final match = RegExp(r'[\u0614\u0615\u0617\u06D6\u06D7\u06D8\u06D9\u06DA\u06DB\u06DC\u06E0\u06EA\u06EB]').firstMatch(word.glyphCode);
       if (match != null) {
         waqfMark = match.group(0) ?? '';
       }
@@ -634,14 +640,39 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
       );
     }
 
+    final isWordActive = (widget.activePlayingWordId != null && widget.activePlayingWordId == word.wordId);
+    final isVerseActive = (widget.activePlayingWordId == null &&
+        widget.activePlayingVerseKey != null &&
+        widget.activePlayingVerseKey == '${word.surah}:${word.ayah}');
+
+    Color containerBgColor = Colors.transparent;
+    BoxBorder? border;
+    List<BoxShadow>? shadows;
+
+    if (isMarked) {
+      containerBgColor = Colors.red.withValues(alpha: 0.18);
+      border = const Border(bottom: BorderSide(color: Color(0xFFD32F2F), width: 2.2));
+    } else if (isWordActive) {
+      containerBgColor = const Color(0xFFFFE082).withValues(alpha: 0.95); // Golden amber highlight
+      border = Border.all(color: const Color(0xFFFFB300), width: 1.0);
+      shadows = [
+        BoxShadow(
+          color: const Color(0xFFFFB300).withValues(alpha: 0.35),
+          blurRadius: 4,
+          spreadRadius: 0.5,
+        ),
+      ];
+    } else if (isVerseActive) {
+      containerBgColor = const Color(0xFFC8E6C9).withValues(alpha: 0.40); // Soft emerald verse tint
+    }
+
     Widget wordChild = Container(
       padding: const EdgeInsets.symmetric(horizontal: 1.5, vertical: 1),
       decoration: BoxDecoration(
-        color: isMarked ? Colors.red.withValues(alpha: 0.18) : Colors.transparent,
-        borderRadius: BorderRadius.circular(3),
-        border: isMarked
-            ? const Border(bottom: BorderSide(color: Color(0xFFD32F2F), width: 2.2))
-            : null,
+        color: containerBgColor,
+        borderRadius: BorderRadius.circular(3.5),
+        border: border,
+        boxShadow: shadows,
       ),
       child: wordTextWidget,
     );
@@ -649,7 +680,14 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
     if (widget.isMarkMistakesMode && !word.glyphCode.contains('﴿')) {
       return InkWell(
         onTap: () => widget.onToggleWordMistake(word.wordId),
-        borderRadius: BorderRadius.circular(3),
+        borderRadius: BorderRadius.circular(3.5),
+        child: wordChild,
+      );
+    } else if (widget.onWordTap != null && word.surah > 0 && word.ayah > 0) {
+      return InkWell(
+        onTap: () => widget.onWordTap!(word.surah, word.ayah),
+        borderRadius: BorderRadius.circular(3.5),
+        splashColor: const Color(0xFFFFE082).withValues(alpha: 0.3),
         child: wordChild,
       );
     }
