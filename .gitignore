@@ -1,4 +1,4 @@
-# Miscellaneous
+# ── Miscellaneous & OS ────────────────────────────────────────────────────────
 *.class
 *.log
 *.pyc
@@ -14,16 +14,14 @@ Thumbs.db
 .swiftpm/
 migrate_working_dir/
 
-# IntelliJ / Android Studio
+# ── IDEs & Editors ─────────────────────────────────────────────────────────────
 *.iml
 *.ipr
 *.iws
 .idea/
-
-# Visual Studio Code
 .vscode/
 
-# Flutter / Dart / Pub related
+# ── Flutter / Dart / Pub ───────────────────────────────────────────────────────
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
@@ -34,35 +32,37 @@ migrate_working_dir/
 /build/
 /coverage/
 
-# Android build outputs & secrets
+# ── Android Build Outputs & Ephemeral Files ────────────────────────────────────
 /android/app/debug/
 /android/app/profile/
 /android/app/release/
 /android/local.properties
 /android/.gradle/
+/android/.kotlin/
 /android/captures/
 /android/gradleBuild/
 
-# iOS build outputs & CocoaPods
+# ── iOS Build Outputs & CocoaPods ──────────────────────────────────────────────
 /ios/Flutter/Generated.xcconfig
 /ios/Flutter/app.flx
 /ios/Flutter/app.zip
 /ios/Flutter/flutter_assets/
 /ios/Flutter/flutter_export_environment.sh
+/ios/Flutter/ephemeral/
 /ios/ServiceDefinitions.json
 /ios/Pods/
 /ios/.symlinks/
 
-# Windows / Linux / macOS desktop ephemeral build files
+# ── Desktop Platforms Ephemeral Build Files ───────────────────────────────────
 /windows/flutter/ephemeral/
 /linux/flutter/ephemeral/
 /macos/Flutter/ephemeral/
 
-# Symbolication & Obfuscation
+# ── Symbolication & Obfuscation ────────────────────────────────────────────────
 app.*.symbols
 app.*.map.json
 
-# Keys, keystores, and secret credentials
+# ── Keys, Keystores, & Secret Credentials ─────────────────────────────────────
 *.jks
 *.keystore
 *.key
@@ -73,7 +73,7 @@ GoogleService-Info.plist
 *.env.*
 secrets.json
 
-# Large datasets & SQLite raw uncompressed databases (excluding bundled gz)
+# ── SQLite & Database Cache Files ──────────────────────────────────────────────
 *.sqlite
 *.db
 *.db-journal
@@ -82,7 +82,7 @@ secrets.json
 *.sqlite3
 !assets/app_database.sqlite.gz
 
-# Audio caches & temporary downloads
+# ── Audio Caches & Temporary Files ─────────────────────────────────────────────
 audio_cache/
 word_timings/
 *.mp3
