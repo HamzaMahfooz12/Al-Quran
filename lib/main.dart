@@ -72,7 +72,7 @@ class AlQuranApp extends ConsumerWidget {
     final router = ref.watch(appRouterProvider);
 
     return MaterialApp.router(
-      title: 'Al Quran',
+      title: 'Hifz ul Quran',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       routerConfig: router,

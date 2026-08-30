@@ -19,9 +19,9 @@ class IndoPakRukuMarginalBadge extends StatelessWidget {
         width: 19,
         padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 1),
         decoration: BoxDecoration(
-          color: const Color(0xFFFAF6EB),
+          color: const Color(0xFFF0F7F2),
           borderRadius: BorderRadius.circular(9.5),
-          border: Border.all(color: const Color(0xFF9E2A2B), width: 0.9),
+          border: Border.all(color: const Color(0xFF2C7A39), width: 1.0),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -36,7 +36,7 @@ class IndoPakRukuMarginalBadge extends StatelessWidget {
                 fontFamily: 'Amiri',
                 fontSize: 9.0,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF111111),
+                color: Color(0xFF1B2A1E),
                 height: 1.0,
               ),
             ),
@@ -50,7 +50,7 @@ class IndoPakRukuMarginalBadge extends StatelessWidget {
                 fontFamily: 'Amiri',
                 fontSize: 11.5,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF9E2A2B), // Traditional crimson Ayn
+                color: Color(0xFF2C7A39), // Islamic Forest Green Ayn
                 height: 0.95,
               ),
             ),

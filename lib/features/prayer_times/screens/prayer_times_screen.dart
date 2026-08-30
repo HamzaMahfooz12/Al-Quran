@@ -7,6 +7,7 @@ import '../../../core/theme/app_theme.dart';
 import '../models/prayer_times_model.dart';
 import '../services/prayer_service.dart';
 import '../widgets/location_picker_bottom_sheet.dart';
+import '../../../core/widgets/app_drawer.dart';
 
 class PrayerTimesScreen extends ConsumerStatefulWidget {
   const PrayerTimesScreen({super.key});
@@ -48,6 +49,13 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: AppBar(
+        leading: Builder(
+          builder: (ctx) => IconButton(
+            icon: const Icon(Icons.menu_rounded, color: AppTheme.primary, size: 26),
+            tooltip: 'Open Menu',
+            onPressed: () => Scaffold.of(ctx).openDrawer(),
+          ),
+        ),
         title: Text(
           'Prayer Times',
           style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold),
@@ -70,6 +78,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
           const SizedBox(width: 8),
         ],
       ),
+      drawer: const AppDrawer(),
       body: prayerTimesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator(color: AppTheme.primary)),
         error: (err, stack) => Center(
@@ -92,120 +101,245 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
           final currentPrayer = model.getCurrentPrayer();
 
           return ListView(
-            padding: EdgeInsets.fromLTRB(16, 8, 16, 32 + MediaQuery.paddingOf(context).bottom),
+            padding: EdgeInsets.fromLTRB(16, 8, 16, 110 + MediaQuery.paddingOf(context).bottom),
             children: [
-              // ── Hero Countdown Card ─────────────────────────────────────
+              // ── Hero Countdown Card (Matching Image 4) ─────────────────
               Container(
-                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF1B4332), Color(0xFF2D5A34)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF1B4332).withValues(alpha: 0.3),
-                      blurRadius: 16,
+                      color: const Color(0xFF1B4332).withValues(alpha: 0.2),
+                      blurRadius: 18,
                       offset: const Offset(0, 6),
                     ),
                   ],
                 ),
-                child: Column(
-                  children: [
-                    // Location & Dates Row
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: Stack(
+                    children: [
+                      // Background Madinah Photo
+                      Positioned.fill(
+                        child: Image.asset(
+                          'assets/images/madinah_hero_bg.jpg',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+
+                      // Gradient Overlay
+                      Positioned.fill(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                const Color(0xFF1B2A1E).withValues(alpha: 0.88),
+                                const Color(0xFF2C7A39).withValues(alpha: 0.72),
+                                const Color(0xFF1B2A1E).withValues(alpha: 0.92),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      Padding(
+                        padding: const EdgeInsets.all(18),
+                        child: Column(
                           children: [
-                            const Icon(Icons.location_on, color: Color(0xFFA5D6A7), size: 14),
-                            const SizedBox(width: 4),
-                            Text(
-                              model.locationName,
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                color: Colors.white70,
-                                fontWeight: FontWeight.w500,
-                              ),
+                            // Location & Hijri Date Chips
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Flexible(
+                                  child: InkWell(
+                                    onTap: () => LocationPickerBottomSheet.show(context),
+                                    borderRadius: BorderRadius.circular(16),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black.withValues(alpha: 0.38),
+                                        borderRadius: BorderRadius.circular(16),
+                                        border: Border.all(color: Colors.white.withValues(alpha: 0.25), width: 0.8),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(Icons.location_on_rounded, color: Color(0xFFA5D6A7), size: 12),
+                                          const SizedBox(width: 3),
+                                          Flexible(
+                                            child: Text(
+                                              model.locationName,
+                                              style: GoogleFonts.inter(
+                                                fontSize: 10.5,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 2),
+                                          const Icon(Icons.arrow_drop_down, color: Colors.white70, size: 14),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withValues(alpha: 0.38),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(color: Colors.white.withValues(alpha: 0.25), width: 0.8),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(Icons.calendar_today_rounded, size: 10.5, color: Color(0xFFFFD54F)),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        model.hijriDate,
+                                        style: GoogleFonts.inter(
+                                          fontSize: 10.5,
+                                          color: const Color(0xFFFFD54F),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                        maxLines: 1,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            // Next Prayer & Countdown Box
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'NEXT PRAYER',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 10.5,
+                                        color: Colors.white70,
+                                        fontWeight: FontWeight.w700,
+                                        letterSpacing: 1.2,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          nextPrayer.name,
+                                          style: GoogleFonts.outfit(
+                                            fontSize: 26,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          nextPrayer.arabicName,
+                                          style: GoogleFonts.amiri(
+                                            fontSize: 20,
+                                            color: const Color(0xFFFFD54F),
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Text(
+                                      'at ${model.formatTime(nextPrayer.time)}',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 13,
+                                        color: Colors.white.withValues(alpha: 0.85),
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFF1F8F3),
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(alpha: 0.15),
+                                        blurRadius: 6,
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        _formatDuration(nextPrayer.timeRemaining),
+                                        style: GoogleFonts.outfit(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w800,
+                                          color: const Color(0xFF1B4332),
+                                          letterSpacing: 0.8,
+                                        ),
+                                      ),
+                                      Text(
+                                        'REMAINING',
+                                        style: GoogleFonts.inter(
+                                          fontSize: 9.5,
+                                          fontWeight: FontWeight.w800,
+                                          color: const Color(0xFF2D6A4F),
+                                          letterSpacing: 0.8,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            // Current Prayer Progress Bar
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Current: ${currentPrayer.name}',
+                                      style: GoogleFonts.inter(fontSize: 11, color: Colors.white70, fontWeight: FontWeight.w500),
+                                    ),
+                                    Text(
+                                      '${(currentPrayer.progress * 100).toInt()}% Elapsed',
+                                      style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFFFFD54F), fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 6),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(4),
+                                  child: LinearProgressIndicator(
+                                    value: currentPrayer.progress,
+                                    minHeight: 5,
+                                    backgroundColor: Colors.white.withValues(alpha: 0.2),
+                                    valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFFFD54F)),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                        Text(
-                          model.hijriDate,
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: const Color(0xFFFFD54F),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Next Prayer Badge & Countdown
-                    Text(
-                      'Next Prayer: ${nextPrayer.name}',
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        color: Colors.white70,
-                        fontWeight: FontWeight.w500,
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _formatDuration(nextPrayer.timeRemaining),
-                      style: GoogleFonts.outfit(
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: 2.0,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'at ${model.formatTime(nextPrayer.time)} (${nextPrayer.arabicName})',
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        color: const Color(0xFFA5D6A7),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Current Prayer progress bar
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Current: ${currentPrayer.name}',
-                              style: GoogleFonts.inter(fontSize: 11, color: Colors.white60),
-                            ),
-                            Text(
-                              '${(currentPrayer.progress * 100).toInt()}% elapsed',
-                              style: GoogleFonts.inter(fontSize: 11, color: Colors.white60),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(4),
-                          child: LinearProgressIndicator(
-                            value: currentPrayer.progress,
-                            minHeight: 6,
-                            backgroundColor: Colors.white.withValues(alpha: 0.15),
-                            valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFFFD54F)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
 

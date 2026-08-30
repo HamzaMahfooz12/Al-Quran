@@ -25,7 +25,7 @@ dependencies:
   media_kit_libs_windows_audio: ^1.0.9
   audio_service: ^0.18.15
   audio_session: ^0.1.21
-  # record: # Will be added back when AI model integration is complete
+  permission_handler: ^12.0.3
 
   # ── Networking & Caching ─────────────────────────────────
   dio: ^5.8.0+1
@@ -81,6 +81,7 @@ flutter:
     - assets/fonts/
     - assets/app_database.sqlite.gz
     - assets/downloadable_editions.json
+    - assets/data/
 
   fonts:
     - family: Scheherazade New

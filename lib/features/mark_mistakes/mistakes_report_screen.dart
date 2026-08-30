@@ -58,9 +58,9 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
     final accuracyScore = (100.0 - (totalMistakes * 0.15)).clamp(0.0, 100.0);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F7F5),
+      backgroundColor: const Color(0xFFFAF7F2),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1B4332),
+        backgroundColor: const Color(0xFF3FA34D),
         elevation: 0,
         title: Text(
           'Mistakes Analytics & Report',
@@ -68,10 +68,10 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
         ),
         bottom: TabBar(
           controller: _tabCtrl,
-          indicatorColor: const Color(0xFFD4A843),
+          indicatorColor: const Color(0xFFF59E0B),
           indicatorWeight: 3,
           labelColor: Colors.white,
-          unselectedLabelColor: Colors.white60,
+          unselectedLabelColor: Colors.white70,
           labelStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
           tabs: const [
             Tab(text: 'By Para (Juz)'),
@@ -81,7 +81,7 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
         ),
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF1B4332)))
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFF3FA34D)))
           : Column(
               children: [
                 // Top Summary Header Cards
@@ -107,7 +107,11 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: const BoxDecoration(
-        color: Color(0xFF1B4332),
+        gradient: LinearGradient(
+          colors: [Color(0xFF2C7A39), Color(0xFF3FA34D)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
       ),
       child: Row(
@@ -117,7 +121,7 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.12),
+                color: Colors.white.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: Colors.white24),
               ),
@@ -125,7 +129,7 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
                 children: [
                   Text(
                     '$totalMistakes',
-                    style: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.bold, color: const Color(0xFFFFD54F)),
+                    style: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.bold, color: const Color(0xFFFEF3C7)),
                   ),
                   const SizedBox(height: 2),
                   Text('Marked Mistakes', style: GoogleFonts.inter(fontSize: 11, color: Colors.white70)),
@@ -139,7 +143,7 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.12),
+                color: Colors.white.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: Colors.white24),
               ),
@@ -147,7 +151,7 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
                 children: [
                   Text(
                     '${accuracyScore.toStringAsFixed(1)}%',
-                    style: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.bold, color: const Color(0xFFA5D6A7)),
+                    style: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.bold, color: const Color(0xFFEAF6EC)),
                   ),
                   const SizedBox(height: 2),
                   Text('Hifz Accuracy Rate', style: GoogleFonts.inter(fontSize: 11, color: Colors.white70)),
@@ -163,7 +167,7 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
   // ── Tab 1: Para (Juz) Breakdown (1–30) ──────────────────────────────────
   Widget _buildJuzTab() {
     return ListView.separated(
-      padding: EdgeInsets.fromLTRB(14, 14, 14, 28 + MediaQuery.paddingOf(context).bottom),
+      padding: EdgeInsets.fromLTRB(14, 14, 14, 100 + MediaQuery.paddingOf(context).bottom),
       itemCount: 30,
       separatorBuilder: (_, _) => const SizedBox(height: 8),
       itemBuilder: (ctx, idx) {
@@ -261,7 +265,7 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
       ..sort((a, b) => b.value.compareTo(a.value));
 
     return ListView.separated(
-      padding: EdgeInsets.fromLTRB(14, 14, 14, 28 + MediaQuery.paddingOf(context).bottom),
+      padding: EdgeInsets.fromLTRB(14, 14, 14, 100 + MediaQuery.paddingOf(context).bottom),
       itemCount: sortedSurahs.length,
       separatorBuilder: (_, _) => const SizedBox(height: 8),
       itemBuilder: (ctx, idx) {

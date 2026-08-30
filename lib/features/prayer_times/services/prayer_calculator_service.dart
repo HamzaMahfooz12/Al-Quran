@@ -195,7 +195,7 @@ class PrayerCalculatorService {
       hijriDate: hijriStr,
       locationName: locationName,
       calculationMethod: method.name.toUpperCase(),
-      fiqhName: juristic == JuristicMethod.hanafi ? 'Hanafi • حَنَفِي' : 'Shafi\'i • شَافِعِي',
+      fiqhName: juristic == JuristicMethod.hanafi ? 'Hanafi' : 'Shafi\'i / Hanbali / Maliki',
     );
   }
 }

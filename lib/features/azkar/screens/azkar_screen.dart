@@ -1,18 +1,13 @@
-﻿// lib/features/azkar/screens/azkar_screen.dart
+// lib/features/azkar/screens/azkar_screen.dart
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vibration/vibration.dart';
-import '../../../core/theme/app_theme.dart';
 import '../data/authentic_azkar.dart';
-
-enum AzkarLanguageFilter {
-  all,
-  urdu,
-  english,
-  transliteration,
-}
 
 class AzkarScreen extends StatefulWidget {
   const AzkarScreen({super.key});
@@ -23,10 +18,14 @@ class AzkarScreen extends StatefulWidget {
 
 class _AzkarScreenState extends State<AzkarScreen> {
   int _selectedCategoryIndex = 0;
-  AzkarLanguageFilter _langFilter = AzkarLanguageFilter.all;
+  String _displayLanguage = 'ur'; // Default to Urdu
   final Map<String, int> _counts = {};
+  final Set<String> _bookmarkedIds = {};
+  final Set<String> _expandedIds = {};
   final TextEditingController _searchCtrl = TextEditingController();
   String _searchQuery = '';
+  List<Map<String, dynamic>> _customDuas = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -34,12 +33,58 @@ class _AzkarScreenState extends State<AzkarScreen> {
     _searchCtrl.addListener(() {
       setState(() => _searchQuery = _searchCtrl.text.trim().toLowerCase());
     });
+    _loadPreferences();
   }
 
   @override
   void dispose() {
     _searchCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    final lang = prefs.getString('azkar_display_language') ?? 'ur';
+    final bookmarksList = prefs.getStringList('azkar_bookmarked_ids') ?? [];
+    final customRaw = prefs.getString('azkar_custom_duas_list');
+    List<Map<String, dynamic>> customList = [];
+    if (customRaw != null) {
+      try {
+        final decoded = jsonDecode(customRaw) as List;
+        customList = decoded.cast<Map<String, dynamic>>();
+      } catch (_) {}
+    }
+
+    if (mounted) {
+      setState(() {
+        _displayLanguage = lang;
+        _bookmarkedIds.addAll(bookmarksList);
+        _customDuas = customList;
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _toggleBookmark(String id) async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      if (_bookmarkedIds.contains(id)) {
+        _bookmarkedIds.remove(id);
+      } else {
+        _bookmarkedIds.add(id);
+      }
+    });
+    await prefs.setStringList('azkar_bookmarked_ids', _bookmarkedIds.toList());
+  }
+
+  void _toggleExpanded(String id) {
+    setState(() {
+      if (_expandedIds.contains(id)) {
+        _expandedIds.remove(id);
+      } else {
+        _expandedIds.add(id);
+      }
+    });
   }
 
   void _tapDua(DuaItem item) {
@@ -73,7 +118,7 @@ class _AzkarScreenState extends State<AzkarScreen> {
         'Urdu: ${item.urduTranslation}\n\n'
         'English: ${item.englishTranslation}\n\n'
         'Reference: ${item.reference}\n\n'
-        '— Shared via Al Quran App';
+        '— Shared via Hifz ul Quran App';
     Share.share(text);
   }
 
@@ -86,11 +131,34 @@ class _AzkarScreenState extends State<AzkarScreen> {
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Dua copied to clipboard!'),
+        content: Text('Supplication copied to clipboard!'),
         behavior: SnackBarBehavior.floating,
         duration: Duration(seconds: 2),
       ),
     );
+  }
+
+  List<DuaItem> _getAllItemsForCategory(AzkarCategory cat) {
+    final items = List<DuaItem>.from(cat.items);
+    for (final cd in _customDuas) {
+      final categoryName = cd['category'] as String? ?? '';
+      if (categoryName.contains(cat.title) || cat.title.contains(categoryName.split(' ').first)) {
+        items.add(
+          DuaItem(
+            id: cd['id'] as String? ?? 'custom_${DateTime.now().millisecondsSinceEpoch}',
+            title: cd['title'] as String? ?? 'Custom Supplication',
+            arabic: cd['arabic'] as String? ?? '',
+            urduTranslation: cd['urduTranslation'] as String? ?? '',
+            englishTranslation: cd['englishTranslation'] as String? ?? '',
+            transliteration: cd['transliteration'] as String? ?? '',
+            reference: cd['reference'] as String? ?? 'Personal Collection',
+            count: cd['count'] as int? ?? 1,
+            benefit: '',
+          ),
+        );
+      }
+    }
+    return items;
   }
 
   List<DuaItem> _getFilteredItems(List<DuaItem> items) {
@@ -107,63 +175,100 @@ class _AzkarScreenState extends State<AzkarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        backgroundColor: Color(0xFFFAF7F2),
+        body: Center(child: CircularProgressIndicator(color: Color(0xFF2C7A39))),
+      );
+    }
+
     final categories = AuthenticAzkar.categories;
     final currentCat = categories[_selectedCategoryIndex];
     final activeItems = _searchQuery.isEmpty
-        ? currentCat.items
-        : categories.expand((c) => c.items).toList();
+        ? _getAllItemsForCategory(currentCat)
+        : categories.expand((c) => _getAllItemsForCategory(c)).toList();
     final filteredItems = _getFilteredItems(activeItems);
 
     // Calculate progress for current category
     int completedCount = 0;
-    for (final it in currentCat.items) {
+    for (final it in activeItems) {
       if ((_counts[it.id] ?? 0) >= it.count) {
         completedCount++;
       }
     }
-    final progress = currentCat.items.isNotEmpty
-        ? completedCount / currentCat.items.length
-        : 0.0;
+    final progress = activeItems.isNotEmpty ? completedCount / activeItems.length : 0.0;
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: const Color(0xFFFAF7F2),
       appBar: AppBar(
+        backgroundColor: const Color(0xFFFAF7F2),
+        elevation: 0,
+        centerTitle: false,
         title: Row(
           children: [
             Text(
-              'Daily Duas & Azkar',
-              style: GoogleFonts.outfit(fontSize: 19, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(width: 6),
-            const Text(
-              'الأذكار',
-              style: TextStyle(
-                fontFamily: 'Scheherazade New',
-                fontSize: 18,
-                color: AppTheme.gold,
+              'Daily Duas',
+              style: GoogleFonts.outfit(
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
+                color: const Color(0xFF1B2A1E),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEAF6EC),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFFC7E6CE)),
+              ),
+              child: const Text(
+                'الأذكار',
+                style: TextStyle(
+                  fontFamily: 'Scheherazade New',
+                  fontSize: 14,
+                  color: Color(0xFF2C7A39),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEAF6EC),
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFFC7E6CE)),
+              ),
+              child: const Icon(Icons.settings_outlined, color: Color(0xFF2C7A39), size: 20),
+            ),
+            tooltip: 'Duas Settings',
+            onPressed: () async {
+              await context.pushNamed('duas-settings');
+              _loadPreferences();
+            },
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: CustomScrollView(
         slivers: [
           // ── Search & Filter Controls ────────────────────────────────────
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildSearchBar(),
-                  const SizedBox(height: 10),
-                  _buildLanguageSelector(),
                   const SizedBox(height: 12),
                   if (_searchQuery.isEmpty) ...[
-                    _buildCategoryChips(categories),
+                    _buildCategoryCards(categories),
                     const SizedBox(height: 12),
-                    _buildProgressBanner(currentCat, completedCount, progress),
+                    _buildProgressBanner(currentCat, completedCount, activeItems.length, progress),
                     const SizedBox(height: 12),
                   ],
                 ],
@@ -171,18 +276,18 @@ class _AzkarScreenState extends State<AzkarScreen> {
             ),
           ),
 
-          // ── Duas List ───────────────────────────────────────────────────
+          // ── Duas List with Smooth Animations ─────────────────────────────
           filteredItems.isEmpty
               ? SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.all(40),
                     child: Column(
                       children: [
-                        const Icon(Icons.search_off_rounded, size: 48, color: AppTheme.textMuted),
+                        const Icon(Icons.search_off_rounded, size: 48, color: Color(0xFF9CA3AF)),
                         const SizedBox(height: 12),
                         Text(
                           'No supplications found for "$_searchQuery"',
-                          style: GoogleFonts.inter(fontSize: 14, color: AppTheme.textSecondary),
+                          style: GoogleFonts.inter(fontSize: 14, color: const Color(0xFF6B7280)),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -190,12 +295,12 @@ class _AzkarScreenState extends State<AzkarScreen> {
                   ),
                 )
               : SliverPadding(
-                  padding: EdgeInsets.fromLTRB(16, 4, 16, 24 + MediaQuery.paddingOf(context).bottom),
+                  padding: EdgeInsets.fromLTRB(16, 4, 16, 110 + MediaQuery.paddingOf(context).bottom),
                   sliver: SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (ctx, idx) {
                         final item = filteredItems[idx];
-                        return _buildDuaCard(item);
+                        return _buildDuaCard(item, idx);
                       },
                       childCount: filteredItems.length,
                     ),
@@ -209,166 +314,170 @@ class _AzkarScreenState extends State<AzkarScreen> {
   Widget _buildSearchBar() {
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.cardBg,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE2E8E4)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE8E1D2)),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 4, offset: const Offset(0, 2)),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 6, offset: const Offset(0, 2)),
         ],
       ),
       child: TextField(
         controller: _searchCtrl,
         decoration: InputDecoration(
-          hintText: 'Search supplications (e.g. morning, sleep, forgiveness)...',
-          hintStyle: GoogleFonts.inter(fontSize: 12.5, color: AppTheme.textMuted),
-          prefixIcon: const Icon(Icons.search_rounded, color: AppTheme.primary, size: 20),
+          hintText: 'Search supplications (e.g. morning, sleep, travel)...',
+          hintStyle: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF9CA3AF)),
+          prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF2C7A39), size: 22),
           suffixIcon: _searchQuery.isNotEmpty
               ? IconButton(
-                  icon: const Icon(Icons.clear, size: 18),
+                  icon: const Icon(Icons.clear_rounded, size: 18, color: Color(0xFF6B7280)),
                   onPressed: () => _searchCtrl.clear(),
                 )
               : null,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         ),
       ),
     );
   }
 
-  Widget _buildLanguageSelector() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          Text(
-            'Language: ',
-            style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.textSecondary),
-          ),
-          const SizedBox(width: 4),
-          _langChip('All (سب)', AzkarLanguageFilter.all),
-          const SizedBox(width: 6),
-          _langChip('اردو (Urdu)', AzkarLanguageFilter.urdu),
-          const SizedBox(width: 6),
-          _langChip('English', AzkarLanguageFilter.english),
-          const SizedBox(width: 6),
-          _langChip('Transliteration', AzkarLanguageFilter.transliteration),
-        ],
-      ),
-    );
-  }
+  Widget _buildCategoryCards(List<AzkarCategory> categories) {
+    final categoryStyles = [
+      {'color': const Color(0xFF2C7A39), 'icon': Icons.wb_sunny_rounded, 'sub': 'صبح و شام'},
+      {'color': const Color(0xFF1E3A8A), 'icon': Icons.mosque_rounded, 'sub': 'نماز کے بعد'},
+      {'color': const Color(0xFF581C87), 'icon': Icons.bedtime_rounded, 'sub': 'سوتے وقت'},
+      {'color': const Color(0xFFBE185D), 'icon': Icons.flight_takeoff_rounded, 'sub': 'سفر'},
+      {'color': const Color(0xFF047857), 'icon': Icons.restaurant_rounded, 'sub': 'طعام و شراب'},
+      {'color': const Color(0xFFB45309), 'icon': Icons.shield_rounded, 'sub': 'حفاظت'},
+      {'color': const Color(0xFF0284C7), 'icon': Icons.favorite_rounded, 'sub': 'استغفار'},
+      {'color': const Color(0xFFD97706), 'icon': Icons.menu_book_rounded, 'sub': 'قرآنی دعائیں'},
+      {'color': const Color(0xFF4B5563), 'icon': Icons.spa_rounded, 'sub': 'روزمرہ'},
+    ];
 
-  Widget _langChip(String label, AzkarLanguageFilter filter) {
-    final isSelected = _langFilter == filter;
-    return InkWell(
-      onTap: () => setState(() => _langFilter = filter),
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: BoxDecoration(
-          color: isSelected ? AppTheme.primary : AppTheme.cardBg,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? AppTheme.primary : const Color(0xFFE2E8E4),
-          ),
-        ),
-        child: Text(
-          label,
-          style: GoogleFonts.inter(
-            fontSize: 11,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-            color: isSelected ? Colors.white : AppTheme.textSecondary,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCategoryChips(List<AzkarCategory> categories) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: List.generate(categories.length, (idx) {
+    return SizedBox(
+      height: 94,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: categories.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 10),
+        itemBuilder: (ctx, idx) {
           final cat = categories[idx];
-          final isSelected = idx == _selectedCategoryIndex;
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: InkWell(
-              onTap: () => setState(() => _selectedCategoryIndex = idx),
-              borderRadius: BorderRadius.circular(14),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: isSelected ? AppTheme.primary : AppTheme.cardBg,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: isSelected ? AppTheme.primary : const Color(0xFFE2E8E4),
-                  ),
-                  boxShadow: [
-                    if (isSelected)
-                      BoxShadow(
-                        color: AppTheme.primary.withValues(alpha: 0.25),
-                        blurRadius: 8,
-                        offset: const Offset(0, 3),
+          final isSelected = _selectedCategoryIndex == idx;
+          final styleInfo = categoryStyles[idx % categoryStyles.length];
+          final Color themeColor = styleInfo['color'] as Color;
+          final IconData icon = styleInfo['icon'] as IconData;
+          final String subArabic = styleInfo['sub'] as String;
+
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedCategoryIndex = idx;
+              });
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOutCubic,
+              width: 138,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                gradient: isSelected
+                    ? LinearGradient(
+                        colors: [themeColor, themeColor.withValues(alpha: 0.85)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      )
+                    : LinearGradient(
+                        colors: [Colors.white, themeColor.withValues(alpha: 0.05)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                  ],
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: isSelected ? themeColor : const Color(0xFFE8E1D2),
+                  width: isSelected ? 1.5 : 1.0,
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      cat.title,
-                      style: GoogleFonts.inter(
-                        fontSize: 12.5,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                        color: isSelected ? Colors.white : AppTheme.textPrimary,
-                      ),
+                boxShadow: [
+                  if (isSelected)
+                    BoxShadow(
+                      color: themeColor.withValues(alpha: 0.28),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    )
+                  else
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
                     ),
-                    const SizedBox(width: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? Colors.white.withValues(alpha: 0.2)
-                            : AppTheme.primarySurface,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        '${cat.items.length}',
-                        style: GoogleFonts.inter(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: isSelected ? Colors.white : AppTheme.primary,
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: 28,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          color: isSelected ? Colors.white.withValues(alpha: 0.22) : themeColor.withValues(alpha: 0.12),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          icon,
+                          color: isSelected ? Colors.white : themeColor,
+                          size: 16,
                         ),
                       ),
+                      Text(
+                        subArabic,
+                        style: TextStyle(
+                          fontFamily: 'Amiri',
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: isSelected ? const Color(0xFFFFD54F) : themeColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    cat.title.split(' (').first,
+                    style: GoogleFonts.outfit(
+                      fontSize: 12.5,
+                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                      color: isSelected ? Colors.white : const Color(0xFF1B2A1E),
                     ),
-                  ],
-                ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
             ),
           );
-        }),
+        },
       ),
     );
   }
 
-  Widget _buildProgressBanner(AzkarCategory cat, int completed, double progress) {
-    final isAllDone = completed == cat.items.length && cat.items.isNotEmpty;
+  Widget _buildProgressBanner(AzkarCategory cat, int completed, int total, double progress) {
+    final isAllDone = completed == total && total > 0;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: isAllDone ? const Color(0xFFE8F5E9) : AppTheme.cardBg,
+        color: isAllDone ? const Color(0xFFEAF6EC) : Colors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: isAllDone ? const Color(0xFF81C784) : const Color(0xFFE8ECE9),
+          color: isAllDone ? const Color(0xFF81C784) : const Color(0xFFE8E1D2),
         ),
       ),
       child: Row(
         children: [
           Icon(
             isAllDone ? Icons.check_circle_rounded : Icons.pie_chart_outline_rounded,
-            color: isAllDone ? const Color(0xFF2E7D32) : AppTheme.primary,
-            size: 20,
+            color: isAllDone ? const Color(0xFF2C7A39) : const Color(0xFF2C7A39),
+            size: 22,
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -379,19 +488,19 @@ class _AzkarScreenState extends State<AzkarScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      isAllDone ? 'All Recitations Completed! 🎉' : '${cat.title} Progress',
+                      isAllDone ? 'Category Completed! 🎉' : '${cat.title.split(' (').first} Progress',
                       style: GoogleFonts.inter(
-                        fontSize: 11.5,
+                        fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: isAllDone ? const Color(0xFF1B4332) : AppTheme.textPrimary,
+                        color: isAllDone ? const Color(0xFF1B4332) : const Color(0xFF1B2A1E),
                       ),
                     ),
                     Text(
-                      '$completed / ${cat.items.length}',
+                      '$completed / $total',
                       style: GoogleFonts.inter(
-                        fontSize: 11.5,
+                        fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: AppTheme.primary,
+                        color: const Color(0xFF2C7A39),
                       ),
                     ),
                   ],
@@ -401,9 +510,9 @@ class _AzkarScreenState extends State<AzkarScreen> {
                   borderRadius: BorderRadius.circular(4),
                   child: LinearProgressIndicator(
                     value: progress,
-                    backgroundColor: const Color(0xFFE2E8E4),
+                    backgroundColor: const Color(0xFFE5EBE6),
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      isAllDone ? const Color(0xFF2E7D32) : AppTheme.primary,
+                      isAllDone ? const Color(0xFF2C7A39) : const Color(0xFF2C7A39),
                     ),
                     minHeight: 5,
                   ),
@@ -416,29 +525,29 @@ class _AzkarScreenState extends State<AzkarScreen> {
     );
   }
 
-  Widget _buildDuaCard(DuaItem item) {
+  Widget _buildDuaCard(DuaItem item, int index) {
     final currentCount = _counts[item.id] ?? 0;
     final isDone = currentCount >= item.count;
+    final isBookmarked = _bookmarkedIds.contains(item.id);
+    final isExpanded = _expandedIds.contains(item.id) || _searchQuery.isNotEmpty;
 
-    final showTranslit = _langFilter == AzkarLanguageFilter.all ||
-        _langFilter == AzkarLanguageFilter.transliteration;
-    final showUrdu = _langFilter == AzkarLanguageFilter.all ||
-        _langFilter == AzkarLanguageFilter.urdu;
-    final showEnglish = _langFilter == AzkarLanguageFilter.all ||
-        _langFilter == AzkarLanguageFilter.english;
+    final showUrdu = _displayLanguage == 'ur' || _displayLanguage == 'all';
+    final showEnglish = _displayLanguage == 'en' || _displayLanguage == 'all';
+    final showTranslit = _displayLanguage == 'transliteration' || _displayLanguage == 'all';
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 14),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 250),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: isDone ? const Color(0xFFF2F9F4) : AppTheme.cardBg,
+        color: isDone ? const Color(0xFFF2F8F4) : Colors.white,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: isDone ? const Color(0xFF81C784) : const Color(0xFFE8ECE9),
+          color: isDone ? const Color(0xFF81C784) : const Color(0xFFE8E1D2),
           width: isDone ? 1.5 : 1.0,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Colors.black.withValues(alpha: 0.025),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -447,54 +556,105 @@ class _AzkarScreenState extends State<AzkarScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // ── Card Header ─────────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 14, 8),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.title,
-                        style: GoogleFonts.inter(
-                          fontSize: 14,
+          // ── Card Header (Tap to Expand/Collapse) ──
+          InkWell(
+            onTap: () => _toggleExpanded(item.id),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 12, 10),
+              child: Row(
+                children: [
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEAF6EC),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Text(
+                        '${index + 1}',
+                        style: GoogleFonts.outfit(
+                          fontSize: 13,
                           fontWeight: FontWeight.bold,
-                          color: AppTheme.textPrimary,
+                          color: const Color(0xFF2C7A39),
                         ),
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        'Target: ${item.count}x recitation',
-                        style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textMuted, fontWeight: FontWeight.w500),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-                // Action icons: Copy & Share
-                IconButton(
-                  icon: const Icon(Icons.copy_rounded, size: 18, color: AppTheme.textMuted),
-                  tooltip: 'Copy',
-                  onPressed: () => _copyDua(item),
-                  constraints: const BoxConstraints(),
-                  padding: const EdgeInsets.all(6),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.share_rounded, size: 18, color: AppTheme.textMuted),
-                  tooltip: 'Share',
-                  onPressed: () => _shareDua(item),
-                  constraints: const BoxConstraints(),
-                  padding: const EdgeInsets.all(6),
-                ),
-              ],
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.title,
+                          style: GoogleFonts.outfit(
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF1B2A1E),
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Repeat: ${item.count}x',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: const Color(0xFF6B7280),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Bookmark Button with Bounce Micro-Animation
+                  TweenAnimationBuilder<double>(
+                    key: ValueKey(isBookmarked),
+                    tween: Tween<double>(begin: 0.8, end: 1.0),
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.elasticOut,
+                    builder: (ctx, scale, child) {
+                      return Transform.scale(
+                        scale: scale,
+                        child: IconButton(
+                          icon: Icon(
+                            isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+                            color: isBookmarked ? const Color(0xFFF59E0B) : const Color(0xFF9CA3AF),
+                            size: 22,
+                          ),
+                          tooltip: isBookmarked ? 'Bookmarked' : 'Bookmark',
+                          onPressed: () => _toggleBookmark(item.id),
+                        ),
+                      );
+                    },
+                  ),
+
+                  // Copy & Share
+                  IconButton(
+                    icon: const Icon(Icons.copy_rounded, size: 18, color: Color(0xFF9CA3AF)),
+                    tooltip: 'Copy',
+                    onPressed: () => _copyDua(item),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.share_rounded, size: 18, color: Color(0xFF9CA3AF)),
+                    tooltip: 'Share',
+                    onPressed: () => _shareDua(item),
+                  ),
+
+                  Icon(
+                    isExpanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
+                    color: const Color(0xFF6B7280),
+                    size: 20,
+                  ),
+                ],
+              ),
             ),
           ),
 
-          const Divider(height: 1, color: Color(0xFFEEF2EF)),
+          const Divider(height: 1, color: Color(0xFFF3F4F6)),
 
-          // ── Arabic Text ─────────────────────────────────────────────────
+          // ── Arabic Text ──
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
             child: Text(
@@ -503,7 +663,7 @@ class _AzkarScreenState extends State<AzkarScreen> {
                 fontFamily: 'Scheherazade New',
                 fontSize: 22,
                 height: 1.85,
-                color: AppTheme.textPrimary,
+                color: Color(0xFF1B2A1E),
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.right,
@@ -511,125 +671,146 @@ class _AzkarScreenState extends State<AzkarScreen> {
             ),
           ),
 
-          // ── Transliteration ─────────────────────────────────────────────
-          if (showTranslit && item.transliteration.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF6F8F6),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: const Color(0xFFE5EBE6)),
-                ),
-                child: Text(
-                  item.transliteration,
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    fontStyle: FontStyle.italic,
-                    color: const Color(0xFF37474F),
-                    height: 1.45,
-                  ),
-                ),
-              ),
-            ),
-
-          // ── Urdu Translation ────────────────────────────────────────────
-          if (showUrdu && item.urduTranslation.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-              child: Text(
-                item.urduTranslation,
-                style: const TextStyle(
-                  fontFamily: 'Noto Nastaliq Urdu',
-                  fontSize: 13.5,
-                  height: 1.85,
-                  color: Color(0xFF2C3E50),
-                ),
-                textAlign: TextAlign.right,
-                textDirection: TextDirection.rtl,
-              ),
-            ),
-
-          // ── English Translation ─────────────────────────────────────────
-          if (showEnglish && item.englishTranslation.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-              child: Text(
-                item.englishTranslation,
-                style: GoogleFonts.inter(
-                  fontSize: 12.5,
-                  color: AppTheme.textSecondary,
-                  height: 1.45,
-                ),
-              ),
-            ),
-
-          // ── Benefit / Virtues Banner ────────────────────────────────────
-          if (item.benefit.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFF8E1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFFFFECB3)),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.auto_awesome, color: Color(0xFFF57F17), size: 14),
-                    const SizedBox(width: 6),
-                    Expanded(
+          // ── Expandable Section (Translations & Transliterations) ──
+          AnimatedCrossFade(
+            firstChild: const SizedBox.shrink(),
+            secondChild: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Transliteration
+                if (showTranslit && item.transliteration.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF8F9FA),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: const Color(0xFFE9ECEF)),
+                      ),
                       child: Text(
-                        item.benefit,
-                        style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFFE65100), fontWeight: FontWeight.w500),
+                        item.transliteration,
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontStyle: FontStyle.italic,
+                          color: const Color(0xFF4B5563),
+                          height: 1.45,
+                        ),
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
+                  ),
 
-          // ── Reference Tag ───────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              '📖 ${item.reference}',
-              style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textMuted, fontStyle: FontStyle.italic),
+                // Urdu Translation
+                if (showUrdu && item.urduTranslation.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF9FAF8),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: const Color(0xFFE8EDE9)),
+                      ),
+                      child: Text(
+                        item.urduTranslation,
+                        style: const TextStyle(
+                          fontFamily: 'Noto Nastaliq Urdu',
+                          fontSize: 13.5,
+                          height: 1.85,
+                          color: Color(0xFF2C3E50),
+                        ),
+                        textAlign: TextAlign.right,
+                        textDirection: TextDirection.rtl,
+                      ),
+                    ),
+                  ),
+
+                // English Translation
+                if (showEnglish && item.englishTranslation.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                    child: Text(
+                      item.englishTranslation,
+                      style: GoogleFonts.inter(
+                        fontSize: 12.5,
+                        color: const Color(0xFF4B5563),
+                        height: 1.45,
+                      ),
+                    ),
+                  ),
+
+                // Benefit / Virtues Note
+                if (item.benefit.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFFBEB),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: const Color(0xFFFEF3C7)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.auto_awesome, color: Color(0xFFD97706), size: 14),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              item.benefit,
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                color: const Color(0xFF92400E),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                // Reference Tag
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    '📖 ${item.reference}',
+                    style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF9CA3AF), fontStyle: FontStyle.italic),
+                  ),
+                ),
+              ],
             ),
+            crossFadeState: isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 200),
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
 
-          // ── Bottom Interactive Counter Row ──────────────────────────────
+          // ── Bottom Interactive Counter Button ──
           Container(
             padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
             decoration: const BoxDecoration(
               color: Color(0xFFFAFBF9),
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(18)),
-              border: Border(top: BorderSide(color: Color(0xFFEEF2EF))),
+              border: Border(top: BorderSide(color: Color(0xFFF3F4F6))),
             ),
             child: Row(
               children: [
-                // Reset Button
                 if (currentCount > 0) ...[
                   IconButton(
-                    icon: const Icon(Icons.refresh_rounded, size: 18, color: AppTheme.textMuted),
+                    icon: const Icon(Icons.refresh_rounded, size: 20, color: Color(0xFF6B7280)),
                     tooltip: 'Reset counter',
                     onPressed: () => _resetDua(item),
                   ),
                   const SizedBox(width: 4),
                 ],
 
-                // Big Tap Counter Button
                 Expanded(
                   child: ElevatedButton(
                     onPressed: isDone ? null : () => _tapDua(item),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: isDone ? const Color(0xFF2E7D32) : AppTheme.primary,
+                      backgroundColor: isDone ? const Color(0xFF2C7A39) : const Color(0xFF2C7A39),
                       foregroundColor: Colors.white,
-                      disabledBackgroundColor: const Color(0xFF2E7D32),
+                      disabledBackgroundColor: const Color(0xFF2C7A39),
                       disabledForegroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -639,13 +820,15 @@ class _AzkarScreenState extends State<AzkarScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          isDone ? Icons.check_circle : Icons.touch_app_rounded,
+                          isDone ? Icons.check_circle_rounded : Icons.touch_app_rounded,
                           size: 18,
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          isDone ? 'Completed ($currentCount/${item.count})' : 'Tap to Recite ($currentCount / ${item.count})',
-                          style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.bold),
+                          isDone
+                              ? 'Completed ($currentCount / ${item.count})'
+                              : 'Tap to Recite ($currentCount / ${item.count})',
+                          style: GoogleFonts.outfit(fontSize: 13.5, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),

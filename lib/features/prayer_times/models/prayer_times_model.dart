@@ -76,7 +76,7 @@ class PrayerTimesModel {
     required this.hijriDate,
     required this.locationName,
     required this.calculationMethod,
-    this.fiqhName = 'Hanafi • حَنَفِي',
+    this.fiqhName = 'Hanafi',
   });
 
   Map<PrayerType, DateTime> get allPrayers => {
@@ -254,7 +254,7 @@ class PrayerTimesModel {
   factory PrayerTimesModel.fromAladhanApi({
     required Map<String, dynamic> data,
     required String locationName,
-    String fiqhName = 'Hanafi • حَنَفِي',
+    String fiqhName = 'Hanafi',
   }) {
     final timings = data['timings'] as Map<String, dynamic>;
     final dateMap = data['date'] as Map<String, dynamic>?;

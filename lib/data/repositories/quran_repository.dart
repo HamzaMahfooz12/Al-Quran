@@ -167,16 +167,13 @@ class QuranRepository {
     return rows.map(Edition.fromMap).toList();
   }
 
-  Future<List<Edition>> getAllEditions({String? type, String? language}) async {
-    final db = await _db.database;
+  final Map<String, List<Edition>> _editionsCache = {};
 
-    // Delete any invalid audio reciter entries saved under translation type
-    await db.rawDelete(
-      "DELETE FROM ayah_content WHERE edition_id IN (SELECT id FROM editions WHERE api_key LIKE '%taqi%' OR api_key IN ('ur.tariqmasood', 'quran-uthmani'))",
-    );
-    await db.rawDelete(
-      "DELETE FROM editions WHERE api_key LIKE '%taqi%' OR api_key IN ('ur.tariqmasood', 'quran-uthmani')",
-    );
+  Future<List<Edition>> getAllEditions({String? type, String? language}) async {
+    final cacheKey = '${type ?? "all"}_${language ?? "all"}';
+    if (_editionsCache.containsKey(cacheKey)) {
+      return _editionsCache[cacheKey]!;
+    }
 
     String? where;
     List<Object?>? whereArgs;
@@ -198,7 +195,13 @@ class QuranRepository {
       whereArgs: whereArgs,
       orderBy: 'is_downloaded DESC, is_bundled DESC, name ASC',
     );
-    return rows.map(Edition.fromMap).toList();
+    final result = rows.map(Edition.fromMap).toList();
+    _editionsCache[cacheKey] = result;
+    return result;
+  }
+
+  void clearEditionsCache() {
+    _editionsCache.clear();
   }
 
   /// Fetches all worldwide editions of a given type ('translation' or 'tafseer')
@@ -246,6 +249,7 @@ class QuranRepository {
   }
 
   Future<void> markEditionDownloaded(int editionId) async {
+    clearEditionsCache();
     await _db.update(
       'editions',
       {'is_downloaded': 1},
@@ -255,12 +259,19 @@ class QuranRepository {
   }
 
   Future<void> deleteEditionContent(int editionId) async {
+    clearEditionsCache();
     final db = await _db.database;
     await db.execute('PRAGMA foreign_keys = OFF;');
     try {
       await db.delete(
         'ayah_content',
         where: 'edition_id = ?',
+        whereArgs: [editionId],
+      );
+      await db.update(
+        'editions',
+        {'is_downloaded': 0},
+        where: 'id = ?',
         whereArgs: [editionId],
       );
     } finally {

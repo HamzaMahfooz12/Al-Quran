@@ -6,7 +6,6 @@ import '../../../data/models/mushaf_page_model.dart';
 import '../../../data/models/surah_info.dart';
 import '../../../data/repositories/quran_repository.dart';
 import '../../../data/ruku_data.dart';
-import '../../../services/recitation_engine.dart';
 import 'ayah_end_symbol.dart';
 import 'indopak_ruku_marginal_badge.dart';
 import 'indopak_sajda_marginal_badge.dart';
@@ -20,9 +19,7 @@ class MushafPageWidget extends ConsumerStatefulWidget {
   final String? activePlayingWordId;
   final String? activePlayingVerseKey;
   final Function(int surah, int ayah)? onWordTap;
-  final Map<String, RecitationWordResult>? liveRecitationWordMap;
-  final bool isHifzRevealMode;
-  final Function(RecitationWordResult wordResult)? onLiveRecitationWordTap;
+  final Function(int surah, int ayah)? onWordDoubleTap;
 
   const MushafPageWidget({
     super.key,
@@ -34,9 +31,7 @@ class MushafPageWidget extends ConsumerStatefulWidget {
     this.activePlayingWordId,
     this.activePlayingVerseKey,
     this.onWordTap,
-    this.liveRecitationWordMap,
-    this.isHifzRevealMode = false,
-    this.onLiveRecitationWordTap,
+    this.onWordDoubleTap,
   });
 
   @override
@@ -211,10 +206,16 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
 
     final bottomInset = MediaQuery.paddingOf(context).bottom;
 
-    return Container(
-      color: const Color(0xFFFBF9F4), // Authentic warm antique paper
-      padding: EdgeInsets.fromLTRB(4, 3, 4, 8 + bottomInset),
-      child: LayoutBuilder(
+    return InteractiveViewer(
+      minScale: 1.0,
+      maxScale: 3.5,
+      panEnabled: true,
+      scaleEnabled: true,
+      clipBehavior: Clip.none,
+      child: Container(
+        color: const Color(0xFFFBF9F4), // Authentic warm antique paper
+        padding: EdgeInsets.fromLTRB(4, 3, 4, 8 + bottomInset),
+        child: LayoutBuilder(
         builder: (context, constraints) {
           return Column(
             children: [
@@ -293,26 +294,28 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
 
                     const SizedBox(width: 2),
 
-                    // ── 2. Authentic Double-Ruled Page Frame (Full-Width Justified) ──
+                    // ── 2. Authentic Double-Ruled Page Frame (Themed Forest Green & Gold) ──
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
-                          border: Border.all(color: const Color(0xFF1F1F1F), width: 0.9), // Outer hairline
-                          borderRadius: BorderRadius.circular(3),
+                          border: Border.all(color: const Color(0xFF2C7A39), width: 1.2), // Outer Forest Green hairline
+                          borderRadius: BorderRadius.circular(4),
                         ),
                         padding: const EdgeInsets.all(2.5), // Frame Gutter
                         child: Container(
                           clipBehavior: Clip.hardEdge,
                           decoration: BoxDecoration(
-                            border: Border.all(color: const Color(0xFF1F1F1F), width: 1.6), // Inner solid border
+                            border: Border.all(color: const Color(0xFFD97706), width: 1.4), // Inner Gold solid border
+                            borderRadius: BorderRadius.circular(2),
                           ),
                           child: Column(
                             children: [
                               // ── Top Header Bar (Surah Name, Page Number, Juz Title) ──
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3.5),
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4.0),
                                 decoration: const BoxDecoration(
-                                  border: Border(bottom: BorderSide(color: Color(0xFF1F1F1F), width: 1.0)),
+                                  color: Color(0xFFF0F7F2), // Soft tinted sage background
+                                  border: Border(bottom: BorderSide(color: Color(0xFF2C7A39), width: 1.0)),
                                 ),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -326,21 +329,29 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
                                         fontFamily: 'Amiri',
                                         fontSize: 13.5,
                                         fontWeight: FontWeight.bold,
-                                        color: Color(0xFF111111),
+                                        color: Color(0xFF1B2A1E),
                                         height: 1.1,
                                       ),
                                     ),
 
                                     // Top Center: Page Number in Eastern Arabic Numerals (e.g. ۵)
-                                    Text(
-                                      ArabicNumerals.format(widget.pageNumber),
-                                      textDirection: TextDirection.rtl,
-                                      style: const TextStyle(
-                                        fontFamily: 'Amiri',
-                                        fontSize: 14.5,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF111111),
-                                        height: 1.1,
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(color: const Color(0xFFC7E6CE), width: 0.8),
+                                      ),
+                                      child: Text(
+                                        ArabicNumerals.format(widget.pageNumber),
+                                        textDirection: TextDirection.rtl,
+                                        style: const TextStyle(
+                                          fontFamily: 'Amiri',
+                                          fontSize: 13.5,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFF2C7A39),
+                                          height: 1.1,
+                                        ),
                                       ),
                                     ),
 
@@ -352,7 +363,7 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
                                         fontFamily: 'Amiri',
                                         fontSize: 13.5,
                                         fontWeight: FontWeight.bold,
-                                        color: Color(0xFF111111),
+                                        color: Color(0xFF1B2A1E),
                                         height: 1.1,
                                       ),
                                     ),
@@ -399,15 +410,23 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
               // ── Bottom Footer: Manzil Indicator (منزل X) ────────────────────
               Padding(
                 padding: const EdgeInsets.only(top: 3),
-                child: Text(
-                  'مَنْزِل ${ArabicNumerals.format(_manzilNumber)}',
-                  textDirection: TextDirection.rtl,
-                  style: const TextStyle(
-                    fontFamily: 'Amiri',
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1F1F1F),
-                    height: 1.0,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 1.5),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF0F7F2),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFFC7E6CE), width: 0.8),
+                  ),
+                  child: Text(
+                    'مَنْزِل ${ArabicNumerals.format(_manzilNumber)}',
+                    textDirection: TextDirection.rtl,
+                    style: const TextStyle(
+                      fontFamily: 'Amiri',
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF2C7A39),
+                      height: 1.0,
+                    ),
                   ),
                 ),
               ),
@@ -415,7 +434,7 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
           );
         },
       ),
-    );
+    ));
   }
 
   Widget _buildLine(MushafLineData line, double availableWidth) {
@@ -485,43 +504,292 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
     );
   }
 
-  // ── Surah Name Header (Decorative lithograph box) ──────────────────────────
+  // ── Surah Name Header Dispatcher (15-line vs 16-line) ──────────────────────
   Widget _buildSurahNameLine(WordLayoutData word) {
+    if (widget.mushafType == '15_line') {
+      return _build15LineSurahHeader(word);
+    } else {
+      return _build16LineSurahHeader(word);
+    }
+  }
+
+  // ── Basmallah Line Dispatcher (15-line vs 16-line) ──────────────────────────
+  Widget _buildBasmallahLine(WordLayoutData word) {
+    if (widget.mushafType == '15_line') {
+      return _build15LineBasmallah(word);
+    } else {
+      return _build16LineBasmallah(word);
+    }
+  }
+
+  // ── 15-Line Mushaf: Line 1 of 2 (Surah Details Illuminated Ribbon) ─────────
+  Widget _build15LineSurahHeader(WordLayoutData word) {
+    final surahNum = (word.surah >= 1 && word.surah <= 114) ? word.surah : _surahNumber;
+    final surahInfo = (surahNum >= 1 && surahNum <= 114) ? kSurahList[surahNum - 1] : null;
+    final isMeccan = surahInfo?.isMeccan ?? true;
+    final ayahCountArabic = ArabicNumerals.format(surahInfo?.ayahCount ?? 0);
+    final rukuCountArabic = ArabicNumerals.format(surahInfo?.rukuCount ?? 0);
+    final surahName = surahInfo?.nameArabic ?? word.glyphCode;
+
     return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 1.5),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
       decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFF1F1F1F), width: 1.3),
-        borderRadius: BorderRadius.circular(3),
-        color: const Color(0xFFFAF6EB),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 1.5),
-      child: Text(
-        'سُورَةُ ${word.glyphCode}',
-        textDirection: TextDirection.rtl,
-        style: const TextStyle(
-          fontFamily: 'Amiri',
-          fontSize: 15,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFF111111),
-          height: 1.1,
+        gradient: const LinearGradient(
+          colors: [Color(0xFF2C7A39), Color(0xFF1B4332)],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
         ),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: const Color(0xFFD97706), width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF1B4332).withValues(alpha: 0.18),
+            blurRadius: 3,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Left: Revelation Medallion Badge
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFEF9EE),
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color: const Color(0xFFD97706), width: 1.0),
+            ),
+            child: Text(
+              isMeccan ? 'مَكِّيَّة' : 'مَدَنِيَّة',
+              textDirection: TextDirection.rtl,
+              style: const TextStyle(
+                fontFamily: 'Scheherazade New',
+                fontSize: 11.5,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF8D4913),
+                height: 1.1,
+              ),
+            ),
+          ),
+
+          // Center: Surah Name in Amiri Calligraphy
+          Expanded(
+            child: Text(
+              'سُورَةُ $surahName',
+              textDirection: TextDirection.rtl,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontFamily: 'Amiri',
+                fontSize: 16.5,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                height: 1.1,
+                shadows: [
+                  Shadow(
+                    color: Color(0xFFF59E0B),
+                    blurRadius: 4,
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Right: Ayahs & Rukus Medallion Badge
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFEF9EE),
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color: const Color(0xFFD97706), width: 1.0),
+            ),
+            child: Text(
+              '$ayahCountArabic آيَات $rukuCountArabic رُكُوْع',
+              textDirection: TextDirection.rtl,
+              style: const TextStyle(
+                fontFamily: 'Scheherazade New',
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF8D4913),
+                height: 1.1,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  // ── Basmallah Line (Centered authentic ink) ────────────────────────────────
-  Widget _buildBasmallahLine(WordLayoutData word) {
+  // ── 15-Line Mushaf: Line 2 of 2 (Dedicated Centered Bismillah) ─────────────
+  Widget _build15LineBasmallah(WordLayoutData word) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 1),
+      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+      child: Row(
+        children: [
+          // Left gold flourish
+          Expanded(
+            child: Container(
+              height: 1,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    const Color(0xFFD97706).withValues(alpha: 0.0),
+                    const Color(0xFFD97706).withValues(alpha: 0.7),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 6),
+          const Icon(Icons.star_rounded, size: 9, color: Color(0xFFD97706)),
+          const SizedBox(width: 8),
+
+          // Center Bismillah Calligraphy
+          Text(
+            word.glyphCode.isNotEmpty ? word.glyphCode : 'بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ',
+            textDirection: TextDirection.rtl,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontFamily: 'Amiri',
+              fontSize: 16.5,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF111111),
+              height: 1.15,
+            ),
+          ),
+
+          const SizedBox(width: 8),
+          const Icon(Icons.star_rounded, size: 9, color: Color(0xFFD97706)),
+          const SizedBox(width: 6),
+
+          // Right gold flourish
+          Expanded(
+            child: Container(
+              height: 1,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    const Color(0xFFD97706).withValues(alpha: 0.7),
+                    const Color(0xFFD97706).withValues(alpha: 0.0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── 16-Line Mushaf: 1-Line Compact Surah Header ─────────────────────────────
+  Widget _build16LineSurahHeader(WordLayoutData word) {
+    final surahNum = (word.surah >= 1 && word.surah <= 114) ? word.surah : _surahNumber;
+    final surahInfo = (surahNum >= 1 && surahNum <= 114) ? kSurahList[surahNum - 1] : null;
+    final isMeccan = surahInfo?.isMeccan ?? true;
+    final ayahCountArabic = ArabicNumerals.format(surahInfo?.ayahCount ?? 0);
+    final rukuCountArabic = ArabicNumerals.format(surahInfo?.rukuCount ?? 0);
+    final surahName = surahInfo?.nameArabic ?? word.glyphCode;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 0.5),
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.0),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF2C7A39), Color(0xFF1B4332)],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(3),
+        border: Border.all(color: const Color(0xFFD97706), width: 1.0),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Left: Makki/Madani badge
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0.5),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFEF9EE),
+              borderRadius: BorderRadius.circular(3),
+              border: Border.all(color: const Color(0xFFD97706), width: 0.8),
+            ),
+            child: Text(
+              isMeccan ? 'مَكِّيَّة' : 'مَدَنِيَّة',
+              textDirection: TextDirection.rtl,
+              style: const TextStyle(
+                fontFamily: 'Scheherazade New',
+                fontSize: 10.5,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF8D4913),
+                height: 1.0,
+              ),
+            ),
+          ),
+
+          // Center: Surah Name
+          Expanded(
+            child: Text(
+              'سُورَةُ $surahName',
+              textDirection: TextDirection.rtl,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontFamily: 'Amiri',
+                fontSize: 14.5,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                height: 1.05,
+                shadows: [
+                  Shadow(
+                    color: Color(0xFFF59E0B),
+                    blurRadius: 3,
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Right: Ayahs and Rukus
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0.5),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFEF9EE),
+              borderRadius: BorderRadius.circular(3),
+              border: Border.all(color: const Color(0xFFD97706), width: 0.8),
+            ),
+            child: Text(
+              '$ayahCountArabic آيَات $rukuCountArabic رُكُوْع',
+              textDirection: TextDirection.rtl,
+              style: const TextStyle(
+                fontFamily: 'Scheherazade New',
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF8D4913),
+                height: 1.0,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── 16-Line Mushaf: Compact Basmallah ───────────────────────────────────────
+  Widget _build16LineBasmallah(WordLayoutData word) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 0.5),
       child: Text(
-        word.glyphCode,
+        word.glyphCode.isNotEmpty ? word.glyphCode : 'بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ',
         textDirection: TextDirection.rtl,
         textAlign: TextAlign.center,
         style: const TextStyle(
           fontFamily: 'Amiri',
-          fontSize: 17,
+          fontSize: 14.5,
           fontWeight: FontWeight.bold,
           color: Color(0xFF111111),
-          height: 1.1,
+          height: 1.0,
         ),
       ),
     );
@@ -652,43 +920,12 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
         widget.activePlayingVerseKey != null &&
         widget.activePlayingVerseKey == '${word.surah}:${word.ayah}');
 
-    final recitationResult = widget.liveRecitationWordMap?[word.wordId];
-
     Color containerBgColor = Colors.transparent;
     BoxBorder? border;
     List<BoxShadow>? shadows;
     Widget currentWordChild = wordTextWidget;
 
-    if (recitationResult != null) {
-      if (recitationResult.status == RecitationWordStatus.correct) {
-        containerBgColor = const Color(0xFFC8E6C9).withValues(alpha: 0.95); // Emerald Green
-        border = Border.all(color: const Color(0xFF4CAF50), width: 1.2);
-      } else if (recitationResult.status == RecitationWordStatus.mistake) {
-        containerBgColor = const Color(0xFFFFCDD2).withValues(alpha: 0.95); // Crimson Red
-        border = Border.all(color: const Color(0xFFE53935), width: 1.5);
-      } else if (recitationResult.status == RecitationWordStatus.active) {
-        containerBgColor = const Color(0xFFFFE082).withValues(alpha: 0.95); // Golden Amber
-        border = Border.all(color: const Color(0xFFFFB300), width: 1.2);
-        shadows = [
-          BoxShadow(
-            color: const Color(0xFFFFB300).withValues(alpha: 0.35),
-            blurRadius: 4,
-            spreadRadius: 0.5,
-          ),
-        ];
-      } else if (recitationResult.status == RecitationWordStatus.pending && widget.isHifzRevealMode) {
-        // Obscure in Hifz Reveal Mode
-        currentWordChild = Container(
-          width: (baseWord.length * 13.0).clamp(20.0, 75.0),
-          height: 16,
-          margin: const EdgeInsets.symmetric(horizontal: 2),
-          decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(3),
-          ),
-        );
-      }
-    } else if (isMarked) {
+    if (isMarked) {
       containerBgColor = Colors.red.withValues(alpha: 0.18);
       border = const Border(bottom: BorderSide(color: Color(0xFFD32F2F), width: 2.2));
     } else if (isWordActive) {
@@ -716,23 +953,16 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
       child: currentWordChild,
     );
 
-    if (recitationResult != null &&
-        recitationResult.status == RecitationWordStatus.mistake &&
-        widget.onLiveRecitationWordTap != null) {
-      return InkWell(
-        onTap: () => widget.onLiveRecitationWordTap!(recitationResult),
-        borderRadius: BorderRadius.circular(3.5),
-        child: wordChild,
-      );
-    } else if (widget.isMarkMistakesMode && !word.glyphCode.contains('﴿')) {
+    if (widget.isMarkMistakesMode && !word.glyphCode.contains('﴿')) {
       return InkWell(
         onTap: () => widget.onToggleWordMistake(word.wordId),
         borderRadius: BorderRadius.circular(3.5),
         child: wordChild,
       );
-    } else if (widget.onWordTap != null && word.surah > 0 && word.ayah > 0) {
+    } else if ((widget.onWordTap != null || widget.onWordDoubleTap != null) && word.surah > 0 && word.ayah > 0) {
       return InkWell(
-        onTap: () => widget.onWordTap!(word.surah, word.ayah),
+        onTap: widget.onWordTap != null ? () => widget.onWordTap!(word.surah, word.ayah) : null,
+        onDoubleTap: widget.onWordDoubleTap != null ? () => widget.onWordDoubleTap!(word.surah, word.ayah) : null,
         borderRadius: BorderRadius.circular(3.5),
         splashColor: const Color(0xFFFFE082).withValues(alpha: 0.3),
         child: wordChild,

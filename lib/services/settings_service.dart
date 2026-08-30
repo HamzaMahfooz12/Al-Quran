@@ -43,6 +43,23 @@ class ArabicFontSizeNotifier extends StateNotifier<double> {
   }
 }
 
+// Reactive provider for Urdu / Translation font size
+final urduFontSizeProvider = StateNotifierProvider<UrduFontSizeNotifier, double>((ref) {
+  final settings = ref.watch(settingsServiceProvider);
+  return UrduFontSizeNotifier(settings);
+});
+
+class UrduFontSizeNotifier extends StateNotifier<double> {
+  final SettingsService _settings;
+  UrduFontSizeNotifier(this._settings) : super(_settings.urduFontSize);
+
+  void updateSize(double newSize) {
+    final clamped = newSize.clamp(12.0, 36.0);
+    state = clamped;
+    _settings.setUrduFontSize(clamped);
+  }
+}
+
 class SettingsService {
   final SharedPreferences _prefs;
   SettingsService(this._prefs);
@@ -55,11 +72,13 @@ class SettingsService {
   static const _kLanguages             = 'selected_languages';
   static const _kAutoScrollSpeed       = 'auto_scroll_speed';
   static const _kArabicFontSize        = 'arabic_font_size';
+  static const _kUrduFontSize          = 'urdu_font_size';
 
   // ── Defaults ───────────────────────────────────────────────────────────────
-  static const String defaultReciterId  = 'ar.abdurrahmaansudais';
-  static const double defaultFontSize   = 28.0;
-  static const int    defaultScrollSpeed = 1;
+  static const String defaultReciterId     = 'ar.abdurrahmaansudais';
+  static const double defaultFontSize      = 28.0;
+  static const double defaultUrduFontSize  = 17.5;
+  static const int    defaultScrollSpeed   = 1;
 
   // ── Onboarding ─────────────────────────────────────────────────────────────
   bool get isOnboardingDone => _prefs.getBool(_kOnboardingDone) ?? false;
@@ -105,6 +124,12 @@ class SettingsService {
       _prefs.getDouble(_kArabicFontSize) ?? defaultFontSize;
   Future<void> setArabicFontSize(double size) =>
       _prefs.setDouble(_kArabicFontSize, size);
+
+  // ── Urdu font size ────────────────────────────────────────────────────────
+  double get urduFontSize =>
+      _prefs.getDouble(_kUrduFontSize) ?? defaultUrduFontSize;
+  Future<void> setUrduFontSize(double size) =>
+      _prefs.setDouble(_kUrduFontSize, size);
 
   // ── Prayer Juristic Method (Fiqh) ──────────────────────────────────────────
   static const _kPrayerJuristic = 'prayer_juristic_method';

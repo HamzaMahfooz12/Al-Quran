@@ -76,7 +76,7 @@ class TafseerImportService {
   static Future<void> _importDownloadableManifest(Database mainDb) async {
     try {
       final curatedTafseers = [
-        // ── Arabic (8) ──────────────────────────────────────────────────────
+        // ── Arabic (2 bundled, 6 downloadable) ──────────────────────────────
         {'id': 101, 'type': 'tafseer', 'language': 'ar', 'name': 'Tafsir Ibn Kathir (تفسير ابن كثير)', 'api_key': 'ar-tafsir-ibn-kathir', 'is_bundled': 1, 'is_downloaded': 1},
         {'id': 102, 'type': 'tafseer', 'language': 'ar', 'name': 'Tafsir al-Tabari (تفسير الطبري)', 'api_key': 'ar-tafsir-al-tabari', 'is_bundled': 0, 'is_downloaded': 0},
         {'id': 201, 'type': 'tafseer', 'language': 'ar', 'name': 'Tafseer Al-Qurtubi (تفسير القرطبي)', 'api_key': 'ar-tafseer-al-qurtubi', 'is_bundled': 0, 'is_downloaded': 0},
@@ -84,24 +84,24 @@ class TafseerImportService {
         {'id': 203, 'type': 'tafseer', 'language': 'ar', 'name': 'As-Seraj Fi Bayan Gharib Al-Quran', 'api_key': 'asseraj-fi-bayan-gharib-alquran', 'is_bundled': 0, 'is_downloaded': 0},
         {'id': 204, 'type': 'tafseer', 'language': 'ar', 'name': 'Tafsir Ibn Abi Hatim', 'api_key': 'tafsir-ibn-abi-hatim', 'is_bundled': 0, 'is_downloaded': 0},
         {'id': 205, 'type': 'tafseer', 'language': 'ar', 'name': 'Tafsir Ibn Uthaymeen', 'api_key': 'tafsir-ibn-uthaymeen', 'is_bundled': 0, 'is_downloaded': 0},
-        {'id': 206, 'type': 'tafseer', 'language': 'ar', 'name': 'Tafsir Al-Jalalayn (تفسير الجلالين)', 'api_key': 'tafsir-jalalayn', 'is_bundled': 0, 'is_downloaded': 0},
+        {'id': 206, 'type': 'tafseer', 'language': 'ar', 'name': 'Tafsir Al-Jalalayn (تفسير الجلالين)', 'api_key': 'tafsir-jalalayn', 'is_bundled': 1, 'is_downloaded': 1},
 
-        // ── Urdu (5) ────────────────────────────────────────────────────────
+        // ── Urdu (2 bundled, 3 downloadable) ────────────────────────────────
         {'id': 103, 'type': 'tafseer', 'language': 'ur', 'name': 'Tafseer Ibn e Kaseer (تفسیر ابن کثیر اردو)', 'api_key': 'tafseer-ibn-e-kaseer-urdu', 'is_bundled': 1, 'is_downloaded': 1},
         {'id': 104, 'type': 'tafseer', 'language': 'ur', 'name': 'Tafseer Bayan ul Quran (تفسیر بیان القرآن)', 'api_key': 'tafsir-bayan-ul-quran', 'is_bundled': 1, 'is_downloaded': 1},
         {'id': 207, 'type': 'tafseer', 'language': 'ur', 'name': 'Tafseer As-Sa\'di Urdu', 'api_key': 'tafsir-as-saadi', 'is_bundled': 0, 'is_downloaded': 0},
         {'id': 208, 'type': 'tafseer', 'language': 'ur', 'name': 'Fi Zilal al-Quran (Syed Qutb)', 'api_key': 'tafsir-fe-zalul-quran-syed-qatab', 'is_bundled': 0, 'is_downloaded': 0},
         {'id': 209, 'type': 'tafseer', 'language': 'ur', 'name': 'Tazkirul Quran Urdu', 'api_key': 'tazkiru-quran-ur', 'is_bundled': 0, 'is_downloaded': 0},
 
-        // ── English (5) ─────────────────────────────────────────────────────
-        {'id': 106, 'type': 'tafseer', 'language': 'en', 'name': 'Tafseer Ibn Kathir English', 'api_key': 'en-tafisr-ibn-kathir', 'is_bundled': 0, 'is_downloaded': 0},
+        // ── English (1 bundled, 4 downloadable) ─────────────────────────────
+        {'id': 106, 'type': 'tafseer', 'language': 'en', 'name': 'Tafseer Ibn Kathir English', 'api_key': 'en-tafisr-ibn-kathir', 'is_bundled': 1, 'is_downloaded': 1},
         {'id': 210, 'type': 'tafseer', 'language': 'en', 'name': 'Al-Mukhtasar English', 'api_key': 'Al-Mukhtasar', 'is_bundled': 0, 'is_downloaded': 0},
         {'id': 211, 'type': 'tafseer', 'language': 'en', 'name': 'Ma\'arif-ul-Quran English', 'api_key': 'en-tafsir-maarif-ul-quran', 'is_bundled': 0, 'is_downloaded': 0},
         {'id': 212, 'type': 'tafseer', 'language': 'en', 'name': 'Tafsir Al-Jalalayn English', 'api_key': 'tafsir-al-jalalayn', 'is_bundled': 0, 'is_downloaded': 0},
         {'id': 213, 'type': 'tafseer', 'language': 'en', 'name': 'Tazkirul Quran English', 'api_key': 'tazkirul-quran-en', 'is_bundled': 0, 'is_downloaded': 0},
 
-        // ── Hindi (1) ───────────────────────────────────────────────────────
-        {'id': 105, 'type': 'tafseer', 'language': 'hi', 'name': 'Al-Mukhtasar Hindi (تफ़सीर अल-मुख़्तसर)', 'api_key': 'hindi-mokhtasar', 'is_bundled': 1, 'is_downloaded': 1},
+        // ── Hindi (Downloadable) ────────────────────────────────────────────
+        {'id': 105, 'type': 'tafseer', 'language': 'hi', 'name': 'Al-Mukhtasar Hindi (تफ़सीर अल-मुख़्तसर)', 'api_key': 'hindi-mokhtasar', 'is_bundled': 0, 'is_downloaded': 0},
       ];
 
       final batch = mainDb.batch();

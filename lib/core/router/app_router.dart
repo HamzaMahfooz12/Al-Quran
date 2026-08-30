@@ -15,10 +15,13 @@ import '../../features/prayer_times/screens/prayer_times_screen.dart';
 import '../../features/qibla/screens/qibla_screen.dart';
 import '../../features/tasbeeh/screens/tasbeeh_screen.dart';
 import '../../features/azkar/screens/azkar_screen.dart';
+import '../../features/azkar/screens/duas_settings_screen.dart';
 import '../../features/search/screens/quran_search_screen.dart';
 import '../../features/mutashabihat/screens/mutashabihat_screen.dart';
 import '../../features/quran/simple_quran_index_screen.dart';
-import '../../features/ai_teacher/ai_teacher_screen.dart';
+import '../../features/full_surah_audio/screens/full_surah_audio_index_screen.dart';
+import '../../features/full_surah_audio/screens/full_surah_audio_player_screen.dart';
+import '../../features/full_surah_audio/screens/full_surah_downloads_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -52,7 +55,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             name: 'verse-by-verse',
             builder: (ctx, state) {
               final surah = int.parse(state.pathParameters['surahNumber']!);
-              final ayah = int.tryParse(state.uri.queryParameters['ayah'] ?? '') ?? 1;
+              final ayah = int.tryParse(state.uri.queryParameters['ayah'] ?? '') ??
+                  int.tryParse(state.uri.queryParameters['scrollToAyah'] ?? '') ??
+                  1;
               return AyahListScreen(surahNumber: surah, scrollToAyah: ayah);
             },
           ),
@@ -87,6 +92,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(path: 'qibla', name: 'qibla', builder: (ctx, state) => const QiblaScreen()),
           GoRoute(path: 'tasbeeh', name: 'tasbeeh', builder: (ctx, state) => const TasbeehScreen()),
           GoRoute(path: 'azkar', name: 'azkar', builder: (ctx, state) => const AzkarScreen()),
+          GoRoute(path: 'azkar/settings', name: 'duas-settings', builder: (ctx, state) => const DuasSettingsScreen()),
           GoRoute(path: 'search', name: 'search', builder: (ctx, state) => const QuranSearchScreen()),
           GoRoute(
             path: 'mutashabihat',
@@ -97,12 +103,24 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             },
           ),
           GoRoute(
-            path: 'ai-teacher',
-            name: 'ai-teacher',
-            builder: (ctx, state) {
-              final page = int.tryParse(state.uri.queryParameters['page'] ?? '') ?? 1;
-              return AiTeacherScreen(initialPage: page);
-            },
+            path: 'full-surah-audio',
+            name: 'full-surah-audio',
+            builder: (ctx, state) => const FullSurahAudioIndexScreen(),
+            routes: [
+              GoRoute(
+                path: 'player',
+                name: 'full-surah-audio-player',
+                builder: (ctx, state) {
+                  final surah = int.tryParse(state.uri.queryParameters['surah'] ?? '') ?? 1;
+                  return FullSurahAudioPlayerScreen(initialSurah: surah);
+                },
+              ),
+              GoRoute(
+                path: 'downloads',
+                name: 'full-surah-audio-downloads',
+                builder: (ctx, state) => const FullSurahDownloadsScreen(),
+              ),
+            ],
           ),
         ],
       ),

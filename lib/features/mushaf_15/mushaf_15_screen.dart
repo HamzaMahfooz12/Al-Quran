@@ -1,6 +1,6 @@
-// lib/features/mushaf_15/mushaf_15_screen.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/models/surah_info.dart';
@@ -8,6 +8,7 @@ import '../../data/repositories/quran_repository.dart';
 import '../../services/audio_service.dart';
 import '../../services/settings_service.dart';
 import '../audio/audio_control_bar.dart';
+import '../mushaf_shared/widgets/mushaf_bottom_control_bar.dart';
 import '../mushaf_shared/widgets/mushaf_page_widget.dart';
 import '../shared/jump_navigation_dialog.dart';
 
@@ -26,6 +27,7 @@ class _Mushaf15ScreenState extends ConsumerState<Mushaf15Screen> {
   bool _isMarkMistakesMode = false;
   Set<String> _markedWordIds = {};
   bool _loadingLastRead = true;
+  bool _showBottomBar = true;
 
   // Auto-scroll
   Timer? _scrollTimer;
@@ -77,6 +79,7 @@ class _Mushaf15ScreenState extends ConsumerState<Mushaf15Screen> {
     }
     _currentPage = page;
     _pageCtrl = PageController(initialPage: page - 1);
+    _pageCtrl!.addListener(_onScrollPage);
     if (mounted) {
       setState(() {
         _loadingLastRead = false;
@@ -85,9 +88,19 @@ class _Mushaf15ScreenState extends ConsumerState<Mushaf15Screen> {
     _loadMarkedMistakes();
   }
 
+  void _onScrollPage() {
+    if (_pageCtrl == null || !_pageCtrl!.hasClients) return;
+    final page = (_pageCtrl!.page?.round() ?? 0) + 1;
+    if (page != _currentPage && page >= 1 && page <= 610) {
+      _currentPage = page;
+      _saveLastRead(page);
+    }
+  }
+
   @override
   void dispose() {
     _scrollTimer?.cancel();
+    _pageCtrl?.removeListener(_onScrollPage);
     _pageCtrl?.dispose();
     super.dispose();
   }
@@ -190,6 +203,37 @@ class _Mushaf15ScreenState extends ConsumerState<Mushaf15Screen> {
     }
   }
 
+  void _togglePlayCurrentPage() async {
+    final audio = ref.read(audioServiceProvider);
+    if (audio.isPlaying) {
+      await audio.pause();
+      if (mounted) setState(() {});
+    } else if (audio.currentPlayingAyahId != null) {
+      await audio.resume();
+      if (mounted) setState(() {});
+    } else {
+      await _playCurrentPage();
+    }
+  }
+
+  void _toggleMarkMistakes() {
+    setState(() {
+      _isMarkMistakesMode = !_isMarkMistakesMode;
+    });
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          _isMarkMistakesMode
+              ? 'Mark Mistakes Mode ON — Tap any word to mark/unmark mistakes.'
+              : 'Mark Mistakes Mode OFF — Words locked for reading.',
+        ),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_loadingLastRead) {
@@ -220,39 +264,6 @@ class _Mushaf15ScreenState extends ConsumerState<Mushaf15Screen> {
           style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         actions: [
-          // Audio Recitation Toggle button
-          IconButton(
-            icon: Icon(
-              isAudioActive ? Icons.volume_up_rounded : Icons.volume_up_outlined,
-              color: isAudioActive ? const Color(0xFFFFD54F) : Colors.white,
-              size: 24,
-            ),
-            tooltip: isAudioActive ? 'Playing Recitation' : 'Start Audio Recitation',
-            onPressed: () {
-              if (isAudioActive) {
-                if (audio.isPlaying) {
-                  audio.pause();
-                } else {
-                  audio.resume();
-                }
-                setState(() {});
-              } else {
-                _playCurrentPage();
-              }
-            },
-          ),
-
-          // Auto-scroll Play / Pause button
-          IconButton(
-            icon: Icon(
-              _autoScrollActive ? Icons.pause_circle_filled : Icons.play_circle_outline,
-              color: _autoScrollActive ? const Color(0xFFFFD54F) : Colors.white,
-              size: 24,
-            ),
-            tooltip: 'Auto-scroll',
-            onPressed: _toggleAutoScroll,
-          ),
-
           // Jump Navigation Dialog Button
           IconButton(
             icon: const Icon(Icons.explore_outlined, color: Colors.white),
@@ -266,48 +277,28 @@ class _Mushaf15ScreenState extends ConsumerState<Mushaf15Screen> {
               },
             ),
           ),
-
-          // Mark Mistakes Mode Toggle Button
-          IconButton(
-            icon: Icon(
-              _isMarkMistakesMode ? Icons.edit_off_rounded : Icons.edit_note_rounded,
-              color: _isMarkMistakesMode ? const Color(0xFFFFD54F) : Colors.white70,
-            ),
-            tooltip: 'Mark Mistakes Mode',
-            onPressed: () {
-              setState(() => _isMarkMistakesMode = !_isMarkMistakesMode);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    _isMarkMistakesMode
-                        ? 'Mark Mistakes Mode ON: Tap any word to mark/unmark mistakes.'
-                        : 'Mark Mistakes Mode OFF: Words locked for reading.',
-                  ),
-                  duration: const Duration(seconds: 2),
-                ),
-              );
-            },
-          ),
         ],
       ),
-      body: SafeArea(
-        top: false,
-        bottom: !isAudioActive,
-        minimum: EdgeInsets.only(bottom: isAudioActive ? 0 : 12),
-        child: Column(
-          children: [
-            // Vertical Page View (1 to 610)
-            Expanded(
+      // Use Stack so the audio bar overlays the page without resizing it
+      body: Stack(
+        children: [
+          // ── Full-height Mushaf Page View (never resizes) ─────────────────
+          Positioned.fill(
+            child: NotificationListener<UserScrollNotification>(
+              onNotification: (notification) {
+                if (notification.direction == ScrollDirection.reverse) {
+                  if (_showBottomBar) setState(() => _showBottomBar = false);
+                } else if (notification.direction == ScrollDirection.forward) {
+                  if (!_showBottomBar) setState(() => _showBottomBar = true);
+                }
+                return true;
+              },
               child: PageView.builder(
                 controller: _pageCtrl,
                 scrollDirection: Axis.vertical,
-                pageSnapping: !_autoScrollActive,
-                physics: _autoScrollActive ? const ClampingScrollPhysics() : const PageScrollPhysics(),
+                pageSnapping: false,
+                physics: const ClampingScrollPhysics(),
                 itemCount: 610,
-                onPageChanged: (pageIndex) {
-                  final pageNum = pageIndex + 1;
-                  _saveLastRead(pageNum);
-                },
                 itemBuilder: (ctx, idx) {
                   final pageNum = idx + 1;
                   return MushafPageWidget(
@@ -318,44 +309,73 @@ class _Mushaf15ScreenState extends ConsumerState<Mushaf15Screen> {
                     onToggleWordMistake: _toggleMistake,
                     activePlayingWordId: activeWordId,
                     activePlayingVerseKey: activeVerseKey,
-                    onWordTap: (surah, ayah) => _playSurahAyah(surah, ayah),
+                    onWordTap: (surah, ayah) {
+                      setState(() => _showBottomBar = !_showBottomBar);
+                    },
+                    onWordDoubleTap: (surah, ayah) => _playSurahAyah(surah, ayah),
                   );
                 },
               ),
             ),
-          ],
-        ),
+          ),
+
+          // ── Audio Bar Overlay (floats above page, doesn't resize it) ────
+          if (isAudioActive)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: AudioControlBar(
+                surahNumber: audio.currentSurah ?? 1,
+                surahName: _currentSurahName.isNotEmpty
+                    ? _currentSurahName
+                    : 'Surah ${audio.currentSurah ?? 1}',
+                currentAyahNumber: audio.currentAyahNumberInSurah ?? 1,
+                totalAyahs: _currentSurahTotalAyahs,
+                onNextAyah: () {
+                  final curS = audio.currentSurah ?? 1;
+                  final curA = audio.currentAyahNumberInSurah ?? 1;
+                  if (curA < _currentSurahTotalAyahs) {
+                    _playSurahAyah(curS, curA + 1);
+                  } else if (curS < 114) {
+                    _playSurahAyah(curS + 1, 1);
+                  }
+                },
+                onPrevAyah: () {
+                  final curS = audio.currentSurah ?? 1;
+                  final curA = audio.currentAyahNumberInSurah ?? 1;
+                  if (curA > 1) {
+                    _playSurahAyah(curS, curA - 1);
+                  } else if (curS > 1) {
+                    _playSurahAyah(curS - 1, 1);
+                  }
+                },
+                onClose: () {
+                  audio.stop();
+                  setState(() {});
+                },
+              ),
+            ),
+
+          // ── Mushaf Bottom Control Bar (shown when no audio, as overlay) ─
+          if (!isAudioActive)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: MushafBottomControlBar(
+                isVisible: _showBottomBar,
+                isAutoScrolling: _autoScrollActive,
+                onToggleAutoScroll: _toggleAutoScroll,
+                isPlaying: audio.isPlaying,
+                isBuffering: audio.isBuffering,
+                onTogglePlay: _togglePlayCurrentPage,
+                isMarkMistakesMode: _isMarkMistakesMode,
+                onToggleMarkMistakes: _toggleMarkMistakes,
+              ),
+            ),
+        ],
       ),
-      bottomSheet: isAudioActive
-          ? AudioControlBar(
-              surahNumber: audio.currentSurah ?? 1,
-              surahName: _currentSurahName.isNotEmpty ? _currentSurahName : 'Surah ${audio.currentSurah ?? 1}',
-              currentAyahNumber: audio.currentAyahNumberInSurah ?? 1,
-              totalAyahs: _currentSurahTotalAyahs,
-              onNextAyah: () {
-                final curS = audio.currentSurah ?? 1;
-                final curA = audio.currentAyahNumberInSurah ?? 1;
-                if (curA < _currentSurahTotalAyahs) {
-                  _playSurahAyah(curS, curA + 1);
-                } else if (curS < 114) {
-                  _playSurahAyah(curS + 1, 1);
-                }
-              },
-              onPrevAyah: () {
-                final curS = audio.currentSurah ?? 1;
-                final curA = audio.currentAyahNumberInSurah ?? 1;
-                if (curA > 1) {
-                  _playSurahAyah(curS, curA - 1);
-                } else if (curS > 1) {
-                  _playSurahAyah(curS - 1, 1);
-                }
-              },
-              onClose: () {
-                audio.stop();
-                setState(() {});
-              },
-            )
-          : null,
     );
   }
 }

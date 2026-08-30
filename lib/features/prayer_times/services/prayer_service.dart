@@ -65,7 +65,7 @@ class PrayerService {
   }) async {
     final targetDate = date ?? DateTime.now();
     final isHanafi = fiqh == 'hanafi';
-    final fiqhLabel = isHanafi ? 'Hanafi • حَنَفِي' : 'Shafi\'i • شَافِعِي';
+    final fiqhLabel = isHanafi ? 'Hanafi' : 'Shafi\'i / Hanbali / Maliki';
 
     // 1. Attempt live online fetch via Aladhan API
     try {

@@ -92,39 +92,59 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 ScaleTransition(
                   scale: _pulseAnim,
                   child: Container(
-                    width: 120,
-                    height: 120,
+                    width: 140,
+                    height: 140,
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(30),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppTheme.gold.withValues(alpha: 0.35),
+                          blurRadius: 28,
+                          spreadRadius: 4,
+                        ),
+                      ],
+                      border: Border.all(color: AppTheme.gold, width: 2.5),
                     ),
-                    child: const Center(
-                      child: Text(
-                        '☪',
-                        style: TextStyle(fontSize: 66, color: Colors.white),
-                      ),
+                    child: Image.asset(
+                      'assets/images/app_logo_emblem.png',
+                      fit: BoxFit.contain,
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 32),
+                const SizedBox(height: 28),
 
                 Text(
-                  'Al Quran',
-                  style: GoogleFonts.inter(
-                    fontSize: 32,
+                  'حَافِظُ الْقُرْآنِ',
+                  style: GoogleFonts.amiri(
+                    fontSize: 34,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.gold,
+                    height: 1.2,
+                  ),
+                ),
+
+                const SizedBox(height: 4),
+
+                Text(
+                  'Hifz ul Quran',
+                  style: GoogleFonts.outfit(
+                    fontSize: 26,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
+                    letterSpacing: 0.5,
                   ),
                 ),
 
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
 
                 Text(
-                  'Read. Listen. Reflect.',
+                  'Read • Memorize • Listen • Reflect',
                   style: GoogleFonts.inter(
-                    fontSize: 15,
-                    color: Colors.white.withValues(alpha: 0.75),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white.withValues(alpha: 0.85),
+                    letterSpacing: 0.3,
                   ),
                 ),
 

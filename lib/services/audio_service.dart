@@ -57,6 +57,9 @@ class QuranAudioService {
 
   AudioPlayer get player => _player;
   bool get isPlaying => _player.playing;
+  bool get isBuffering =>
+      _player.processingState == ProcessingState.buffering ||
+      _player.processingState == ProcessingState.loading;
   Stream<PlayerState> get playerStateStream => _player.playerStateStream;
   Stream<Duration?> get positionStream => _player.positionStream;
   Stream<Duration?> get durationStream => _player.durationStream;

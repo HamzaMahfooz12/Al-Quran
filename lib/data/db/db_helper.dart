@@ -55,6 +55,13 @@ class DatabaseHelper {
             final count = (countRes.first['c'] as int?) ?? 0;
             if (count == 0) {
               shouldExtract = true;
+            } else {
+              // Check if DB has old contaminated tafseer rows (> 3000 rows for edition 103)
+              final tafseerCountRes = await tempDb.rawQuery("SELECT COUNT(*) as c FROM ayah_content WHERE edition_id=103");
+              final tafseerCount = (tafseerCountRes.first['c'] as int?) ?? 0;
+              if (tafseerCount > 3000) {
+                shouldExtract = true;
+              }
             }
           }
         }

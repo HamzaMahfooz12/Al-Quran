@@ -15,12 +15,12 @@ import '../../data/models/ayah.dart';
 import '../../data/models/edition.dart';
 import '../../data/models/surah_info.dart';
 import '../../data/repositories/quran_repository.dart';
-import '../../data/ruku_data.dart';
 import '../../services/settings_service.dart';
 import '../../services/audio_service.dart';
 import '../audio/audio_control_bar.dart';
-import '../mushaf_shared/widgets/ayah_end_symbol.dart';
 import '../share/widgets/ayah_share_dialog.dart';
+import '../tafseer/widgets/ayah_tafseer_modal.dart';
+import '../shared/widgets/unified_ayah_card.dart';
 
 class AyahListScreen extends ConsumerStatefulWidget {
   final int surahNumber;
@@ -42,7 +42,6 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
   Map<int, String> _translations = {};
   Map<int, String> _tafseers = {};
   String? _bismillahTranslationText;
-  String? _bismillahTafseerText;
   bool _loading = true;
 
   // Active editions
@@ -51,8 +50,6 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
 
   // Toggle states
   bool _showTranslation = true;
-  bool _showTafseer = false;
-  bool _showHeaderTafseer = false;
 
   // Auto-scroll
   Timer? _scrollTimer;
@@ -60,6 +57,7 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
 
   Timer? _lastReadTimer;
   late SurahInfo _surahInfo;
+  Set<int> _bookmarkedAyahs = {};
 
   @override
   void initState() {
@@ -112,13 +110,11 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
     Map<int, String> translations = await repo.getContentBulk(ayahIds, transEdition.id);
     Map<int, String> tafseers = await repo.getContentBulk(ayahIds, tafseerEdition.id);
 
-    // Fetch Bismillah translation & tafseer for Ayah ID 1 (Ayah 1 of Surah 1 = Bismillah)
+    // Fetch Bismillah translation for Ayah ID 1 (Ayah 1 of Surah 1 = Bismillah)
     String? bTrans = translations[1] ?? await repo.getContent(1, transEdition.id);
     bTrans ??= (transEdition.language == 'ur'
         ? 'شروع اللہ کے نام سے جو بڑا مہربان نہایت رحم والا ہے'
         : 'In the name of Allah, the Entirely Merciful, the Especially Merciful.');
-
-    String? bTafseer = tafseers[1] ?? await repo.getContent(1, tafseerEdition.id);
 
     // If selected translation rows don't exist yet, download on the fly for this Surah
     if (translations.isEmpty) {
@@ -149,10 +145,14 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
 
     if (tafseers.isEmpty || isTafseerStaleArabic) {
       tafseers = await _loadEditionContent(tafseerEdition, ayahIds);
-      bTafseer = tafseers[1] ?? await repo.getContent(1, tafseerEdition.id);
     }
 
     final lastRead = await repo.getLastRead('verse_by_verse');
+    final allBookmarks = await repo.getBookmarks();
+    final bookmarkedSet = allBookmarks
+        .where((b) => b.surah == widget.surahNumber)
+        .map((b) => b.ayah)
+        .toSet();
 
     if (mounted) {
       setState(() {
@@ -162,14 +162,16 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
         _translations = translations;
         _tafseers = tafseers;
         _bismillahTranslationText = bTrans;
-        _bismillahTafseerText = bTafseer;
+        _bookmarkedAyahs = bookmarkedSet;
         _loading = false;
       });
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        final targetAyah = (lastRead != null && lastRead['surah'] == widget.surahNumber)
-            ? (lastRead['ayah'] as int? ?? 1)
-            : widget.scrollToAyah;
+        final targetAyah = widget.scrollToAyah > 1
+            ? widget.scrollToAyah
+            : ((lastRead != null && lastRead['surah'] == widget.surahNumber)
+                ? (lastRead['ayah'] as int? ?? 1)
+                : 1);
 
         if (targetAyah > 1 && _ayahs.length >= targetAyah && _scrollCtrl.hasClients) {
           final estimatedOffset = (targetAyah - 1) * 200.0;
@@ -298,12 +300,27 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
   }
 
   Future<void> _playAyah(Ayah ayah) async {
+    if (_autoScrollActive) {
+      _scrollTimer?.cancel();
+      _autoScrollActive = false;
+    }
     final audio = ref.read(audioServiceProvider);
 
     audio.onAdvance = (surah, nextAyahInSurah) {
       final nextIdx = _ayahs.indexWhere((a) => a.ayahNumber == nextAyahInSurah);
       if (nextIdx >= 0 && mounted) {
         _playAyah(_ayahs[nextIdx]);
+        // Auto-scroll the list to the newly playing ayah
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_scrollCtrl.hasClients) {
+            final targetOffset = nextIdx * 280.0;
+            _scrollCtrl.animateTo(
+              targetOffset.clamp(0, _scrollCtrl.position.maxScrollExtent),
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeInOut,
+            );
+          }
+        });
       }
     };
 
@@ -319,8 +336,6 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
   // ── Edition Selector Bottom Sheet ─────────────────────────────────────────
   Future<void> _showEditionSelector(String type) async {
     final repo = ref.read(quranRepositoryProvider);
-    // Sync all global editions from API first
-    await repo.fetchAndSyncApiEditions(type);
     final allEditions = await repo.getAllEditions(type: type);
 
     final currentLang = type == 'translation'
@@ -329,6 +344,23 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
     String selectedLangFilter = currentLang;
 
     if (!mounted) return;
+
+    // Background sync without blocking the UI
+    unawaited(repo.fetchAndSyncApiEditions(type).catchError((_) => <Edition>[]));
+
+    // Pre-organize and pre-sort by language
+    final Map<String, List<Edition>> langMap = {};
+    for (final ed in allEditions) {
+      final lang = ed.language.toLowerCase();
+      langMap.putIfAbsent(lang, () => []).add(ed);
+    }
+    for (final list in langMap.values) {
+      list.sort((a, b) {
+        if (a.isAvailable && !b.isAvailable) return -1;
+        if (!a.isAvailable && b.isAvailable) return 1;
+        return a.name.compareTo(b.name);
+      });
+    }
 
     showModalBottomSheet(
       context: context,
@@ -340,16 +372,8 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
       builder: (ctx) {
         return StatefulBuilder(
           builder: (context, setModalState) {
-            final baseFiltered = selectedLangFilter == 'all'
-                ? List<Edition>.from(allEditions)
-                : allEditions.where((e) => e.language.toLowerCase() == selectedLangFilter).toList();
-
-            final filteredList = baseFiltered
-              ..sort((a, b) {
-                if (a.isAvailable && !b.isAvailable) return -1;
-                if (!a.isAvailable && b.isAvailable) return 1;
-                return a.name.compareTo(b.name);
-              });
+            final filteredList = langMap[selectedLangFilter] ??
+                (selectedLangFilter == 'all' ? allEditions : <Edition>[]);
 
             return ConstrainedBox(
               constraints: BoxConstraints(
@@ -444,7 +468,6 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                                     } else {
                                       setState(() {
                                         _activeTafseerEdition = ed;
-                                        _showTafseer = true;
                                       });
                                       await ref.read(settingsServiceProvider).setSelectedTafseerEditionId(ed.id);
                                     }
@@ -535,8 +558,12 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
         for (final entry in tafseerDict.entries) {
           final key = entry.key; // e.g. "1:1"
           final val = entry.value;
-          final rawText = val is Map ? (val['text'] ?? '').toString() : val.toString();
+          // Only insert if entry contains actual commentary (skip pointer aliases like "3:1")
+          if (val is! Map) continue;
+          final rawText = (val['text'] ?? '').toString();
+          if (rawText.trim().isEmpty) continue;
           final text = _cleanHtml(rawText);
+          if (text.isEmpty) continue;
 
           final parts = key.split(':');
           if (parts.length == 2) {
@@ -652,7 +679,7 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                           const Icon(Icons.compare_arrows_rounded, color: Color(0xFFD84315), size: 22),
                           const SizedBox(width: 8),
                           Text(
-                            'Mutashabihat • المتشابهات',
+                            'Mutashabihat (Similar Verses)',
                             style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
                           ),
                         ],
@@ -773,6 +800,7 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
   @override
   Widget build(BuildContext context) {
     final arabicFontSize = ref.watch(arabicFontSizeProvider);
+    final urduFontSize = ref.watch(urduFontSizeProvider);
     final audio = ref.watch(audioServiceProvider);
 
     return Scaffold(
@@ -808,12 +836,12 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                 final isBuffering = playerState?.processingState == ProcessingState.buffering ||
                     playerState?.processingState == ProcessingState.loading;
 
-                  final double bottomPadding = (audio.currentPlayingAyahId != null ? 220.0 : 30.0) +
+                  final double bottomPadding = (audio.currentPlayingAyahId != null ? 260.0 : 110.0) +
                       MediaQuery.paddingOf(context).bottom;
 
                   return ListView.builder(
                     controller: _scrollCtrl,
-                    padding: EdgeInsets.fromLTRB(12, 0, 12, bottomPadding),
+                    padding: EdgeInsets.fromLTRB(14, 8, 14, bottomPadding),
                     itemCount: _ayahs.length + 1,
                     itemBuilder: (ctx, i) {
                       // Index 0 → premium Surah Header Banner
@@ -821,31 +849,46 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                         return _SurahHeaderBanner(
                           surahInfo: _surahInfo,
                           showBismillah: widget.surahNumber != 9,
+                          bismillahTranslationText: _bismillahTranslationText,
+                          showTranslation: _showTranslation,
                           translationName: _activeTranslationEdition?.name ?? 'Translation',
                           tafseerName: _activeTafseerEdition?.name ?? 'Tafseer',
-                          bismillahTranslationText: _bismillahTranslationText,
-                          bismillahTafseerText: _bismillahTafseerText,
-                          showTranslation: _showTranslation,
-                          showTafseer: _showHeaderTafseer,
                           onToggleTranslation: () => setState(() => _showTranslation = !_showTranslation),
-                          onToggleTafseer: () async {
-                            setState(() => _showHeaderTafseer = !_showHeaderTafseer);
-                            if (_showHeaderTafseer) {
-                              final repo = ref.read(quranRepositoryProvider);
-                              final ayahIds = _ayahs.map((a) => a.id).toList();
-                              final edId = _activeTafseerEdition?.id ?? 7;
-                              var tMap = await repo.getContentBulk(ayahIds, edId);
-                              if (tMap.isEmpty && _activeTafseerEdition != null) {
-                                tMap = await _fetchSurahEditionFromApi(_activeTafseerEdition!, ayahIds);
-                              }
-                              final bTaf = tMap[1] ?? await repo.getContent(1, edId);
-                              if (mounted && tMap.isNotEmpty) {
-                                setState(() {
-                                  _tafseers = tMap;
-                                  _bismillahTafseerText = bTaf;
-                                });
-                              }
-                            }
+                          onToggleTafseer: () {
+                            showAyahTafseerModal(
+                              context: context,
+                              ref: ref,
+                              ayah: _ayahs.isNotEmpty
+                                  ? _ayahs.first
+                                  : Ayah(
+                                      id: _getGlobalAyahId(widget.surahNumber, 1),
+                                      surah: widget.surahNumber,
+                                      ayahNumber: 1,
+                                      arabicText: widget.surahNumber == 9
+                                          ? _surahInfo.nameArabic
+                                          : 'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ',
+                                      juz: _surahInfo.startPage,
+                                      hizb: 1,
+                                      ruku: 1,
+                                      manzil: 1,
+                                      page: _surahInfo.startPage,
+                                      isSajda: false,
+                                    ),
+                              activeTafseerEdition: _activeTafseerEdition ??
+                                  const Edition(
+                                    id: 103,
+                                    type: 'tafseer',
+                                    language: 'ur',
+                                    name: 'Tafseer Ibn e Kaseer',
+                                    apiKey: 'tafseer-ibn-e-kaseer-urdu',
+                                    isBundled: true,
+                                    isDownloaded: true,
+                                  ),
+                              onEditionChanged: (newEd) {
+                                setState(() => _activeTafseerEdition = newEd);
+                                _loadData();
+                              },
+                            );
                           },
                           onSelectTranslation: () => _showEditionSelector('translation'),
                           onSelectTafseer: () => _showEditionSelector('tafseer'),
@@ -862,36 +905,43 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                       final activeWordAsync = ref.watch(activeWordIdProvider);
                       final activeWordId = activeWordAsync.value ?? audio.currentActiveWordId;
 
-                      return _AyahCard(
+                      final isBookmarkedNow = _bookmarkedAyahs.contains(_ayahs[ayahIdx].ayahNumber);
+
+                      return UnifiedAyahCard(
                         ayah: _ayahs[ayahIdx],
                         translationText: _translations[_ayahs[ayahIdx].id],
                         tafseerText: _tafseers[_ayahs[ayahIdx].id],
                         translationName: _activeTranslationEdition?.name ?? 'Translation',
                         tafseerName: _activeTafseerEdition?.name ?? 'Tafseer',
-                        showTranslation: _showTranslation,
-                        showTafseer: _showTafseer,
                         arabicFontSize: arabicFontSize,
+                        urduFontSize: urduFontSize,
                         isPlaying: isPlayingNow,
                         isBuffering: isBufferingNow,
+                        isBookmarked: isBookmarkedNow,
                         activeWordId: activeWordId,
-                        onToggleTranslation: () => setState(() => _showTranslation = !_showTranslation),
-                        onToggleTafseer: () async {
-                          setState(() => _showTafseer = !_showTafseer);
-                          if (_showTafseer) {
-                            final repo = ref.read(quranRepositoryProvider);
-                            final ayahIds = _ayahs.map((a) => a.id).toList();
-                            final edId = _activeTafseerEdition?.id ?? 7;
-                            var tMap = await repo.getContentBulk(ayahIds, edId);
-                            if (tMap.isEmpty && _activeTafseerEdition != null) {
-                              tMap = await _fetchSurahEditionFromApi(_activeTafseerEdition!, ayahIds);
-                            }
-                            if (mounted && tMap.isNotEmpty) {
-                              setState(() => _tafseers = tMap);
-                            }
-                          }
+                        onOpenTafseer: () {
+                          showAyahTafseerModal(
+                            context: context,
+                            ref: ref,
+                            ayah: _ayahs[ayahIdx],
+                            activeTafseerEdition: _activeTafseerEdition ??
+                                const Edition(
+                                  id: 103,
+                                  type: 'tafseer',
+                                  language: 'ur',
+                                  name: 'Tafseer Ibn e Kaseer',
+                                  apiKey: 'tafseer-ibn-e-kaseer-urdu',
+                                  isBundled: true,
+                                  isDownloaded: true,
+                                ),
+                            initialTafseerText: _tafseers[_ayahs[ayahIdx].id],
+                            onEditionChanged: (newEd) {
+                              setState(() => _activeTafseerEdition = newEd);
+                              _loadData();
+                            },
+                          );
                         },
                         onSelectTranslation: () => _showEditionSelector('translation'),
-                        onSelectTafseer: () => _showEditionSelector('tafseer'),
                         onPlayTap: () => _playAyah(_ayahs[ayahIdx]),
                         onShareTap: () {
                           final trText = _translations[_ayahs[ayahIdx].id] ?? '';
@@ -917,15 +967,22 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                         onBookmarkTap: () async {
                           final repo = ref.read(quranRepositoryProvider);
                           final messenger = ScaffoldMessenger.of(context);
-                          final isBookmarked = await repo.isBookmarked(_ayahs[ayahIdx].surah, _ayahs[ayahIdx].ayahNumber);
-                          if (isBookmarked) {
-                            await repo.removeBookmark(_ayahs[ayahIdx].surah, _ayahs[ayahIdx].ayahNumber);
+                          final curAyahNum = _ayahs[ayahIdx].ayahNumber;
+                          final isCurrentlyBookmarked = _bookmarkedAyahs.contains(curAyahNum);
+                          if (isCurrentlyBookmarked) {
+                            await repo.removeBookmark(_ayahs[ayahIdx].surah, curAyahNum);
+                            if (mounted) {
+                              setState(() => _bookmarkedAyahs.remove(curAyahNum));
+                            }
                           } else {
-                            await repo.addBookmark(_ayahs[ayahIdx].surah, _ayahs[ayahIdx].ayahNumber);
+                            await repo.addBookmark(_ayahs[ayahIdx].surah, curAyahNum);
+                            if (mounted) {
+                              setState(() => _bookmarkedAyahs.add(curAyahNum));
+                            }
                           }
                           if (mounted) {
                             messenger.showSnackBar(SnackBar(
-                              content: Text(isBookmarked ? 'Bookmark removed' : 'Bookmarked!'),
+                              content: Text(isCurrentlyBookmarked ? 'Bookmark removed' : 'Bookmarked!'),
                               duration: const Duration(seconds: 1),
                               behavior: SnackBarBehavior.floating,
                             ));
@@ -937,28 +994,81 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                 },
               ),
       bottomSheet: (audio.currentPlayingAyahId != null && _ayahs.isNotEmpty)
-          ? AudioControlBar(
-              surahNumber: widget.surahNumber,
-              surahName: _surahInfo.nameTransliteration,
-              currentAyahNumber: _ayahs
-                  .firstWhere((a) => a.id == audio.currentPlayingAyahId, orElse: () => _ayahs.first)
-                  .ayahNumber,
-              totalAyahs: _ayahs.length,
-              onNextAyah: () {
-                final curIdx = _ayahs.indexWhere((a) => a.id == audio.currentPlayingAyahId);
-                if (curIdx >= 0 && curIdx < _ayahs.length - 1) {
-                  _playAyah(_ayahs[curIdx + 1]);
-                }
-              },
-              onPrevAyah: () {
-                final curIdx = _ayahs.indexWhere((a) => a.id == audio.currentPlayingAyahId);
-                if (curIdx > 0) {
-                  _playAyah(_ayahs[curIdx - 1]);
-                }
-              },
-              onClose: () => setState(() {}),
+          ? Container(
+              color: Colors.transparent,
+              child: AudioControlBar(
+                surahNumber: widget.surahNumber,
+                surahName: _surahInfo.nameTransliteration,
+                currentAyahNumber: _ayahs
+                    .firstWhere((a) => a.id == audio.currentPlayingAyahId, orElse: () => _ayahs.first)
+                    .ayahNumber,
+                totalAyahs: _ayahs.length,
+                onNextAyah: () {
+                  final curIdx = _ayahs.indexWhere((a) => a.id == audio.currentPlayingAyahId);
+                  if (curIdx >= 0 && curIdx < _ayahs.length - 1) {
+                    _playAyah(_ayahs[curIdx + 1]);
+                  }
+                },
+                onPrevAyah: () {
+                  final curIdx = _ayahs.indexWhere((a) => a.id == audio.currentPlayingAyahId);
+                  if (curIdx > 0) {
+                    _playAyah(_ayahs[curIdx - 1]);
+                  }
+                },
+                onClose: () => setState(() {}),
+              ),
             )
           : null,
+      // Auto-scroll FAB: completely hidden when audio session is active, sits near bottom right
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: (audio.currentPlayingAyahId != null)
+          ? null
+          : Padding(
+              padding: EdgeInsets.only(
+                bottom: (MediaQuery.paddingOf(context).bottom > 0 ? 4.0 : 10.0),
+                right: 4.0,
+              ),
+              child: InkWell(
+                onTap: _toggleAutoScroll,
+                borderRadius: BorderRadius.circular(26),
+                child: Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF26A69A), Color(0xFF00796B)],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.22),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF0D1B1E),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: Icon(
+                          _autoScrollActive ? Icons.pause_rounded : Icons.keyboard_arrow_down_rounded,
+                          color: Colors.white,
+                          size: 26,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
     );
   }
 }
@@ -970,9 +1080,7 @@ class _SurahHeaderBanner extends StatelessWidget {
   final String translationName;
   final String tafseerName;
   final String? bismillahTranslationText;
-  final String? bismillahTafseerText;
   final bool showTranslation;
-  final bool showTafseer;
   final VoidCallback onToggleTranslation;
   final VoidCallback onToggleTafseer;
   final VoidCallback onSelectTranslation;
@@ -984,9 +1092,7 @@ class _SurahHeaderBanner extends StatelessWidget {
     required this.translationName,
     required this.tafseerName,
     required this.bismillahTranslationText,
-    required this.bismillahTafseerText,
     required this.showTranslation,
-    required this.showTafseer,
     required this.onToggleTranslation,
     required this.onToggleTafseer,
     required this.onSelectTranslation,
@@ -998,140 +1104,156 @@ class _SurahHeaderBanner extends StatelessWidget {
     final isMeccan = surahInfo.revelationType == 'Meccan';
 
     return Container(
-      margin: const EdgeInsets.fromLTRB(0, 8, 0, 12),
+      margin: const EdgeInsets.fromLTRB(0, 8, 0, 14),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(22),
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF1A4731), Color(0xFF2D6A4F), Color(0xFF1B5E3B)],
+          colors: [
+            Color(0xFF1E5B2E), // Rich Islamic Forest Green
+            Color(0xFF144723), // Deep Emerald Shadow
+          ],
+        ),
+        border: Border.all(
+          color: const Color(0xFFF59E0B).withValues(alpha: 0.35),
+          width: 1.2,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1A4731).withValues(alpha: 0.4),
-            blurRadius: 16,
+            color: const Color(0xFF144723).withValues(alpha: 0.35),
+            blurRadius: 18,
             offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Column(
         children: [
-          // ── Main info row ────────────────────────────────────────────
+          // ── 1. Top Gilded Surah Ribbon Row ──────────────────────────────
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 18, 16, 14),
+            padding: const EdgeInsets.fromLTRB(14, 16, 14, 10),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Left — Revelation type badge
-                Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
-                        borderRadius: BorderRadius.circular(10),
+                // Left — Revelation badge in ornate gold medallion pill
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFEF9EE),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFF59E0B), width: 1.4),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.12),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
                       ),
-                      child: Column(
-                        children: [
-                          Text(
-                            isMeccan ? 'مَكِّيَّة' : 'مَدَنِيَّة',
-                            style: const TextStyle(
-                              fontFamily: 'Scheherazade New',
-                              fontSize: 15,
-                              color: Colors.white,
-                            ),
-                          ),
-                          Text(
-                            isMeccan ? 'Meccan' : 'Medinan',
-                            style: GoogleFonts.inter(
-                              fontSize: 10,
-                              color: Colors.white70,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-
-                // Center — Arabic surah name
-                Expanded(
+                    ],
+                  ),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Decorative line
-                      Row(
-                        children: [
-                          Expanded(child: Container(height: 1, color: Colors.white.withValues(alpha: 0.2))),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: Container(
-                              width: 6, height: 6,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFD4A843),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ),
-                          Expanded(child: Container(height: 1, color: Colors.white.withValues(alpha: 0.2))),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      // Arabic surah name
                       Text(
-                        'سُورَةُ ${surahInfo.nameArabic}',
+                        isMeccan ? 'مَكِّيَّة' : 'مَدَنِيَّة',
                         style: const TextStyle(
                           fontFamily: 'Scheherazade New',
-                          fontSize: 28,
-                          color: Colors.white,
-                          height: 1.3,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF8D4913),
+                          height: 1.1,
                         ),
-                        textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 2),
                       Text(
-                        surahInfo.nameTransliteration,
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          color: Colors.white70,
-                          fontWeight: FontWeight.w500,
-                          letterSpacing: 0.5,
+                        isMeccan ? 'Meccan' : 'Medinan',
+                        style: GoogleFonts.outfit(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF8D4913),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Expanded(child: Container(height: 1, color: Colors.white.withValues(alpha: 0.2))),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: Container(
-                              width: 6, height: 6,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFD4A843),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ),
-                          Expanded(child: Container(height: 1, color: Colors.white.withValues(alpha: 0.2))),
-                        ],
                       ),
                     ],
                   ),
                 ),
 
-                // Right — Surah stats
+                const SizedBox(width: 8),
+
+                // Center — Arabic Surah Name & Transliteration
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Arabic Surah Title with subtle gold glow
+                      Text(
+                        'سُورَةُ ${surahInfo.nameArabic}',
+                        style: const TextStyle(
+                          fontFamily: 'Scheherazade New',
+                          fontSize: 27,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          height: 1.25,
+                          shadows: [
+                            Shadow(
+                              color: Color(0xFFF59E0B),
+                              blurRadius: 8,
+                            ),
+                          ],
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${surahInfo.nameTransliteration} • ${surahInfo.nameTranslation}',
+                        style: GoogleFonts.outfit(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFFFEF3C7),
+                          letterSpacing: 0.3,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(width: 8),
+
+                // Right — Verses Count & Rukus Count in ornate gold medallion pill
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
-                    borderRadius: BorderRadius.circular(10),
+                    color: const Color(0xFFFEF9EE),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFF59E0B), width: 1.4),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.12),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      _statRow('Verses', surahInfo.ayahCount.toString()),
-                      _statRow('Surah', surahInfo.number.toString()),
-                      _statRow('Page', surahInfo.startPage.toString()),
+                      Text(
+                        '${surahInfo.ayahCount} Verses',
+                        style: GoogleFonts.outfit(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF8D4913),
+                          height: 1.1,
+                        ),
+                      ),
+                      Text(
+                        '${surahInfo.rukuCount} Rukus',
+                        style: GoogleFonts.outfit(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF8D4913),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -1139,111 +1261,164 @@ class _SurahHeaderBanner extends StatelessWidget {
             ),
           ),
 
-          // ── Translation & Tafseer Control Pills in Header ─────────────
+          // ── 2. Interactive Tafseer & Translation Floating Selector Chips ──
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Tafseer Pill Button
-                  InkWell(
-                    onTap: onToggleTafseer,
-                    borderRadius: const BorderRadius.horizontal(left: Radius.circular(20)),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: showTafseer ? const Color(0xFFD4A843) : Colors.transparent,
-                        borderRadius: const BorderRadius.horizontal(left: Radius.circular(20)),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Tafseer Pill Button (Opens Tafseer modal / Edition picker)
+                InkWell(
+                  onTap: onToggleTafseer,
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6.5),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.menu_book_rounded, size: 14, color: Color(0xFFFEF3C7)),
+                        const SizedBox(width: 5),
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 120),
+                          child: Text(
+                            tafseerName.isNotEmpty ? tafseerName : 'Tafseer',
+                            style: GoogleFonts.outfit(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: onSelectTafseer,
+                          child: const Padding(
+                            padding: EdgeInsets.only(left: 2),
+                            child: Icon(Icons.arrow_drop_down_rounded, size: 18, color: Colors.white70),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(width: 8),
+
+                // Translation Pill Button (Toggles visibility / Opens Edition picker)
+                InkWell(
+                  onTap: onToggleTranslation,
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6.5),
+                    decoration: BoxDecoration(
+                      color: showTranslation ? const Color(0xFFFEF3C7) : Colors.white.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: showTranslation ? const Color(0xFFF59E0B) : Colors.white.withValues(alpha: 0.3),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'Tafseer (تفسير)',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: showTafseer ? Colors.black87 : Colors.white,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.translate_rounded,
+                          size: 14,
+                          color: showTranslation ? const Color(0xFF1B2A1E) : Colors.white,
+                        ),
+                        const SizedBox(width: 5),
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 120),
+                          child: Text(
+                            translationName.isNotEmpty ? translationName : 'Translation',
+                            style: GoogleFonts.outfit(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.bold,
+                              color: showTranslation ? const Color(0xFF1B2A1E) : Colors.white,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: onSelectTranslation,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 2),
+                            child: Icon(
+                              Icons.arrow_drop_down_rounded,
+                              size: 18,
+                              color: showTranslation ? const Color(0xFF1B2A1E) : Colors.white70,
                             ),
                           ),
-                          GestureDetector(
-                            onTap: onSelectTafseer,
-                            child: const Padding(
-                              padding: EdgeInsets.only(left: 2),
-                              child: Icon(Icons.arrow_drop_down, size: 16, color: Colors.white70),
-                            ),
-                          ),
-                        ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 6),
+
+          // ── 3. Bismillah & Urdu Translation Section ───────────────────────
+          if (showBismillah) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 1,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.white.withValues(alpha: 0.0),
+                            const Color(0xFFF59E0B).withValues(alpha: 0.6),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-
-                  Container(width: 1, height: 16, color: Colors.white24),
-
-                  // Translation Pill Button
-                  InkWell(
-                    onTap: onToggleTranslation,
-                    borderRadius: const BorderRadius.horizontal(right: Radius.circular(20)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Icon(
+                      Icons.star_rounded,
+                      size: 12,
+                      color: const Color(0xFFF59E0B).withValues(alpha: 0.8),
+                    ),
+                  ),
+                  Expanded(
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      height: 1,
                       decoration: BoxDecoration(
-                        color: showTranslation ? const Color(0xFFA5D6A7) : Colors.transparent,
-                        borderRadius: const BorderRadius.horizontal(right: Radius.circular(20)),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.translate,
-                            size: 14,
-                            color: showTranslation ? const Color(0xFF1B4332) : Colors.white,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            translationName.contains('Urdu') || translationName.contains('Jalandhry') || translationName.contains('Taqi')
-                                ? 'Urdu Ttion'
-                                : 'Translation',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: showTranslation ? const Color(0xFF1B4332) : Colors.white,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: onSelectTranslation,
-                            child: const Padding(
-                              padding: EdgeInsets.only(left: 2),
-                              child: Icon(Icons.arrow_drop_down, size: 16, color: Colors.white70),
-                            ),
-                          ),
-                        ],
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFFF59E0B).withValues(alpha: 0.6),
+                            Colors.white.withValues(alpha: 0.0),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-          ),
-          const SizedBox(height: 6),
-
-          // ── Bismillah & Bismillah Translation line ─────────────────────────
-          if (showBismillah) ...[
-            Container(height: 1, color: Colors.white.withValues(alpha: 0.12)),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               child: Column(
                 children: [
-                  Text(
+                  const Text(
                     'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ',
                     textAlign: TextAlign.center,
                     textDirection: TextDirection.rtl,
-                    style: GoogleFonts.amiri(
+                    style: TextStyle(
+                      fontFamily: 'Scheherazade New',
                       fontSize: 24,
                       color: Colors.white,
                       height: 1.8,
@@ -1251,9 +1426,9 @@ class _SurahHeaderBanner extends StatelessWidget {
                     ),
                   ),
 
-                  // Bismillah Translation
+                  // Bismillah Urdu Translation
                   if (showTranslation && bismillahTranslationText != null) ...[
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
                     Text(
                       bismillahTranslationText!,
                       textAlign: TextAlign.center,
@@ -1261,540 +1436,19 @@ class _SurahHeaderBanner extends StatelessWidget {
                           ? TextDirection.rtl
                           : TextDirection.ltr,
                       style: bismillahTranslationText!.contains(RegExp(r'[\u0600-\u06FF]'))
-                          ? GoogleFonts.notoNastaliqUrdu(
-                              fontSize: 15, height: 2.2, color: const Color(0xFFE8F5E9))
+                          ? const TextStyle(
+                              fontFamily: 'Noto Nastaliq Urdu',
+                              fontSize: 15,
+                              height: 2.2,
+                              color: Color(0xFFE8F5E9),
+                            )
                           : GoogleFonts.inter(
-                              fontSize: 13, height: 1.5, color: const Color(0xFFE8F5E9)),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ],
-
-          // ── Surah Tafseer Background Details ────────────────────────────────
-          if (showTafseer && bismillahTafseerText != null) ...[
-            Container(height: 1, color: Colors.white.withValues(alpha: 0.12)),
-            Padding(
-              padding: const EdgeInsets.all(14),
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.25),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFFD4A843).withValues(alpha: 0.4)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.menu_book_rounded, size: 16, color: Color(0xFFD4A843)),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            'تفسیر و پس منظر — $tafseerName',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: const Color(0xFFD4A843),
+                              fontSize: 13,
+                              height: 1.5,
+                              color: const Color(0xFFE8F5E9),
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      _cleanHtml(bismillahTafseerText!),
-                      textAlign: bismillahTafseerText!.contains(RegExp(r'[\u0600-\u06FF]'))
-                          ? TextAlign.right
-                          : TextAlign.left,
-                      textDirection: bismillahTafseerText!.contains(RegExp(r'[\u0600-\u06FF]'))
-                          ? TextDirection.rtl
-                          : TextDirection.ltr,
-                      style: bismillahTafseerText!.contains(RegExp(r'[\u0600-\u06FF]'))
-                          ? GoogleFonts.notoNastaliqUrdu(
-                              fontSize: 14, height: 2.3, color: Colors.white)
-                          : GoogleFonts.inter(fontSize: 13, height: 1.6, color: Colors.white),
                     ),
                   ],
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _statRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 2),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            '$label: ',
-            style: GoogleFonts.inter(
-              fontSize: 10,
-              color: Colors.white60,
-            ),
-          ),
-          Text(
-            value,
-            style: GoogleFonts.inter(
-              fontSize: 10,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ── Ayah Card Component ───────────────────────────────────────────────────────
-class _AyahCard extends StatelessWidget {
-  final Ayah ayah;
-  final String? translationText;
-  final String? tafseerText;
-  final String translationName;
-  final String tafseerName;
-  final bool showTranslation;
-  final bool showTafseer;
-  final double arabicFontSize;
-  final bool isPlaying;
-  final bool isBuffering;
-  final String? activeWordId;
-  final VoidCallback onToggleTranslation;
-  final VoidCallback onToggleTafseer;
-  final VoidCallback onSelectTranslation;
-  final VoidCallback onSelectTafseer;
-  final VoidCallback onPlayTap;
-  final VoidCallback onBookmarkTap;
-  final VoidCallback onShareTap;
-  final VoidCallback onMutashabihatTap;
-  final VoidCallback onCopyTap;
-
-  const _AyahCard({
-    required this.ayah,
-    required this.translationText,
-    required this.tafseerText,
-    required this.translationName,
-    required this.tafseerName,
-    required this.showTranslation,
-    required this.showTafseer,
-    required this.arabicFontSize,
-    required this.isPlaying,
-    required this.isBuffering,
-    this.activeWordId,
-    required this.onToggleTranslation,
-    required this.onToggleTafseer,
-    required this.onSelectTranslation,
-    required this.onSelectTafseer,
-    required this.onPlayTap,
-    required this.onBookmarkTap,
-    required this.onShareTap,
-    required this.onMutashabihatTap,
-    required this.onCopyTap,
-  });
-
-  Widget _buildArabicText() {
-    final rawText = cleanAyahText(ayah);
-    final words = rawText.trim().split(RegExp(r'\s+'));
-    final spans = <InlineSpan>[];
-
-    for (var i = 0; i < words.length; i++) {
-      final wordText = words[i];
-      final wordIndex = i + 1;
-      final wordKey = '${ayah.surah}:${ayah.ayahNumber}:$wordIndex';
-      final isWordActive = (isPlaying && activeWordId == wordKey);
-
-      if (isWordActive) {
-        spans.add(
-          WidgetSpan(
-            alignment: PlaceholderAlignment.middle,
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 1.0),
-              padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFE082).withValues(alpha: 0.95), // Warm Golden Amber
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(color: const Color(0xFFFFB300), width: 1),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFFFFB300).withValues(alpha: 0.35),
-                    blurRadius: 4,
-                    spreadRadius: 0.5,
-                  ),
-                ],
-              ),
-              child: Text(
-                wordText,
-                textDirection: TextDirection.rtl,
-                style: GoogleFonts.amiri(
-                  fontSize: arabicFontSize,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF111111),
-                  height: 1.25,
-                ),
-              ),
-            ),
-          ),
-        );
-      } else {
-        spans.add(
-          TextSpan(
-            text: '$wordText ',
-            style: GoogleFonts.amiri(
-              fontSize: arabicFontSize,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF1A1A1A),
-              height: 2.1,
-            ),
-          ),
-        );
-      }
-    }
-
-    // Ayah End Symbol
-    spans.add(
-      WidgetSpan(
-        alignment: PlaceholderAlignment.middle,
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 2.0, left: 3.0),
-          child: AyahEndSymbol(
-            ayahNumber: ayah.ayahNumber,
-            waqfMark: ayah.endWaqf ?? '',
-            isRukuEnd: RukuData.getRukuEndInfo(ayah.surah, ayah.ayahNumber) != null,
-            color: AppTheme.primary,
-            circleSize: (arabicFontSize * 0.84).clamp(21.0, 30.0),
-          ),
-        ),
-      ),
-    );
-
-    return Text.rich(
-      TextSpan(children: spans),
-      textAlign: TextAlign.right,
-      textDirection: TextDirection.rtl,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: const Color(0xFFEDF4EE),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isPlaying ? AppTheme.primary : const Color(0xFFE2EBE3),
-          width: isPlaying ? 2 : 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Header Row with Pill Buttons
-          Row(
-            children: [
-              // Circle Ayah Badge
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.9),
-                  shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFFA8C8AD)),
-                ),
-                child: Center(
-                  child: Text(
-                    ayah.ayahNumber.toString(),
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF2D5A34),
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(width: 8),
-
-              // Pill Container (Tafseer & Translation)
-              Flexible(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: const Color(0xFFD4E3D6)),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Tafseer Pill Button
-                      InkWell(
-                        onTap: onToggleTafseer,
-                        borderRadius: const BorderRadius.horizontal(left: Radius.circular(18)),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: showTafseer ? const Color(0xFFBBE2EC) : Colors.transparent,
-                            borderRadius: const BorderRadius.horizontal(left: Radius.circular(18)),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'Tafseer',
-                                style: GoogleFonts.inter(
-                                  fontSize: 11.5,
-                                  fontWeight: FontWeight.w600,
-                                  color: showTafseer ? const Color(0xFF1E5260) : AppTheme.textSecondary,
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: onSelectTafseer,
-                                child: const Padding(
-                                  padding: EdgeInsets.only(left: 1),
-                                  child: Icon(Icons.arrow_drop_down, size: 15, color: AppTheme.textMuted),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      Container(width: 1, height: 14, color: const Color(0xFFE0E0E0)),
-
-                      // Translation Pill Button
-                      InkWell(
-                        onTap: onToggleTranslation,
-                        borderRadius: const BorderRadius.horizontal(right: Radius.circular(18)),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: showTranslation ? const Color(0xFFBCE1F5) : Colors.transparent,
-                            borderRadius: const BorderRadius.horizontal(right: Radius.circular(18)),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.translate, size: 12, color: Color(0xFF1B4E6B)),
-                              const SizedBox(width: 3),
-                              Text(
-                                'Translation',
-                                style: GoogleFonts.inter(
-                                  fontSize: 11.5,
-                                  fontWeight: FontWeight.w600,
-                                  color: showTranslation ? const Color(0xFF1B4E6B) : AppTheme.textSecondary,
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: onSelectTranslation,
-                                child: const Padding(
-                                  padding: EdgeInsets.only(left: 1),
-                                  child: Icon(Icons.arrow_drop_down, size: 15, color: AppTheme.textMuted),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(width: 6),
-
-              // Bookmark Button
-              IconButton(
-                icon: const Icon(Icons.bookmark_border, size: 20, color: AppTheme.textSecondary),
-                onPressed: onBookmarkTap,
-                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                padding: EdgeInsets.zero,
-              ),
-
-              const SizedBox(width: 4),
-
-              // Live API Verse Audio Button
-              GestureDetector(
-                onTap: onPlayTap,
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFA5D6A7),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: isBuffering
-                        ? const SizedBox(
-                            width: 14,
-                            height: 14,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF1B4332)),
-                          )
-                        : Icon(
-                            isPlaying ? Icons.pause : Icons.play_arrow,
-                            size: 18,
-                            color: const Color(0xFF1B4332),
-                          ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          // Arabic Verse Text with authentic Quranic End Ayah Symbol ۝ and Synchronized Word Highlighting
-          _buildArabicText(),
-
-          // Translation Text
-          if (showTranslation && translationText != null) ...[
-            const SizedBox(height: 12),
-            Builder(
-              builder: (context) {
-                final isUrduOrArabic = translationText!.contains(RegExp(r'[\u0600-\u06FF]'));
-                final isHindi = translationText!.contains(RegExp(r'[\u0900-\u097F]'));
-
-                return Text(
-                  translationText!,
-                  textAlign: isUrduOrArabic ? TextAlign.right : TextAlign.left,
-                  textDirection: isUrduOrArabic ? TextDirection.rtl : TextDirection.ltr,
-                  style: isUrduOrArabic
-                      ? GoogleFonts.notoNastaliqUrdu(fontSize: 16, height: 2.2, color: const Color(0xFF2C3E50))
-                      : (isHindi
-                          ? GoogleFonts.notoSansDevanagari(fontSize: 15, height: 1.8, color: const Color(0xFF2C3E50))
-                          : GoogleFonts.inter(fontSize: 14, height: 1.7, color: const Color(0xFF2C3E50))),
-                );
-              },
-            ),
-          ],
-
-          // Tafseer Section — named header + styled body
-          if (showTafseer) ...[
-            const SizedBox(height: 14),
-            Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFFF0F8F1),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: const Color(0xFFA8C8AD), width: 1),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // ── Tafseer Author Header ───────────────────────────────
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2D5A34).withValues(alpha: 0.08),
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(13)),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF2D5A34).withValues(alpha: 0.12),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.menu_book_rounded,
-                            size: 14,
-                            color: Color(0xFF2D5A34),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'تفسير',
-                                style: GoogleFonts.amiri(
-                                  fontSize: 11,
-                                  color: const Color(0xFF4A7A52),
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                              Text(
-                                tafseerName,
-                                style: GoogleFonts.inter(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: const Color(0xFF2D5A34),
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // ── Divider ─────────────────────────────────────────────
-                  Container(height: 1, color: const Color(0xFFC8DEC9)),
-
-                  // ── Tafseer Body ─────────────────────────────────────────
-                  Padding(
-                    padding: const EdgeInsets.all(14),
-                    child: tafseerText == null
-                        ? Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF2D5A34)),
-                              ),
-                              const SizedBox(width: 10),
-                              Text(
-                                'Loading tafseer…',
-                                style: GoogleFonts.inter(
-                                  fontSize: 13,
-                                  color: const Color(0xFF4A7A52),
-                                ),
-                              ),
-                            ],
-                          )
-                        : Builder(
-                            builder: (context) {
-                              final cleanedText = _cleanHtml(tafseerText!);
-                              final isUrduOrArabic = cleanedText.contains(RegExp(r'[\u0600-\u06FF]'));
-                              final isHindi = cleanedText.contains(RegExp(r'[\u0900-\u097F]'));
-
-                              return Text(
-                                cleanedText,
-                                textAlign: isUrduOrArabic ? TextAlign.right : TextAlign.left,
-                                textDirection: isUrduOrArabic ? TextDirection.rtl : TextDirection.ltr,
-                                style: isUrduOrArabic
-                                    ? GoogleFonts.notoNastaliqUrdu(
-                                        fontSize: 15,
-                                        height: 2.4,
-                                        color: const Color(0xFF2C3E50),
-                                      )
-                                    : (isHindi
-                                        ? GoogleFonts.notoSansDevanagari(
-                                            fontSize: 14,
-                                            height: 1.8,
-                                            color: const Color(0xFF2C3E50),
-                                          )
-                                        : GoogleFonts.inter(
-                                            fontSize: 14,
-                                            height: 1.75,
-                                            color: const Color(0xFF2C3E50),
-                                          )),
-                              );
-                            },
-                          ),
-                  ),
                 ],
               ),
             ),
@@ -1804,6 +1458,8 @@ class _AyahCard extends StatelessWidget {
     );
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 String _resolveTafseerValue(Map<String, dynamic> dict, String key, [int depth = 0]) {
   if (depth > 10) return '';

@@ -1,0 +1,1378 @@
+[
+  {
+    "id": 123,
+    "name": "Mishary Alafasi",
+    "arabic_name": "مشاري العفاسي",
+    "folder_slug": "mishaari_raashid_al_3afaasee",
+    "mp3quran_server": "https://server8.mp3quran.net/afs/",
+    "surah_total": 114
+  },
+  {
+    "id": 102,
+    "name": "Maher Al Meaqli",
+    "arabic_name": "ماهر المعيقلي",
+    "folder_slug": "maher_almu3aiqly/year1440",
+    "mp3quran_server": "https://server12.mp3quran.net/maher/Almusshaf-Al-Mojawwad/",
+    "surah_total": 114
+  },
+  {
+    "id": 30,
+    "name": "Saad Al-Ghamdi",
+    "arabic_name": "سعد الغامدي",
+    "folder_slug": "sa3d_al-ghaamidi/complete",
+    "mp3quran_server": "https://server7.mp3quran.net/s_gmd/",
+    "surah_total": 114
+  },
+  {
+    "id": 4,
+    "name": "Shaik Abu Bakr Al Shatri",
+    "arabic_name": "شيخ أبو بكر الشاطري",
+    "folder_slug": "abu_bakr_ash-shaatree",
+    "mp3quran_server": "https://server11.mp3quran.net/shatri/",
+    "surah_total": 114
+  },
+  {
+    "id": 92,
+    "name": "Yasser Al-Dosari",
+    "arabic_name": "ياسر الدوسري",
+    "folder_slug": "yasser_ad-dussary",
+    "mp3quran_server": "https://server11.mp3quran.net/yasser/",
+    "surah_total": 114
+  },
+  {
+    "id": 118,
+    "name": "Mahmoud Khalil Al-Hussary",
+    "arabic_name": "محمود خليل الحصري",
+    "folder_slug": "mahmood_khaleel_al-husaree",
+    "mp3quran_server": "https://server13.mp3quran.net/husr/Rewayat-Qalon-A-n-Nafi/",
+    "surah_total": 114
+  },
+  {
+    "id": 112,
+    "name": "Mohammed Siddiq Al-Minshawi",
+    "arabic_name": "محمد صديق المنشاوي",
+    "folder_slug": "minshawi_murattal",
+    "mp3quran_server": "https://server10.mp3quran.net/minsh/Almusshaf-Al-Mo-lim/",
+    "surah_total": 114
+  },
+  {
+    "id": 51,
+    "name": "Abdulbasit Abdulsamad",
+    "arabic_name": "عبدالباسط عبدالصمد",
+    "folder_slug": "abdulbaset_mujawwad",
+    "mp3quran_server": "https://server7.mp3quran.net/basit/",
+    "surah_total": 114
+  },
+  {
+    "id": 31,
+    "name": "Saud Al-Shuraim",
+    "arabic_name": "سعود الشريم",
+    "folder_slug": "sa3ood_al-shuraym",
+    "mp3quran_server": "https://server7.mp3quran.net/shur/",
+    "surah_total": 114
+  },
+  {
+    "id": 76,
+    "name": "Ali Jaber",
+    "arabic_name": "علي جابر",
+    "folder_slug": "ali_jaber",
+    "mp3quran_server": "https://server11.mp3quran.net/a_jbr/",
+    "surah_total": 114
+  },
+  {
+    "id": 86,
+    "name": "Nasser Alqatami",
+    "arabic_name": "ناصر القطامي",
+    "folder_slug": "nasser_alqatami",
+    "mp3quran_server": "https://server6.mp3quran.net/qtm/",
+    "surah_total": 114
+  },
+  {
+    "id": 109,
+    "name": "Mohammed Ayyub",
+    "arabic_name": "محمد أيوب",
+    "folder_slug": "muhammad_ayyoob",
+    "mp3quran_server": "https://server16.mp3quran.net/ayyoub2/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 12,
+    "name": "Idrees Abkr",
+    "arabic_name": "إدريس أبكر",
+    "folder_slug": "idrees_akbar",
+    "mp3quran_server": "https://server6.mp3quran.net/abkr/",
+    "surah_total": 114
+  },
+  {
+    "id": 43,
+    "name": "Salah Albudair",
+    "arabic_name": "صلاح البدير",
+    "folder_slug": "salah_albudair",
+    "mp3quran_server": "https://server6.mp3quran.net/s_bud/",
+    "surah_total": 114
+  },
+  {
+    "id": 46,
+    "name": "Slaah Bukhatir",
+    "arabic_name": "صلاح بو خاطر",
+    "folder_slug": "salaah_bukhaatir",
+    "mp3quran_server": "https://server8.mp3quran.net/bu_khtr/",
+    "surah_total": 114
+  },
+  {
+    "id": 121,
+    "name": "Mahmoud Ali  Albanna",
+    "arabic_name": "محمود علي البنا",
+    "folder_slug": "mahmood_al-banna",
+    "mp3quran_server": "https://server8.mp3quran.net/bna/Almusshaf-Al-Mojawwad/",
+    "surah_total": 114
+  },
+  {
+    "id": 125,
+    "name": "Mustafa Ismail",
+    "arabic_name": "مصطفى إسماعيل",
+    "folder_slug": "mustafa_ismaa3eel",
+    "mp3quran_server": "https://server8.mp3quran.net/mustafa/Almusshaf-Al-Mojawwad/",
+    "surah_total": 114
+  },
+  {
+    "id": 106,
+    "name": "Mohammad Al-Tablaway",
+    "arabic_name": "محمد الطبلاوي",
+    "folder_slug": "mohammad_al-tablaway",
+    "mp3quran_server": "https://server12.mp3quran.net/tblawi/Al-Mojawwad/",
+    "surah_total": 114
+  },
+  {
+    "id": 107,
+    "name": "Mohammed Al-Lohaidan",
+    "arabic_name": "محمد اللحيدان",
+    "folder_slug": "mohammed_al-lohaidan",
+    "mp3quran_server": "https://server8.mp3quran.net/lhdan/",
+    "surah_total": 114
+  },
+  {
+    "id": 111,
+    "name": "Mohammed Jibreel",
+    "arabic_name": "محمد جبريل",
+    "folder_slug": "muhammad_jibreel",
+    "mp3quran_server": "https://server8.mp3quran.net/jbrl/",
+    "surah_total": 114
+  },
+  {
+    "id": 17,
+    "name": "Tawfeeq As-Sayegh",
+    "arabic_name": "توفيق الصايغ",
+    "folder_slug": "tawfeeq_as-sayegh",
+    "mp3quran_server": "https://server6.mp3quran.net/twfeeq/",
+    "surah_total": 114
+  },
+  {
+    "id": 1,
+    "name": "Ibrahim Al-Akdar",
+    "arabic_name": "إبراهيم الأخضر",
+    "folder_slug": "ibrahim_al-akhdar",
+    "mp3quran_server": "https://server6.mp3quran.net/akdr/",
+    "surah_total": 114
+  },
+  {
+    "id": 138,
+    "name": "Noreen Mohammad Siddiq",
+    "arabic_name": "نورين محمد صديق",
+    "folder_slug": "noreen_siddiq",
+    "mp3quran_server": "https://server16.mp3quran.net/nourin_siddig/Rewayat-Aldori-A-n-Abi-Amr/",
+    "surah_total": 114
+  },
+  {
+    "id": 13,
+    "name": "Alzain Mohammad Ahmad",
+    "arabic_name": "الزين محمد أحمد",
+    "folder_slug": "alzain_mohammad",
+    "mp3quran_server": "https://server9.mp3quran.net/alzain/",
+    "surah_total": 114
+  },
+  {
+    "id": 16,
+    "name": "Aloyoon Al-Koshi",
+    "arabic_name": "العيون الكوشي",
+    "folder_slug": "aloyoon_al_koshi",
+    "mp3quran_server": "https://server11.mp3quran.net/koshi/",
+    "surah_total": 114
+  },
+  {
+    "id": 10,
+    "name": "Akram Alalaqmi",
+    "arabic_name": "أكرم العلاقمي",
+    "folder_slug": "akram_al_alaqmi",
+    "mp3quran_server": "https://server9.mp3quran.net/akrm/",
+    "surah_total": 114
+  },
+  {
+    "id": 108,
+    "name": "Mohammed Al-Muhasny",
+    "arabic_name": "محمد المحيسني",
+    "folder_slug": "mohammed_al_muhasny",
+    "mp3quran_server": "https://server11.mp3quran.net/mhsny/",
+    "surah_total": 114
+  },
+  {
+    "id": 110,
+    "name": "Mohammad Saleh Alim Shah",
+    "arabic_name": "محمد صالح عالم شاه",
+    "folder_slug": "mohammad_saleh_alim_shah",
+    "mp3quran_server": "https://server12.mp3quran.net/shah/",
+    "surah_total": 114
+  },
+  {
+    "id": 115,
+    "name": "Mohammad Abdullkarem",
+    "arabic_name": "محمد عبدالكريم",
+    "folder_slug": "mohammad_abdullkarem",
+    "mp3quran_server": "https://server12.mp3quran.net/m_krm/Rewayat-Warsh-A-n-Nafi-Men-Tariq-Abi-Baker-Alasbahani/",
+    "surah_total": 114
+  },
+  {
+    "id": 116,
+    "name": "Mohammad Al-Abdullah",
+    "arabic_name": "محمد عبدالحكيم سعيد العبدالله",
+    "folder_slug": "mohammad_al_abdullah",
+    "mp3quran_server": "https://server9.mp3quran.net/abdullah/Rewayat-AlDorai-A-n-Al-Kisa-ai/",
+    "surah_total": 114
+  },
+  {
+    "id": 126,
+    "name": "Mustafa Al-Lahoni",
+    "arabic_name": "مصطفى اللاهوني",
+    "folder_slug": "mustafa_al_lahoni",
+    "mp3quran_server": "https://server6.mp3quran.net/lahoni/",
+    "surah_total": 114
+  },
+  {
+    "id": 127,
+    "name": "Mustafa raad Alazawy",
+    "arabic_name": "مصطفى رعد العزاوي",
+    "folder_slug": "mustafa_raad_alazawy",
+    "mp3quran_server": "https://server8.mp3quran.net/ra3ad/",
+    "surah_total": 114
+  },
+  {
+    "id": 129,
+    "name": "Muftah Alsaltany",
+    "arabic_name": "مفتاح السلطني",
+    "folder_slug": "muftah_alsaltany",
+    "mp3quran_server": "https://server14.mp3quran.net/muftah_sultany/Rewayat_Ibn-Thakwan-A-n-Ibn-Amer/",
+    "surah_total": 114
+  },
+  {
+    "id": 134,
+    "name": "Mohammad Saayed",
+    "arabic_name": "محمد سايد",
+    "folder_slug": "mohammad_saayed",
+    "mp3quran_server": "https://server16.mp3quran.net/m_sayed/Rewayat-Warsh-A-n-Nafi/",
+    "surah_total": 114
+  },
+  {
+    "id": 136,
+    "name": "Abdulelah bin Aoun",
+    "arabic_name": "عبدالإله بن عون",
+    "folder_slug": "abdulelah_bin_aoun",
+    "mp3quran_server": "https://server16.mp3quran.net/a_binaoun/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 139,
+    "name": "Majed Al-Zamil",
+    "arabic_name": "ماجد الزامل",
+    "folder_slug": "majed_al_zamil",
+    "mp3quran_server": "https://server9.mp3quran.net/zaml/",
+    "surah_total": 114
+  },
+  {
+    "id": 14,
+    "name": "Al-Qaria Yassen",
+    "arabic_name": "القارئ ياسين",
+    "folder_slug": "al_qaria_yassen",
+    "mp3quran_server": "https://server11.mp3quran.net/qari/",
+    "surah_total": 114
+  },
+  {
+    "id": 149,
+    "name": "Maher Shakhashero",
+    "arabic_name": "ماهر شخاشيرو",
+    "folder_slug": "maher_shakhashero",
+    "mp3quran_server": "https://server10.mp3quran.net/shaksh/",
+    "surah_total": 114
+  },
+  {
+    "id": 151,
+    "name": "Mahmood AlSheimy",
+    "arabic_name": "محمود الشيمي",
+    "folder_slug": "mahmood_alsheimy",
+    "mp3quran_server": "https://server10.mp3quran.net/sheimy/",
+    "surah_total": 114
+  },
+  {
+    "id": 152,
+    "name": "Yasser Salamah",
+    "arabic_name": "ياسر سلامة",
+    "folder_slug": "yasser_salamah",
+    "mp3quran_server": "https://server12.mp3quran.net/salamah/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 159,
+    "name": "Khalid Almohana",
+    "arabic_name": "خالد المهنا",
+    "folder_slug": "khalid_almohana",
+    "mp3quran_server": "https://server11.mp3quran.net/mohna/",
+    "surah_total": 114
+  },
+  {
+    "id": 160,
+    "name": "Adel Al-Khalbany",
+    "arabic_name": "عادل الكلباني",
+    "folder_slug": "adel_al_khalbany",
+    "mp3quran_server": "https://server8.mp3quran.net/a_klb/",
+    "surah_total": 114
+  },
+  {
+    "id": 161,
+    "name": "Mousa Bilal",
+    "arabic_name": "موسى بلال",
+    "folder_slug": "mousa_bilal",
+    "mp3quran_server": "https://server11.mp3quran.net/bilal/",
+    "surah_total": 114
+  },
+  {
+    "id": 163,
+    "name": "Hatem Fareed Alwaer",
+    "arabic_name": "حاتم فريد الواعر",
+    "folder_slug": "hatem_fareed_alwaer",
+    "mp3quran_server": "https://server11.mp3quran.net/hatem/",
+    "surah_total": 114
+  },
+  {
+    "id": 164,
+    "name": "Ibrahim Aljormy",
+    "arabic_name": "إبراهيم الجرمي",
+    "folder_slug": "ibrahim_aljormy",
+    "mp3quran_server": "https://server11.mp3quran.net/jormy/",
+    "surah_total": 114
+  },
+  {
+    "id": 165,
+    "name": "Mahmood Al rifai",
+    "arabic_name": "محمود الرفاعي",
+    "folder_slug": "mahmood_al_rifai",
+    "mp3quran_server": "https://server11.mp3quran.net/mrifai/",
+    "surah_total": 114
+  },
+  {
+    "id": 178,
+    "name": "Ibrahim Aldosari",
+    "arabic_name": "إبراهيم الدوسري",
+    "folder_slug": "ibrahim_aldosari",
+    "mp3quran_server": "https://server10.mp3quran.net/ibrahim_dosri/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 18,
+    "name": "Jamal Shaker Abdullah",
+    "arabic_name": "جمال شاكر عبدالله",
+    "folder_slug": "jamal_shaker_abdullah",
+    "mp3quran_server": "https://server6.mp3quran.net/jamal/",
+    "surah_total": 114
+  },
+  {
+    "id": 181,
+    "name": "Jamaan Alosaimi",
+    "arabic_name": "جمعان العصيمي",
+    "folder_slug": "jamaan_alosaimi",
+    "mp3quran_server": "https://server6.mp3quran.net/jaman/",
+    "surah_total": 114
+  },
+  {
+    "id": 193,
+    "name": "Yousef Bin Noah Ahmad",
+    "arabic_name": "يوسف بن نوح أحمد",
+    "folder_slug": "yousef_bin_noah_ahmad",
+    "mp3quran_server": "https://server8.mp3quran.net/noah/",
+    "surah_total": 114
+  },
+  {
+    "id": 197,
+    "name": "Moeedh Alharthi",
+    "arabic_name": "معيض الحارثي",
+    "folder_slug": "moeedh_alharthi",
+    "mp3quran_server": "https://server8.mp3quran.net/harthi/",
+    "surah_total": 114
+  },
+  {
+    "id": 198,
+    "name": "Mohammad Rashad Alshareef",
+    "arabic_name": "محمد رشاد الشريف",
+    "folder_slug": "mohammad_rashad_alshareef",
+    "mp3quran_server": "https://server10.mp3quran.net/rashad/",
+    "surah_total": 114
+  },
+  {
+    "id": 20,
+    "name": "Khalid Al-Jileel",
+    "arabic_name": "خالد الجليل",
+    "folder_slug": "khalid_al_jileel",
+    "mp3quran_server": "https://server10.mp3quran.net/jleel/",
+    "surah_total": 114
+  },
+  {
+    "id": 201,
+    "name": "Ahmed Al-trabulsi",
+    "arabic_name": "أحمد الطرابلسي",
+    "folder_slug": "ahmed_al_trabulsi",
+    "mp3quran_server": "https://server10.mp3quran.net/trabulsi/",
+    "surah_total": 114
+  },
+  {
+    "id": 202,
+    "name": "Abdullah Al-Kandari",
+    "arabic_name": "عبدالله الكندري",
+    "folder_slug": "abdullah_al_kandari",
+    "mp3quran_server": "https://server10.mp3quran.net/Abdullahk/",
+    "surah_total": 114
+  },
+  {
+    "id": 203,
+    "name": "Ahmed Amer",
+    "arabic_name": "أحمد عامر",
+    "folder_slug": "ahmed_amer",
+    "mp3quran_server": "https://server10.mp3quran.net/Aamer/",
+    "surah_total": 114
+  },
+  {
+    "id": 206,
+    "name": "Mohammed Osman Khan",
+    "arabic_name": "محمد عثمان خان",
+    "folder_slug": "mohammed_osman_khan",
+    "mp3quran_server": "https://server6.mp3quran.net/khan/",
+    "surah_total": 114
+  },
+  {
+    "id": 208,
+    "name": "Addokali Mohammad Alalim",
+    "arabic_name": "الدوكالي محمد العالم",
+    "folder_slug": "addokali_mohammad_alalim",
+    "mp3quran_server": "https://server7.mp3quran.net/dokali/",
+    "surah_total": 114
+  },
+  {
+    "id": 21,
+    "name": "Khaled Al-Qahtani",
+    "arabic_name": "خالد القحطاني",
+    "folder_slug": "khaled_al_qahtani",
+    "mp3quran_server": "https://server10.mp3quran.net/qht/",
+    "surah_total": 114
+  },
+  {
+    "id": 211,
+    "name": "Alfateh Alzubair",
+    "arabic_name": "الفاتح محمد الزبير",
+    "folder_slug": "alfateh_alzubair",
+    "mp3quran_server": "https://server6.mp3quran.net/fateh/",
+    "surah_total": 114
+  },
+  {
+    "id": 21136,
+    "name": "Abdullah Alqarafi",
+    "arabic_name": "عبدالله القرافي",
+    "folder_slug": "abdullah_alqarafi",
+    "mp3quran_server": "https://server16.mp3quran.net/a_alqrafi/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 21148,
+    "name": "Abdulbadi Ghailan",
+    "arabic_name": "عبدالبديع غيلان",
+    "folder_slug": "abdulbadi_ghailan",
+    "mp3quran_server": "https://server16.mp3quran.net/A-Ghailan/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 21181,
+    "name": "Muhammad Burhaji",
+    "arabic_name": "محمد برهجي",
+    "folder_slug": "muhammad_burhaji",
+    "mp3quran_server": "https://server16.mp3quran.net/M_Burhaji/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 21182,
+    "name": "Yusuf ALaidroos",
+    "arabic_name": "يوسف العيدروس",
+    "folder_slug": "yusuf_alaidroos",
+    "mp3quran_server": "https://server16.mp3quran.net/Y_ALaidroos/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 21183,
+    "name": "Hassan Aldaghriri",
+    "arabic_name": "حسن الدغريري",
+    "folder_slug": "hassan_aldaghriri",
+    "mp3quran_server": "https://server16.mp3quran.net/H-Aldaghriri/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 21184,
+    "name": "Muhammad Al Faqih",
+    "arabic_name": "محمد الفقيه",
+    "folder_slug": "muhammad_al_faqih",
+    "mp3quran_server": "https://server16.mp3quran.net/M_Alfaqih/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 21186,
+    "name": "Junaid Adam Abdullah",
+    "arabic_name": "جنيد آدم عبدالله",
+    "folder_slug": "junaid_adam_abdullah",
+    "mp3quran_server": "https://server16.mp3quran.net/J-Abdullah/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 21187,
+    "name": "Khalid Alziyadi",
+    "arabic_name": "خالد الزيادي",
+    "folder_slug": "khalid_alziyadi",
+    "mp3quran_server": "https://server16.mp3quran.net/K-Alzadi/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 21193,
+    "name": "Abdul Rahman bin Abdul Razzaq Al Badr",
+    "arabic_name": "عبدالرحمن بن عبدالرزاق البدر",
+    "folder_slug": "abdul_rahman_bin_abdul_razzaq_al_badr",
+    "mp3quran_server": "https://server16.mp3quran.net/A-AlBadr/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 21196,
+    "name": "Alijon Qori",
+    "arabic_name": "عليجان قوري حمدان",
+    "folder_slug": "alijon_qori",
+    "mp3quran_server": "https://server16.mp3quran.net/Alijon/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 21197,
+    "name": "Mohammed Al-Zubaidi",
+    "arabic_name": "محمد الزبيدي",
+    "folder_slug": "mohammed_al_zubaidi",
+    "mp3quran_server": "https://server16.mp3quran.net/M-AlZubaidi/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 21199,
+    "name": "Abdelmoujib Benkirane",
+    "arabic_name": "عبد المجيب بنكيران",
+    "folder_slug": "abdelmoujib_benkirane",
+    "mp3quran_server": "https://server16.mp3quran.net/A-Benkirane/Rewayat-Warsh-A-n-Nafi/",
+    "surah_total": 114
+  },
+  {
+    "id": 212,
+    "name": "Tareq Abdulgani daawob",
+    "arabic_name": "طارق عبدالغني دعوب",
+    "folder_slug": "tareq_abdulgani_daawob",
+    "mp3quran_server": "https://server10.mp3quran.net/tareq/",
+    "surah_total": 114
+  },
+  {
+    "id": 21201,
+    "name": "Asim Al-Luhaidan",
+    "arabic_name": "عاصم اللحیدان",
+    "folder_slug": "asim_al_luhaidan",
+    "mp3quran_server": "https://server7.mp3quran.net/asim/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 21202,
+    "name": "Mahmoud Harfoush",
+    "arabic_name": "محمود حرفوش",
+    "folder_slug": "mahmoud_harfoush",
+    "mp3quran_server": "https://server16.mp3quran.net/M-Harfoush/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 217,
+    "name": "Bandar Balilah",
+    "arabic_name": "بندر بليله",
+    "folder_slug": "bandar_balilah",
+    "mp3quran_server": "https://server6.mp3quran.net/balilah/",
+    "surah_total": 114
+  },
+  {
+    "id": 219,
+    "name": "Wadeea Al-Yamani",
+    "arabic_name": "وديع اليمني",
+    "folder_slug": "wadeea_al_yamani",
+    "mp3quran_server": "https://server6.mp3quran.net/wdee3/",
+    "surah_total": 114
+  },
+  {
+    "id": 22,
+    "name": "Khalid Abdulkafi",
+    "arabic_name": "خالد عبدالكافي",
+    "folder_slug": "khalid_abdulkafi",
+    "mp3quran_server": "https://server11.mp3quran.net/kafi/",
+    "surah_total": 114
+  },
+  {
+    "id": 221,
+    "name": "Raad Al Kurdi",
+    "arabic_name": "رعد محمد الكردي",
+    "folder_slug": "raad_al_kurdi",
+    "mp3quran_server": "https://server6.mp3quran.net/kurdi/",
+    "surah_total": 114
+  },
+  {
+    "id": 225,
+    "name": "Abdulrahman Aloosi",
+    "arabic_name": "عبدالرحمن العوسي",
+    "folder_slug": "abdulrahman_aloosi",
+    "mp3quran_server": "https://server6.mp3quran.net/aloosi/",
+    "surah_total": 114
+  },
+  {
+    "id": 229,
+    "name": "Mohammad Khalil Al-Qari",
+    "arabic_name": "محمد خليل القارئ",
+    "folder_slug": "mohammad_khalil_al_qari",
+    "mp3quran_server": "https://server8.mp3quran.net/m_qari/",
+    "surah_total": 114
+  },
+  {
+    "id": 230,
+    "name": "Rami Aldeais",
+    "arabic_name": "رامي الدعيس",
+    "folder_slug": "rami_aldeais",
+    "mp3quran_server": "https://server6.mp3quran.net/rami/",
+    "surah_total": 114
+  },
+  {
+    "id": 236,
+    "name": "Abdulrahman Al-Majed",
+    "arabic_name": "عبدالرحمن الماجد",
+    "folder_slug": "abdulrahman_al_majed",
+    "mp3quran_server": "https://server10.mp3quran.net/a_majed/",
+    "surah_total": 114
+  },
+  {
+    "id": 237,
+    "name": "Marwan Alakri",
+    "arabic_name": "مروان العكري",
+    "folder_slug": "marwan_alakri",
+    "mp3quran_server": "https://server16.mp3quran.net/m_akri/Rewayat-Qalon-A-n-Nafi/",
+    "surah_total": 114
+  },
+  {
+    "id": 24,
+    "name": "Khalifa Altunaiji",
+    "arabic_name": "خليفة الطنيجي",
+    "folder_slug": "khalifa_altunaiji",
+    "mp3quran_server": "https://server12.mp3quran.net/tnjy/",
+    "surah_total": 114
+  },
+  {
+    "id": 243,
+    "name": "Abdullah Al-Mousa",
+    "arabic_name": "عبدالله الموسى",
+    "folder_slug": "abdullah_al_mousa",
+    "mp3quran_server": "https://server14.mp3quran.net/mousa/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 244,
+    "name": "Abdullah Al-Khalaf",
+    "arabic_name": "عبدالله الخلف",
+    "folder_slug": "abdullah_al_khalaf",
+    "mp3quran_server": "https://server14.mp3quran.net/khalf/",
+    "surah_total": 114
+  },
+  {
+    "id": 245,
+    "name": "Mansour Al-Salemi",
+    "arabic_name": "منصور السالمي",
+    "folder_slug": "mansour_al_salemi",
+    "mp3quran_server": "https://server14.mp3quran.net/mansor/",
+    "surah_total": 114
+  },
+  {
+    "id": 248,
+    "name": "Nasser Alosfor",
+    "arabic_name": "ناصر العصفور",
+    "folder_slug": "nasser_alosfor",
+    "mp3quran_server": "https://server14.mp3quran.net/alosfor/",
+    "surah_total": 114
+  },
+  {
+    "id": 25,
+    "name": "Dawood Hamza",
+    "arabic_name": "داود حمزة",
+    "folder_slug": "dawood_hamza",
+    "mp3quran_server": "https://server9.mp3quran.net/hamza/",
+    "surah_total": 114
+  },
+  {
+    "id": 250,
+    "name": "Mohammad Albukheet",
+    "arabic_name": "محمد البخيت",
+    "folder_slug": "mohammad_albukheet",
+    "mp3quran_server": "https://server14.mp3quran.net/bukheet/",
+    "surah_total": 114
+  },
+  {
+    "id": 251,
+    "name": "Nasser Almajed",
+    "arabic_name": "ناصر الماجد",
+    "folder_slug": "nasser_almajed",
+    "mp3quran_server": "https://server14.mp3quran.net/nasser_almajed/",
+    "surah_total": 114
+  },
+  {
+    "id": 252,
+    "name": "Ahmed Al-Swailem",
+    "arabic_name": "أحمد السويلم",
+    "folder_slug": "ahmed_al_swailem",
+    "mp3quran_server": "https://server14.mp3quran.net/swlim/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 254,
+    "name": "Bader Alturki",
+    "arabic_name": "بدر التركي",
+    "folder_slug": "bader_alturki",
+    "mp3quran_server": "https://server10.mp3quran.net/bader/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 256,
+    "name": "Ahmad Shaheen",
+    "arabic_name": "أحمد خليل شاهين",
+    "folder_slug": "ahmad_shaheen",
+    "mp3quran_server": "https://server16.mp3quran.net/shaheen/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 257,
+    "name": "Saad Almqren",
+    "arabic_name": "سعد المقرن",
+    "folder_slug": "saad_almqren",
+    "mp3quran_server": "https://server16.mp3quran.net/saad/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 259,
+    "name": "Ahmad Al Nufais",
+    "arabic_name": "أحمد النفيس",
+    "folder_slug": "ahmad_al_nufais",
+    "mp3quran_server": "https://server16.mp3quran.net/nufais/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 260,
+    "name": "Omar Al Darweez",
+    "arabic_name": "عمر الدريويز",
+    "folder_slug": "omar_al_darweez",
+    "mp3quran_server": "https://server16.mp3quran.net/darweez/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 265,
+    "name": "Ahmad Deban",
+    "arabic_name": "أحمد ديبان",
+    "folder_slug": "ahmad_deban",
+    "mp3quran_server": "https://server16.mp3quran.net/deban/Rewayat-Warsh-A-n-Nafi-Men-Tariq-Alazraq/",
+    "surah_total": 114
+  },
+  {
+    "id": 267,
+    "name": "Abdullah Kamel",
+    "arabic_name": "عبدالله كامل",
+    "folder_slug": "abdullah_kamel",
+    "mp3quran_server": "https://server16.mp3quran.net/kamel/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 268,
+    "name": "Peshawa Qadr Al-Kurdi",
+    "arabic_name": "بيشه وا قادر الكردي",
+    "folder_slug": "peshawa_qadr_al_kurdi",
+    "mp3quran_server": "https://server16.mp3quran.net/peshawa/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 27,
+    "name": "Rachid Belalya",
+    "arabic_name": "رشيد بلعالية",
+    "folder_slug": "rachid_belalya",
+    "mp3quran_server": "https://server6.mp3quran.net/bl3/Rewayat-Warsh-A-n-Nafi/",
+    "surah_total": 114
+  },
+  {
+    "id": 271,
+    "name": "Nathier Almalki",
+    "arabic_name": "نذير المالكي",
+    "folder_slug": "nathier_almalki",
+    "mp3quran_server": "https://server16.mp3quran.net//nathier/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 272,
+    "name": "Okasha Kameny",
+    "arabic_name": "عكاشة كميني",
+    "folder_slug": "okasha_kameny",
+    "mp3quran_server": "https://server16.mp3quran.net/okasha/Rewayat-Albizi-A-n-Ibn-Katheer/",
+    "surah_total": 114
+  },
+  {
+    "id": 273,
+    "name": "Haitham Aldukhain",
+    "arabic_name": "هيثم الدخين",
+    "folder_slug": "haitham_aldukhain",
+    "mp3quran_server": "https://server16.mp3quran.net/h_dukhain/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 274,
+    "name": "Muhammad Abu Sneina",
+    "arabic_name": "محمد أبو سنينة",
+    "folder_slug": "muhammad_abu_sneina",
+    "mp3quran_server": "https://server16.mp3quran.net/sneineh/Rewayat-Qalon-A-n-Nafi/",
+    "surah_total": 114
+  },
+  {
+    "id": 275,
+    "name": "Mohammed Al-Amin Qeniwa",
+    "arabic_name": "محمد الأمين قنيوة",
+    "folder_slug": "mohammed_al_amin_qeniwa",
+    "mp3quran_server": "https://server16.mp3quran.net/qeniwa/Rewayat-Qalon-A-n-Nafi/",
+    "surah_total": 114
+  },
+  {
+    "id": 277,
+    "name": "Mahmoud Abdul Hakam",
+    "arabic_name": "محمود عبدالحكم",
+    "folder_slug": "mahmoud_abdul_hakam",
+    "mp3quran_server": "https://server16.mp3quran.net/m_abdelhakam/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 278,
+    "name": "Ahmad Issa Al Maasaraawi",
+    "arabic_name": "أحمد عيسى المعصراوي",
+    "folder_slug": "ahmad_issa_al_maasaraawi",
+    "mp3quran_server": "https://server16.mp3quran.net/a_maasaraawi/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 279,
+    "name": "Ibrahim Kshidan",
+    "arabic_name": "إبراهيم كشيدان",
+    "folder_slug": "ibrahim_kshidan",
+    "mp3quran_server": "https://server16.mp3quran.net/i_kshidan/Rewayat-Qalon-A-n-Nafi/",
+    "surah_total": 114
+  },
+  {
+    "id": 280,
+    "name": "Hashim Abu Dalal",
+    "arabic_name": "هاشم أبو دلال",
+    "folder_slug": "hashim_abu_dalal",
+    "mp3quran_server": "https://server16.mp3quran.net/h_abudalal/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 281,
+    "name": "Fouad Alkhamery",
+    "arabic_name": "فؤاد الخامري",
+    "folder_slug": "fouad_alkhamery",
+    "mp3quran_server": "https://server16.mp3quran.net/f_khamery/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 282,
+    "name": "Sayed Ahmad Hashemi",
+    "arabic_name": "سيد أحمد هاشمي",
+    "folder_slug": "sayed_ahmad_hashemi",
+    "mp3quran_server": "https://server16.mp3quran.net/s_hashemi/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 283,
+    "name": "Khalid Mohammadi",
+    "arabic_name": "خالد كريم محمدي",
+    "folder_slug": "khalid_mohammadi",
+    "mp3quran_server": "https://server16.mp3quran.net/kh_mohammadi/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 284,
+    "name": "Mal-Allah Abdulrhman Aljaber",
+    "arabic_name": "مال الله عبدالرحمن الجابر",
+    "folder_slug": "mal_allah_abdulrhman_aljaber",
+    "mp3quran_server": "https://server16.mp3quran.net/mal-allah_jaber/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 285,
+    "name": "Salman Alsadeiq",
+    "arabic_name": "سلمان الصديق",
+    "folder_slug": "salman_alsadeiq",
+    "mp3quran_server": "https://server16.mp3quran.net/s_sadeiq/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 286,
+    "name": "Hasan Saleh",
+    "arabic_name": "حسن صالح",
+    "folder_slug": "hasan_saleh",
+    "mp3quran_server": "https://server16.mp3quran.net/h_saleh/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 287,
+    "name": "Abdulrahman Alshahhat",
+    "arabic_name": "عبدالرحمن الشحات",
+    "folder_slug": "abdulrahman_alshahhat",
+    "mp3quran_server": "https://server16.mp3quran.net/a_alshahhat/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 288,
+    "name": "Issa Omar Sanankoua",
+    "arabic_name": "عيسى عمر سناكو",
+    "folder_slug": "issa_omar_sanankoua",
+    "mp3quran_server": "https://server16.mp3quran.net/i_sanankoua/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 290,
+    "name": "Saleh Alquraishi",
+    "arabic_name": "صالح القريشي",
+    "folder_slug": "saleh_alquraishi",
+    "mp3quran_server": "https://server16.mp3quran.net/s_alquraishi/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 3,
+    "name": "Ibrahim Al-Asiri",
+    "arabic_name": "إبراهيم العسيري",
+    "folder_slug": "ibrahim_al_asiri",
+    "mp3quran_server": "https://server6.mp3quran.net/3siri/",
+    "surah_total": 114
+  },
+  {
+    "id": 300,
+    "name": "Saleh Alshamrani",
+    "arabic_name": "صالح الشمراني",
+    "folder_slug": "saleh_alshamrani",
+    "mp3quran_server": "https://server16.mp3quran.net/shamrani/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 301,
+    "name": "Faisal Al-Hajry",
+    "arabic_name": "فيصل الهاجري",
+    "folder_slug": "faisal_al_hajry",
+    "mp3quran_server": "https://server16.mp3quran.net/f_hajry/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 302,
+    "name": "Anas Alemadi",
+    "arabic_name": "أنس العمادي",
+    "folder_slug": "anas_alemadi",
+    "mp3quran_server": "https://server16.mp3quran.net/a_alemadi/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 304,
+    "name": "Abdulkareem Alhazmi",
+    "arabic_name": "عبدالكريم الحازمي",
+    "folder_slug": "abdulkareem_alhazmi",
+    "mp3quran_server": "https://server16.mp3quran.net/a_alhazmi/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 32,
+    "name": "Sahl Yassin",
+    "arabic_name": "سهل ياسين",
+    "folder_slug": "sahl_yassin",
+    "mp3quran_server": "https://server6.mp3quran.net/shl/",
+    "surah_total": 114
+  },
+  {
+    "id": 33,
+    "name": "Zaki Daghistani",
+    "arabic_name": "زكي داغستاني",
+    "folder_slug": "zaki_daghistani",
+    "mp3quran_server": "https://server9.mp3quran.net/zaki/",
+    "surah_total": 114
+  },
+  {
+    "id": 36,
+    "name": "Sayeed Ramadan",
+    "arabic_name": "سيد رمضان",
+    "folder_slug": "sayeed_ramadan",
+    "mp3quran_server": "https://server12.mp3quran.net/sayed/",
+    "surah_total": 114
+  },
+  {
+    "id": 38,
+    "name": "Shirazad Taher",
+    "arabic_name": "شيرزاد عبدالرحمن طاهر",
+    "folder_slug": "shirazad_taher",
+    "mp3quran_server": "https://server12.mp3quran.net/taher/",
+    "surah_total": 114
+  },
+  {
+    "id": 39,
+    "name": "Saber Abdulhakm",
+    "arabic_name": "صابر عبدالحكم",
+    "folder_slug": "saber_abdulhakm",
+    "mp3quran_server": "https://server12.mp3quran.net/hkm/",
+    "surah_total": 114
+  },
+  {
+    "id": 40,
+    "name": "Saleh Alsahood",
+    "arabic_name": "صالح الصاهود",
+    "folder_slug": "saleh_alsahood",
+    "mp3quran_server": "https://server8.mp3quran.net/sahood/",
+    "surah_total": 114
+  },
+  {
+    "id": 42,
+    "name": "Saleh Al-Habdan",
+    "arabic_name": "صالح الهبدان",
+    "folder_slug": "saleh_al_habdan",
+    "mp3quran_server": "https://server6.mp3quran.net/habdan/",
+    "surah_total": 114
+  },
+  {
+    "id": 44,
+    "name": "Salah Alhashim",
+    "arabic_name": "صلاح الهاشم",
+    "folder_slug": "salah_alhashim",
+    "mp3quran_server": "https://server12.mp3quran.net/salah_hashim_m/",
+    "surah_total": 114
+  },
+  {
+    "id": 47,
+    "name": "Mukhtar Al-Haj",
+    "arabic_name": "مختار الحاج",
+    "folder_slug": "mukhtar_al_haj",
+    "mp3quran_server": "https://server16.mp3quran.net/mukhtar_haj/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 48,
+    "name": "Adel Ryyan",
+    "arabic_name": "عادل ريان",
+    "folder_slug": "adel_ryyan",
+    "mp3quran_server": "https://server8.mp3quran.net/ryan/",
+    "surah_total": 114
+  },
+  {
+    "id": 49,
+    "name": "Abdelbari Al-Toubayti",
+    "arabic_name": "عبدالبارئ الثبيتي",
+    "folder_slug": "abdelbari_al_toubayti",
+    "mp3quran_server": "https://server6.mp3quran.net/thubti/",
+    "surah_total": 114
+  },
+  {
+    "id": 5,
+    "name": "Ahmad Al-Ajmy",
+    "arabic_name": "أحمد بن علي العجمي",
+    "folder_slug": "ahmad_al_ajmy",
+    "mp3quran_server": "https://server10.mp3quran.net/ajm/",
+    "surah_total": 114
+  },
+  {
+    "id": 50,
+    "name": "Abdulbari Mohammad",
+    "arabic_name": "عبدالبارئ محمد",
+    "folder_slug": "abdulbari_mohammad",
+    "mp3quran_server": "https://server12.mp3quran.net/bari/",
+    "surah_total": 114
+  },
+  {
+    "id": 54,
+    "name": "Abdulrahman Alsudaes",
+    "arabic_name": "عبدالرحمن السديس",
+    "folder_slug": "abdulrahman_alsudaes",
+    "mp3quran_server": "https://server11.mp3quran.net/sds/",
+    "surah_total": 114
+  },
+  {
+    "id": 55,
+    "name": "Abdul Aziz Al-Ahmad",
+    "arabic_name": "عبدالعزيز الأحمد",
+    "folder_slug": "abdul_aziz_al_ahmad",
+    "mp3quran_server": "https://server11.mp3quran.net/a_ahmed/",
+    "surah_total": 114
+  },
+  {
+    "id": 56,
+    "name": "Abdulaziz Az-Zahrani",
+    "arabic_name": "عبدالعزيز الزهراني",
+    "folder_slug": "abdulaziz_az_zahrani",
+    "mp3quran_server": "https://server9.mp3quran.net/zahrani/",
+    "surah_total": 114
+  },
+  {
+    "id": 58,
+    "name": "Abdullah Albuajan",
+    "arabic_name": "عبدالله البعيجان",
+    "folder_slug": "abdullah_albuajan",
+    "mp3quran_server": "https://server8.mp3quran.net/buajan/",
+    "surah_total": 114
+  },
+  {
+    "id": 59,
+    "name": "Abdullah Al-Mattrod",
+    "arabic_name": "عبدالله المطرود",
+    "folder_slug": "abdullah_al_mattrod",
+    "mp3quran_server": "https://server8.mp3quran.net/mtrod/",
+    "surah_total": 114
+  },
+  {
+    "id": 6,
+    "name": "Ahmad Al-Hawashi",
+    "arabic_name": "أحمد الحواشي",
+    "folder_slug": "ahmad_al_hawashi",
+    "mp3quran_server": "https://server11.mp3quran.net/hawashi/",
+    "surah_total": 114
+  },
+  {
+    "id": 60,
+    "name": "Abdullah Basfer",
+    "arabic_name": "عبدالله بصفر",
+    "folder_slug": "abdullah_basfer",
+    "mp3quran_server": "https://server6.mp3quran.net/bsfr/",
+    "surah_total": 114
+  },
+  {
+    "id": 61,
+    "name": "Abdullah Khayyat",
+    "arabic_name": "عبدالله خياط",
+    "folder_slug": "abdullah_khayyat",
+    "mp3quran_server": "https://server12.mp3quran.net/kyat/",
+    "surah_total": 114
+  },
+  {
+    "id": 62,
+    "name": "Abdullah Al-Johany",
+    "arabic_name": "عبدالله عواد الجهني",
+    "folder_slug": "abdullah_al_johany",
+    "mp3quran_server": "https://server13.mp3quran.net/jhn/",
+    "surah_total": 114
+  },
+  {
+    "id": 63,
+    "name": "Abdullah Qaulan",
+    "arabic_name": "عبدالله غيلان",
+    "folder_slug": "abdullah_qaulan",
+    "mp3quran_server": "https://server8.mp3quran.net/gulan/",
+    "surah_total": 114
+  },
+  {
+    "id": 64,
+    "name": "Abdulrasheed Soufi",
+    "arabic_name": "عبدالرشيد صوفي",
+    "folder_slug": "abdulrasheed_soufi",
+    "mp3quran_server": "https://server16.mp3quran.net/soufi/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 66,
+    "name": "Abdulmohsin Al-Harthy",
+    "arabic_name": "عبدالمحسن الحارثي",
+    "folder_slug": "abdulmohsin_al_harthy",
+    "mp3quran_server": "https://server6.mp3quran.net/mohsin_harthi/",
+    "surah_total": 114
+  },
+  {
+    "id": 67,
+    "name": "Abdulmohsen Al-Qasim",
+    "arabic_name": "عبدالمحسن القاسم",
+    "folder_slug": "abdulmohsen_al_qasim",
+    "mp3quran_server": "https://server8.mp3quran.net/qasm/",
+    "surah_total": 114
+  },
+  {
+    "id": 69,
+    "name": "Abdulmohsin Al-Obaikan",
+    "arabic_name": "عبدالمحسن العبيكان",
+    "folder_slug": "abdulmohsin_al_obaikan",
+    "mp3quran_server": "https://server12.mp3quran.net/obk/",
+    "surah_total": 114
+  },
+  {
+    "id": 70,
+    "name": "Abdulhadi Kanakeri",
+    "arabic_name": "عبدالهادي أحمد كناكري",
+    "folder_slug": "abdulhadi_kanakeri",
+    "mp3quran_server": "https://server6.mp3quran.net/kanakeri/",
+    "surah_total": 114
+  },
+  {
+    "id": 71,
+    "name": "Abdulwadood Haneef",
+    "arabic_name": "عبدالودود حنيف",
+    "folder_slug": "abdulwadood_haneef",
+    "mp3quran_server": "https://server8.mp3quran.net/wdod/",
+    "surah_total": 114
+  },
+  {
+    "id": 72,
+    "name": "Abdulwali Al-Arkani",
+    "arabic_name": "عبدالولي الأركاني",
+    "folder_slug": "abdulwali_al_arkani",
+    "mp3quran_server": "https://server6.mp3quran.net/arkani/",
+    "surah_total": 114
+  },
+  {
+    "id": 74,
+    "name": "Ali Alhuthaifi",
+    "arabic_name": "علي بن عبدالرحمن الحذيفي",
+    "folder_slug": "ali_alhuthaifi",
+    "mp3quran_server": "https://server9.mp3quran.net/hthfi/Rewayat-Sho-bah-A-n-Asim/",
+    "surah_total": 114
+  },
+  {
+    "id": 77,
+    "name": "Ali Hajjaj Alsouasi",
+    "arabic_name": "علي حجاج السويسي",
+    "folder_slug": "ali_hajjaj_alsouasi",
+    "mp3quran_server": "https://server9.mp3quran.net/hajjaj/",
+    "surah_total": 114
+  },
+  {
+    "id": 78,
+    "name": "Emad Hafez",
+    "arabic_name": "عماد زهير حافظ",
+    "folder_slug": "emad_hafez",
+    "mp3quran_server": "https://server6.mp3quran.net/hafz/",
+    "surah_total": 114
+  },
+  {
+    "id": 79,
+    "name": "Abdulaziz Alturki",
+    "arabic_name": "عبدالعزيز التركي",
+    "folder_slug": "abdulaziz_alturki",
+    "mp3quran_server": "https://server16.mp3quran.net/a_turki/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  },
+  {
+    "id": 8,
+    "name": "Ahmad Saber",
+    "arabic_name": "أحمد صابر",
+    "folder_slug": "ahmad_saber",
+    "mp3quran_server": "https://server8.mp3quran.net/saber/",
+    "surah_total": 114
+  },
+  {
+    "id": 80,
+    "name": "Omar Al-Qazabri",
+    "arabic_name": "عمر القزابري",
+    "folder_slug": "omar_al_qazabri",
+    "mp3quran_server": "https://server9.mp3quran.net/omar_warsh/",
+    "surah_total": 114
+  },
+  {
+    "id": 81,
+    "name": "Fares Abbad",
+    "arabic_name": "فارس عباد",
+    "folder_slug": "fares_abbad",
+    "mp3quran_server": "https://server8.mp3quran.net/frs_a/",
+    "surah_total": 114
+  },
+  {
+    "id": 87,
+    "name": "Nabil Al Rifay",
+    "arabic_name": "نبيل الرفاعي",
+    "folder_slug": "nabil_al_rifay",
+    "mp3quran_server": "https://server9.mp3quran.net/nabil/",
+    "surah_total": 114
+  },
+  {
+    "id": 88,
+    "name": "Neamah Al-Hassan",
+    "arabic_name": "نعمة الحسان",
+    "folder_slug": "neamah_al_hassan",
+    "mp3quran_server": "https://server8.mp3quran.net/namh/",
+    "surah_total": 114
+  },
+  {
+    "id": 89,
+    "name": "Hani Arrifai",
+    "arabic_name": "هاني الرفاعي",
+    "folder_slug": "hani_arrifai",
+    "mp3quran_server": "https://server8.mp3quran.net/hani/",
+    "surah_total": 114
+  },
+  {
+    "id": 9,
+    "name": "Ahmad Nauina",
+    "arabic_name": "أحمد نعينع",
+    "folder_slug": "ahmad_nauina",
+    "mp3quran_server": "https://server11.mp3quran.net/ahmad_nu/",
+    "surah_total": 114
+  },
+  {
+    "id": 91,
+    "name": "Waleed Alnaehi",
+    "arabic_name": "وليد النائحي",
+    "folder_slug": "waleed_alnaehi",
+    "mp3quran_server": "https://server9.mp3quran.net/waleed/",
+    "surah_total": 114
+  },
+  {
+    "id": 93,
+    "name": "Yasser Al-Qurashi",
+    "arabic_name": "ياسر القرشي",
+    "folder_slug": "yasser_al_qurashi",
+    "mp3quran_server": "https://server9.mp3quran.net/qurashi/",
+    "surah_total": 114
+  },
+  {
+    "id": 95,
+    "name": "Yasser Al-Mazroyee",
+    "arabic_name": "ياسر المزروعي ",
+    "folder_slug": "yasser_al_mazroyee",
+    "mp3quran_server": "https://server9.mp3quran.net/mzroyee/",
+    "surah_total": 114
+  },
+  {
+    "id": 96,
+    "name": "Yahya Hawwa",
+    "arabic_name": "يحيى حوا",
+    "folder_slug": "yahya_hawwa",
+    "mp3quran_server": "https://server12.mp3quran.net/yahya/",
+    "surah_total": 114
+  },
+  {
+    "id": 97,
+    "name": "Yousef Alshoaey",
+    "arabic_name": "يوسف الشويعي",
+    "folder_slug": "yousef_alshoaey",
+    "mp3quran_server": "https://server9.mp3quran.net/yousef/",
+    "surah_total": 114
+  },
+  {
+    "id": 98,
+    "name": "Abdullah Abdal",
+    "arabic_name": "عبدالله عبدل",
+    "folder_slug": "abdullah_abdal",
+    "mp3quran_server": "https://server16.mp3quran.net/a_abdl/Rewayat-Hafs-A-n-Assem/",
+    "surah_total": 114
+  }
+]

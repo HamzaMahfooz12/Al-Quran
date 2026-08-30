@@ -226,7 +226,7 @@ class _JumpNavigationDialogState extends ConsumerState<JumpNavigationDialog>
   // ── 2. Surah Jump Tab ───────────────────────────────────────────────────────
   Widget _buildSurahJumpTab() {
     final filtered = kSurahList.where((s) {
-      final q = _searchQuery.toLowerCase();
+      final q = _searchQuery.toLowerCase().trim();
       return s.nameTransliteration.toLowerCase().contains(q) ||
           s.nameArabic.contains(q) ||
           s.number.toString() == q;
@@ -236,46 +236,96 @@ class _JumpNavigationDialogState extends ConsumerState<JumpNavigationDialog>
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          child: TextField(
-            onChanged: (v) => setState(() => _searchQuery = v),
-            decoration: InputDecoration(
-              hintText: 'Search Surah name or number...',
-              prefixIcon: const Icon(Icons.search, size: 18, color: Color(0xFF2D6A4F)),
-              filled: true,
-              fillColor: Colors.white,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: const Color(0xFFE2E8E4)),
+            ),
+            child: TextField(
+              onChanged: (v) => setState(() => _searchQuery = v),
+              decoration: InputDecoration(
+                hintText: 'Search Surah by name or number...',
+                hintStyle: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF9CA3AF)),
+                prefixIcon: const Icon(Icons.search, size: 18, color: Color(0xFF6B7280)),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              ),
             ),
           ),
         ),
         Expanded(
-          child: ListView.separated(
-            padding: EdgeInsets.fromLTRB(14, 6, 14, 20 + MediaQuery.paddingOf(context).bottom),
+          child: ListView.builder(
+            padding: EdgeInsets.fromLTRB(14, 4, 14, 20 + MediaQuery.paddingOf(context).bottom),
             itemCount: filtered.length,
-            separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (ctx, i) {
               final surah = filtered[i];
-              return ListTile(
-                dense: true,
-                leading: CircleAvatar(
-                  radius: 14,
-                  backgroundColor: const Color(0xFFE8F5E9),
-                  child: Text('${surah.number}',
-                      style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.bold, color: const Color(0xFF1B4332))),
+              return Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: const Color(0xFFEDE8DF)),
                 ),
-                title: Text(surah.nameTransliteration, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600)),
-                subtitle: Text('${surah.ayahCount} Verses • ${surah.revelationType}', style: GoogleFonts.inter(fontSize: 10, color: Colors.grey[600])),
-                trailing: Text(surah.nameArabic, style: const TextStyle(fontFamily: 'Scheherazade New', fontSize: 18, color: Color(0xFF1B4332))),
-                onTap: () async {
-                  if (widget.onJumpToPage != null && widget.mushafType != null) {
-                    final repo = ref.read(quranRepositoryProvider);
-                    final page = await repo.getSurahStartPage(surah.number, widget.mushafType!);
-                    _executeJumpToPage(page);
-                  } else {
-                    Navigator.pop(context);
-                    context.push('/home/surah/${surah.number}');
-                  }
-                },
+                child: Material(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(14),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(14),
+                    onTap: () async {
+                      if (widget.onJumpToPage != null && widget.mushafType != null) {
+                        final repo = ref.read(quranRepositoryProvider);
+                        final page = await repo.getSurahStartPage(surah.number, widget.mushafType!);
+                        _executeJumpToPage(page);
+                      } else {
+                        Navigator.pop(context);
+                        context.push('/home/surah/${surah.number}');
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      child: Row(
+                        children: [
+                          _buildStarBadge(surah.number),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  surah.nameTransliteration,
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 14.5,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFF1E293B),
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  '${surah.revelationType} • ${surah.ayahCount} Verses • Page ${surah.startPage}',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    color: const Color(0xFF64748B),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Text(
+                            surah.nameArabic,
+                            style: GoogleFonts.amiri(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFFC59B27),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          const Icon(Icons.chevron_right_rounded, size: 18, color: Color(0xFF94A3B8)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               );
             },
           ),
@@ -287,29 +337,53 @@ class _JumpNavigationDialogState extends ConsumerState<JumpNavigationDialog>
   // ── 3. Juz Jump Tab ─────────────────────────────────────────────────────────
   Widget _buildJuzJumpTab() {
     return ListView.builder(
-      padding: EdgeInsets.fromLTRB(14, 14, 14, 20 + MediaQuery.paddingOf(context).bottom),
+      padding: EdgeInsets.fromLTRB(14, 10, 14, 20 + MediaQuery.paddingOf(context).bottom),
       itemCount: 30,
       itemBuilder: (ctx, idx) {
         final juzNum = idx + 1;
-        return Card(
-          elevation: 0.5,
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: const Color(0xFFE8F5E9),
-              child: Text('$juzNum', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF1B4332))),
+        return Container(
+          margin: const EdgeInsets.only(bottom: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0xFFEDE8DF)),
+          ),
+          child: Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(14),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(14),
+              onTap: () async {
+                if (widget.onJumpToPage != null && widget.mushafType != null) {
+                  final repo = ref.read(quranRepositoryProvider);
+                  final page = await repo.getJuzStartPage(juzNum, widget.mushafType!);
+                  _executeJumpToPage(page);
+                } else {
+                  Navigator.pop(context);
+                  context.push('/home/juz/$juzNum');
+                }
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                child: Row(
+                  children: [
+                    _buildStarBadge(juzNum),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Juz $juzNum',
+                        style: GoogleFonts.outfit(
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF1E293B),
+                        ),
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right_rounded, size: 18, color: Color(0xFF94A3B8)),
+                  ],
+                ),
+              ),
             ),
-            title: Text('Juz $juzNum (پارہ $juzNum)', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600)),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
-            onTap: () async {
-              if (widget.onJumpToPage != null && widget.mushafType != null) {
-                final repo = ref.read(quranRepositoryProvider);
-                final page = await repo.getJuzStartPage(juzNum, widget.mushafType!);
-                _executeJumpToPage(page);
-              } else {
-                Navigator.pop(context);
-                context.push('/home/juz/$juzNum');
-              }
-            },
           ),
         );
       },
@@ -319,17 +393,17 @@ class _JumpNavigationDialogState extends ConsumerState<JumpNavigationDialog>
   // ── 4. Manzil Jump Tab ──────────────────────────────────────────────────────
   Widget _buildManzilJumpTab() {
     const manzilInfo = [
-      {'num': 1, 'surah': 1, 'title': 'Manzil 1 (منزل ۱)', 'range': 'Surah 1 (Al-Fatihah) – Surah 4 (An-Nisa)'},
-      {'num': 2, 'surah': 5, 'title': 'Manzil 2 (منزل ۲)', 'range': "Surah 5 (Al-Ma'idah) – Surah 9 (At-Tawbah)"},
-      {'num': 3, 'surah': 10, 'title': 'Manzil 3 (منزل ۳)', 'range': 'Surah 10 (Yunus) – Surah 16 (An-Nahl)'},
-      {'num': 4, 'surah': 17, 'title': 'Manzil 4 (منزل ۴)', 'range': "Surah 17 (Al-Isra') – Surah 25 (Al-Furqan)"},
-      {'num': 5, 'surah': 26, 'title': 'Manzil 5 (منزل ۵)', 'range': "Surah 26 (Ash-Shu'ara) – Surah 36 (Ya-Sin)"},
-      {'num': 6, 'surah': 37, 'title': 'Manzil 6 (منزل ۶)', 'range': 'Surah 37 (As-Saffat) – Surah 49 (Al-Hujurat)'},
-      {'num': 7, 'surah': 50, 'title': 'Manzil 7 (منزل ۷)', 'range': 'Surah 50 (Qaf) – Surah 114 (An-Nas)'},
+      {'num': 1, 'surah': 1, 'title': 'Manzil 1', 'range': 'Surah 1 (Al-Fatihah) – Surah 4 (An-Nisa)'},
+      {'num': 2, 'surah': 5, 'title': 'Manzil 2', 'range': "Surah 5 (Al-Ma'idah) – Surah 9 (At-Tawbah)"},
+      {'num': 3, 'surah': 10, 'title': 'Manzil 3', 'range': 'Surah 10 (Yunus) – Surah 16 (An-Nahl)'},
+      {'num': 4, 'surah': 17, 'title': 'Manzil 4', 'range': "Surah 17 (Al-Isra') – Surah 25 (Al-Furqan)"},
+      {'num': 5, 'surah': 26, 'title': 'Manzil 5', 'range': "Surah 26 (Ash-Shu'ara) – Surah 36 (Ya-Sin)"},
+      {'num': 6, 'surah': 37, 'title': 'Manzil 6', 'range': 'Surah 37 (As-Saffat) – Surah 49 (Al-Hujurat)'},
+      {'num': 7, 'surah': 50, 'title': 'Manzil 7', 'range': 'Surah 50 (Qaf) – Surah 114 (An-Nas)'},
     ];
 
     return ListView.builder(
-      padding: EdgeInsets.fromLTRB(14, 14, 14, 20 + MediaQuery.paddingOf(context).bottom),
+      padding: EdgeInsets.fromLTRB(14, 10, 14, 20 + MediaQuery.paddingOf(context).bottom),
       itemCount: 7,
       itemBuilder: (ctx, idx) {
         final info = manzilInfo[idx];
@@ -338,33 +412,107 @@ class _JumpNavigationDialogState extends ConsumerState<JumpNavigationDialog>
         final title = info['title'] as String;
         final range = info['range'] as String;
 
-        return Card(
-          elevation: 0.5,
+        return Container(
           margin: const EdgeInsets.only(bottom: 8),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: const Color(0xFFE8F5E9),
-              child: Text(
-                '$manzilNum',
-                style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF1B4332)),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0xFFEDE8DF)),
+          ),
+          child: Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(14),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(14),
+              onTap: () async {
+                if (widget.onJumpToPage != null && widget.mushafType != null) {
+                  final repo = ref.read(quranRepositoryProvider);
+                  final page = await repo.getSurahStartPage(startSurah, widget.mushafType!);
+                  _executeJumpToPage(page);
+                } else {
+                  Navigator.pop(context);
+                  context.push('/home/surah/$startSurah');
+                }
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                child: Row(
+                  children: [
+                    _buildStarBadge(manzilNum),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: GoogleFonts.outfit(
+                              fontSize: 14.5,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF1E293B),
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            range,
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              color: const Color(0xFF64748B),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right_rounded, size: 18, color: Color(0xFF94A3B8)),
+                  ],
+                ),
               ),
             ),
-            title: Text(title, style: GoogleFonts.inter(fontSize: 13.5, fontWeight: FontWeight.w600)),
-            subtitle: Text(range, style: GoogleFonts.inter(fontSize: 10.5, color: Colors.grey[600])),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
-            onTap: () async {
-              if (widget.onJumpToPage != null && widget.mushafType != null) {
-                final repo = ref.read(quranRepositoryProvider);
-                final page = await repo.getSurahStartPage(startSurah, widget.mushafType!);
-                _executeJumpToPage(page);
-              } else {
-                Navigator.pop(context);
-                context.push('/home/surah/$startSurah');
-              }
-            },
           ),
         );
       },
+    );
+  }
+
+  Widget _buildStarBadge(int number) {
+    const size = 36.0;
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            width: size * 0.84,
+            height: size * 0.84,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF9FAF9),
+              borderRadius: BorderRadius.circular(size * 0.18),
+              border: Border.all(color: const Color(0xFFD1DDD4), width: 1.2),
+            ),
+          ),
+          Transform.rotate(
+            angle: 0.785398,
+            child: Container(
+              width: size * 0.84,
+              height: size * 0.84,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF9FAF9).withValues(alpha: 0.85),
+                borderRadius: BorderRadius.circular(size * 0.18),
+                border: Border.all(color: const Color(0xFFD1DDD4), width: 1.2),
+              ),
+            ),
+          ),
+          Text(
+            '$number',
+            style: GoogleFonts.outfit(
+              fontSize: size * 0.36,
+              fontWeight: FontWeight.w800,
+              color: const Color(0xFF1B4332),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
