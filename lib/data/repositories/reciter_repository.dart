@@ -51,6 +51,26 @@ class ReciterRepository {
     'kk.khalifahaltai-audio',
   };
 
+  static const List<Reciter> kDefaultReciters = [
+    Reciter(id: 'ar.alafasy', name: 'Mishary Rashid Alafasy', style: 'Murattal', language: 'ar'),
+    Reciter(id: 'ar.abdurrahmaansudais', name: 'Abdur-Rahman as-Sudais', style: 'Murattal', language: 'ar'),
+    Reciter(id: 'ar.saoodshuraym', name: 'Saud ash-Shuraym', style: 'Murattal', language: 'ar'),
+    Reciter(id: 'ar.abdulbasitmurattal', name: 'Abdul Basit Abdul Samad', style: 'Murattal', language: 'ar'),
+    Reciter(id: 'ar.mahermuaiqly', name: 'Maher Al Muaiqly', style: 'Murattal', language: 'ar'),
+    Reciter(id: 'ar.ahmedajamy', name: 'Ahmed ibn Ali al-Ajamy', style: 'Murattal', language: 'ar'),
+    Reciter(id: 'ar.hudhaify', name: 'Ali Al-Hudhaify', style: 'Murattal', language: 'ar'),
+    Reciter(id: 'ar.minshawi', name: 'Mohamed Siddiq El-Minshawi', style: 'Murattal', language: 'ar'),
+    Reciter(id: 'ar.husary', name: 'Mahmoud Khalil Al-Husary', style: 'Murattal', language: 'ar'),
+    Reciter(id: 'ar.shaatree', name: 'Abu Bakr Al-Shatri', style: 'Murattal', language: 'ar'),
+    Reciter(id: 'ar.hanirifai', name: 'Hani Ar-Rifai', style: 'Murattal', language: 'ar'),
+    Reciter(id: 'ar.muhammadayyoub', name: 'Muhammad Ayyub', style: 'Murattal', language: 'ar'),
+    Reciter(id: 'ar.muhammadjibreel', name: 'Muhammad Jibreel', style: 'Murattal', language: 'ar'),
+    Reciter(id: 'ar.abdullahbasfar', name: 'Abdullah Basfar', style: 'Murattal', language: 'ar'),
+    Reciter(id: 'ar.aymanswoaid', name: 'Ayman Sowaid', style: 'Murattal', language: 'ar'),
+    Reciter(id: 'en.walk', name: 'Ibrahim Walk (English)', style: 'Translation', language: 'en'),
+    Reciter(id: 'ur.khan', name: 'Shamshad Ali Khan (Urdu)', style: 'Translation', language: 'ur'),
+  ];
+
   /// Returns reciters from local cache; fetches from API if cache is empty.
   Future<List<Reciter>> getReciters({bool forceRefresh = false}) async {
     if (!forceRefresh) {
@@ -64,14 +84,16 @@ class ReciterRepository {
         // Table column migration fallback
       }
     }
-    return _fetchAndCache();
+    final fetched = await _fetchAndCache();
+    if (fetched.isNotEmpty) return fetched;
+    return kDefaultReciters;
   }
 
   Future<List<Reciter>> _fetchAndCache() async {
     try {
       final response = await _dio.get<Map<String, dynamic>>(_apiUrl);
       final data = response.data;
-      if (data == null || data['status'] != 'OK') return [];
+      if (data == null || data['status'] != 'OK') return kDefaultReciters;
 
       final items = (data['data'] as List).cast<Map<String, dynamic>>();
       final reciters = items
@@ -111,9 +133,11 @@ class ReciterRepository {
     } catch (_) {
       try {
         final cached = await _db.query('reciters', orderBy: _orderBy);
-        return cached.map(Reciter.fromMap).where((r) => validReciterIds.contains(r.id)).toList();
+        final list = cached.map(Reciter.fromMap).where((r) => validReciterIds.contains(r.id)).toList();
+        if (list.isNotEmpty) return list;
+        return kDefaultReciters;
       } catch (_) {
-        return [];
+        return kDefaultReciters;
       }
     }
   }

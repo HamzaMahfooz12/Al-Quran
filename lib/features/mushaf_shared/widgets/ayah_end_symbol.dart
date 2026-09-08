@@ -30,11 +30,14 @@ class AyahEndSymbol extends StatelessWidget {
     '\u06d6': 'صلی',
     '\u0617': 'ز',
     '\u0614': 'ص',
+    '\u06ea': 'ص',
+    '\u06eb': 'ق',
+    '\u06ec': 'قف',
     '\u06dc': 'س',
-    '\u06db': 'ۛ',
-    '\u06e0': 'ع',
-    '\u06ea': 'قف',
-    '\u06eb': 'ك',
+    '\u06db': '؞',
+    '\u06e0': '∘',
+    '\u06e2': 'مـ',
+    '\u06ed': 'مـ',
   };
 
   static String resolveWaqfDisplay(String mark) {

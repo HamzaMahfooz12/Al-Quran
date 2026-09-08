@@ -2,10 +2,16 @@
 *.class
 *.log
 *.pyc
+*.pyo
+*.pyd
 __pycache__/
+.pytest_cache/
 *.swp
 .DS_Store
 Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
 .atom/
 .build/
 .buildlog/
@@ -25,24 +31,34 @@ migrate_working_dir/
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
+**/.dart_tool/
 .flutter-plugins-dependencies
 .flutter-plugins
+.packages
 .pub-cache/
 .pub/
-/build/
-/coverage/
+build/
+**/build/
+coverage/
+**/coverage/
 
 # ── Android Build Outputs & Ephemeral Files ────────────────────────────────────
+*.apk
+*.aab
+*.ap_
 /android/app/debug/
 /android/app/profile/
 /android/app/release/
-/android/local.properties
-/android/.gradle/
+android/local.properties
+**/local.properties
+android/.gradle/
+**/.gradle/
 /android/.kotlin/
 /android/captures/
 /android/gradleBuild/
 
 # ── iOS Build Outputs & CocoaPods ──────────────────────────────────────────────
+*.ipa
 /ios/Flutter/Generated.xcconfig
 /ios/Flutter/app.flx
 /ios/Flutter/app.zip

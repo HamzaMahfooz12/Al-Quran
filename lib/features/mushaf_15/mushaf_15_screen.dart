@@ -37,6 +37,66 @@ class _Mushaf15ScreenState extends ConsumerState<Mushaf15Screen> {
   String _currentSurahName = '';
   int _currentSurahTotalAyahs = 1;
 
+  // Global Zoom & Pan State (Uniform across all pages)
+  double _zoomScale = 1.0;
+  double _baseZoomScale = 1.0;
+  double _panX = 0.0;
+  double _basePanX = 0.0;
+  final Map<int, Offset> _pointerPositions = {};
+  double _initialPinchDistance = 0.0;
+  Offset _initialPinchMidpoint = Offset.zero;
+
+  void _onPointerDown(PointerDownEvent event) {
+    _pointerPositions[event.pointer] = event.position;
+    if (_pointerPositions.length == 2) {
+      final points = _pointerPositions.values.toList();
+      _initialPinchDistance = (points[0] - points[1]).distance;
+      _initialPinchMidpoint = (points[0] + points[1]) / 2;
+      _baseZoomScale = _zoomScale;
+      _basePanX = _panX;
+    }
+  }
+
+  void _onPointerMove(PointerMoveEvent event) {
+    _pointerPositions[event.pointer] = event.position;
+    if (_pointerPositions.length == 2) {
+      final points = _pointerPositions.values.toList();
+      final currentDistance = (points[0] - points[1]).distance;
+      final currentMidpoint = (points[0] + points[1]) / 2;
+      if (_initialPinchDistance > 10.0) {
+        final newScale = (_baseZoomScale * (currentDistance / _initialPinchDistance)).clamp(1.0, 2.5);
+        final deltaX = currentMidpoint.dx - _initialPinchMidpoint.dx;
+        final maxPanX = (MediaQuery.sizeOf(context).width * (newScale - 1.0)) / 2;
+        setState(() {
+          _zoomScale = newScale;
+          _panX = (_basePanX + deltaX).clamp(-maxPanX, maxPanX);
+        });
+      }
+    }
+  }
+
+  void _onPointerUp(PointerUpEvent event) {
+    _pointerPositions.remove(event.pointer);
+    if (_pointerPositions.length < 2) {
+      _baseZoomScale = _zoomScale;
+      _basePanX = _panX;
+      if (_zoomScale <= 1.03) {
+        setState(() {
+          _zoomScale = 1.0;
+          _panX = 0.0;
+        });
+      }
+    }
+  }
+
+  void _onPointerCancel(PointerCancelEvent event) {
+    _pointerPositions.remove(event.pointer);
+    if (_pointerPositions.length < 2) {
+      _baseZoomScale = _zoomScale;
+      _basePanX = _panX;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -284,40 +344,95 @@ class _Mushaf15ScreenState extends ConsumerState<Mushaf15Screen> {
         children: [
           // ── Full-height Mushaf Page View (never resizes) ─────────────────
           Positioned.fill(
-            child: NotificationListener<UserScrollNotification>(
-              onNotification: (notification) {
-                if (notification.direction == ScrollDirection.reverse) {
-                  if (_showBottomBar) setState(() => _showBottomBar = false);
-                } else if (notification.direction == ScrollDirection.forward) {
-                  if (!_showBottomBar) setState(() => _showBottomBar = true);
-                }
-                return true;
-              },
-              child: PageView.builder(
-                controller: _pageCtrl,
-                scrollDirection: Axis.vertical,
-                pageSnapping: false,
-                physics: const ClampingScrollPhysics(),
-                itemCount: 610,
-                itemBuilder: (ctx, idx) {
-                  final pageNum = idx + 1;
-                  return MushafPageWidget(
-                    pageNumber: pageNum,
-                    mushafType: '15_line',
-                    isMarkMistakesMode: _isMarkMistakesMode,
-                    markedWordIds: _markedWordIds,
-                    onToggleWordMistake: _toggleMistake,
-                    activePlayingWordId: activeWordId,
-                    activePlayingVerseKey: activeVerseKey,
-                    onWordTap: (surah, ayah) {
-                      setState(() => _showBottomBar = !_showBottomBar);
+            child: Listener(
+              onPointerDown: _onPointerDown,
+              onPointerMove: _onPointerMove,
+              onPointerUp: _onPointerUp,
+              onPointerCancel: _onPointerCancel,
+              child: ClipRect(
+                child: Transform(
+                  transform: Matrix4.diagonal3Values(_zoomScale, _zoomScale, 1.0)
+                    ..setTranslationRaw(_panX, 0.0, 0.0),
+                  alignment: Alignment.center,
+                  child: NotificationListener<UserScrollNotification>(
+                    onNotification: (notification) {
+                      if (notification.direction == ScrollDirection.reverse) {
+                        if (_showBottomBar) setState(() => _showBottomBar = false);
+                      } else if (notification.direction == ScrollDirection.forward) {
+                        if (!_showBottomBar) setState(() => _showBottomBar = true);
+                      }
+                      return true;
                     },
-                    onWordDoubleTap: (surah, ayah) => _playSurahAyah(surah, ayah),
-                  );
-                },
+                    child: PageView.builder(
+                      controller: _pageCtrl,
+                      scrollDirection: Axis.vertical,
+                      pageSnapping: false,
+                      physics: const ClampingScrollPhysics(),
+                      itemCount: 610,
+                      itemBuilder: (ctx, idx) {
+                        final pageNum = idx + 1;
+                        return MushafPageWidget(
+                          pageNumber: pageNum,
+                          mushafType: '15_line',
+                          isMarkMistakesMode: _isMarkMistakesMode,
+                          markedWordIds: _markedWordIds,
+                          onToggleWordMistake: _toggleMistake,
+                          activePlayingWordId: activeWordId,
+                          activePlayingVerseKey: activeVerseKey,
+                          onWordTap: (surah, ayah) {
+                            setState(() => _showBottomBar = !_showBottomBar);
+                          },
+                          onWordDoubleTap: (surah, ayah) => _playSurahAyah(surah, ayah),
+                        );
+                      },
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
+
+          // ── Floating Zoom Indicator (Tap to Reset) ──────────────────────
+          if (_zoomScale > 1.03)
+            Positioned(
+              top: 12,
+              right: 12,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _zoomScale = 1.0;
+                    _panX = 0.0;
+                    _baseZoomScale = 1.0;
+                    _basePanX = 0.0;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1B2A1E).withValues(alpha: 0.85),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: const [
+                      BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2)),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '${(_zoomScale * 100).round()}%',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Icon(Icons.refresh, color: Colors.white70, size: 14),
+                    ],
+                  ),
+                ),
+              ),
+            ),
 
           // ── Audio Bar Overlay (floats above page, doesn't resize it) ────
           if (isAudioActive)

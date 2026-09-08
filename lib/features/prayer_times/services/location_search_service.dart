@@ -181,13 +181,40 @@ class LocationSearchService {
       return null;
     }
 
-    final pos = await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(accuracy: LocationAccuracy.medium),
-    );
+    Position? pos;
 
-    // Try reverse geocoding via OpenStreetMap
-    String cityName = 'Current Location';
-    String countryName = '';
+    // Get CURRENT live location via network/cell towers (medium = fast 1-2s, accurate enough for prayer times)
+    // NOTE: Do NOT use getLastKnownPosition() — it returns stale old coords from days/weeks ago
+    try {
+      pos = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.medium, // Uses cell towers + WiFi — fast & current
+          timeLimit: Duration(seconds: 8),
+        ),
+      );
+    } catch (_) {
+      // Fallback — try with no time limit
+      try {
+        pos = await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.low,
+          ),
+        );
+      } catch (_) {
+        return null;
+      }
+    }
+
+    if (pos == null) return null;
+
+    // Format coordinates as a short display label (always shown as subtitle)
+    final latStr = pos.latitude.toStringAsFixed(5);
+    final lonStr = pos.longitude.toStringAsFixed(5);
+    final coordLabel = '$latStr°N, $lonStr°E';
+
+    // Try reverse geocoding via OpenStreetMap Nominatim
+    String cityName = coordLabel; // fallback = exact coordinates
+    String countryName = 'Pakistan';
 
     try {
       final response = await _dio.get(
@@ -197,16 +224,29 @@ class LocationSearchService {
           'lon': pos.longitude,
           'format': 'json',
           'addressdetails': 1,
+          'zoom': 14, // town/village level — NOT district/county
         },
       );
       if (response.statusCode == 200 && response.data is Map) {
         final address = response.data['address'] as Map<String, dynamic>?;
-        cityName = address?['city'] ??
-            address?['town'] ??
-            address?['village'] ??
-            address?['county'] ??
-            'Current Location';
-        countryName = address?['country'] ?? '';
+        // Priority: hamlet > village > town > suburb > city
+        // (hamlet/village are most precise for rural areas like Pindmuneem)
+        final resolved = (address?['hamlet'] ??
+                address?['village'] ??
+                address?['town'] ??
+                address?['suburb'] ??
+                address?['city_district'] ??
+                address?['city'] ??
+                address?['municipality'] ??
+                '')
+            .toString()
+            .trim();
+
+        // Use resolved name if found, otherwise keep exact coordinates as name
+        if (resolved.isNotEmpty) {
+          cityName = resolved;
+        }
+        countryName = address?['country']?.toString() ?? 'Pakistan';
       }
     } catch (_) {}
 

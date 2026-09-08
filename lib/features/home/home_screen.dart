@@ -995,20 +995,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       margin: const EdgeInsets.fromLTRB(16, 8, 16, 6),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [
-            Color(0xFFFFFFFF),
-            Color(0xFFFBF8F2),
-          ],
+          colors: [Color(0xFF0D3B26), Color(0xFF165B37), Color(0xFF0F2F1E)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: const Color(0xFFE2D6C0), width: 1.2),
+        border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.45), width: 1.4),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2C7A39).withValues(alpha: 0.05),
-            blurRadius: 14,
-            offset: const Offset(0, 4),
+            color: const Color(0xFF0D3B26).withValues(alpha: 0.35),
+            blurRadius: 20,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -1017,261 +1014,136 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // ── 1. Header Bar: Verse of the Day + Quick Actions ──
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
                     Container(
-                      width: 32,
-                      height: 32,
+                      width: 34,
+                      height: 34,
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color(0xFFFEF3C7), Color(0xFFFDE68A)],
+                          colors: [Color(0xFFD4AF37), Color(0xFFB8962E)],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
                         shape: BoxShape.circle,
-                        border: Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.4)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFD4AF37).withValues(alpha: 0.35),
+                            blurRadius: 6,
+                          ),
+                        ],
                       ),
                       child: const Center(
-                        child: Icon(Icons.wb_sunny_rounded, color: Color(0xFFD97706), size: 17),
+                        child: Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 17),
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Verse of the Day',
-                          style: GoogleFonts.outfit(
-                            fontSize: 15.5,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF1B2A1E),
-                          ),
-                        ),
-                        Text(
-                          'آية اليوم المباركة',
-                          style: GoogleFonts.amiri(
-                            fontSize: 11.5,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF2C7A39),
-                            height: 1.1,
-                          ),
-                        ),
-                      ],
-                    ),
+                    Text('Verse of the Day', style: GoogleFonts.outfit(fontSize: 15.5, fontWeight: FontWeight.bold, color: Colors.white)),
                   ],
                 ),
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Copy Button
                     IconButton(
-                      icon: const Icon(Icons.copy_rounded, size: 17, color: Color(0xFF526E5B)),
+                      icon: const Icon(Icons.copy_rounded, size: 17, color: Color(0xFFD4AF37)),
                       tooltip: 'Copy Verse',
                       constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                       padding: const EdgeInsets.all(6),
                       onPressed: () {
                         HapticFeedback.lightImpact();
-                        Clipboard.setData(
-                          ClipboardData(
-                            text: '${verse.arabic}\n\n${verse.urdu}\n\n— Surah ${verse.surahName} [${verse.surahNumber}:${verse.ayahNumber}]',
-                          ),
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Verse of the Day copied to clipboard'),
-                            backgroundColor: Color(0xFF1B4332),
-                            behavior: SnackBarBehavior.floating,
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
+                        Clipboard.setData(ClipboardData(
+                          text: '${verse.arabic}\n\n${verse.english}\n\n— Surah ${verse.surahName} [${verse.surahNumber}:${verse.ayahNumber}]',
+                        ));
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text('Copy verse'),
+                          backgroundColor: Color(0xFF1B4332),
+                          behavior: SnackBarBehavior.floating,
+                          duration: Duration(seconds: 2),
+                        ));
                       },
                     ),
                     const SizedBox(width: 4),
-                    // Share Button
                     InkWell(
-                      onTap: () {
-                        AyahShareDialog.show(
-                          context,
-                          surahName: verse.surahName,
-                          ayahNumber: verse.ayahNumber,
-                          arabicText: verse.arabic,
-                          translationText: verse.urdu,
-                        );
-                      },
+                      onTap: () => AyahShareDialog.show(context, surahName: verse.surahName, ayahNumber: verse.ayahNumber, arabicText: verse.arabic, translationText: verse.english),
                       borderRadius: BorderRadius.circular(10),
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5.5),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFEAF6EC),
+                          color: const Color(0xFFD4AF37).withValues(alpha: 0.18),
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: const Color(0xFF2C7A39).withValues(alpha: 0.25)),
+                          border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.45)),
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.share_outlined, size: 13.5, color: Color(0xFF2C7A39)),
-                            const SizedBox(width: 4),
-                            Text(
-                              'Share',
-                              style: GoogleFonts.outfit(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: const Color(0xFF2C7A39),
-                              ),
-                            ),
-                          ],
-                        ),
+                        child: Row(mainAxisSize: MainAxisSize.min, children: [
+                          const Icon(Icons.share_outlined, size: 13.5, color: Color(0xFFD4AF37)),
+                          const SizedBox(width: 4),
+                          Text('Share', style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFFD4AF37))),
+                        ]),
                       ),
                     ),
                   ],
                 ),
               ],
             ),
-
             const SizedBox(height: 14),
-
-            // ── 2. Arabic Quranic Verse ──
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Text(
-                verse.arabic,
-                style: const TextStyle(
-                  fontFamily: 'Scheherazade New',
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF111827),
-                  height: 1.85,
-                ),
-                textAlign: TextAlign.center,
-                textDirection: TextDirection.rtl,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.2)),
               ),
+              child: Text(verse.arabic, style: const TextStyle(fontFamily: 'Scheherazade New', fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white, height: 1.85), textAlign: TextAlign.center, textDirection: TextDirection.rtl),
             ),
-
             const SizedBox(height: 10),
-
-            // ── 3. Urdu Translation Box (Urdu ONLY) ──
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
-                color: const Color(0xFFF3F9F4),
+                color: Colors.white.withValues(alpha: 0.09),
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: const Color(0xFFD3E7D7)),
+                border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.25)),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF2C7A39).withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          'اردو ترجمہ',
-                          style: GoogleFonts.notoNastaliqUrdu(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF2C7A39),
-                          ),
-                        ),
-                      ),
-                    ],
+              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                Row(children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                    decoration: BoxDecoration(color: const Color(0xFFD4AF37).withValues(alpha: 0.18), borderRadius: BorderRadius.circular(6)),
+                    child: Text('English Translation', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.bold, color: const Color(0xFFD4AF37))),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    verse.urdu,
-                    style: const TextStyle(
-                      fontFamily: 'Noto Nastaliq Urdu',
-                      fontSize: 14.5,
-                      color: Color(0xFF1B3D2F),
-                      height: 2.0,
-                    ),
-                    textAlign: TextAlign.right,
-                    textDirection: TextDirection.rtl,
-                  ),
-                ],
-              ),
+                ]),
+                const SizedBox(height: 8),
+                Text(verse.english, style: GoogleFonts.inter(fontSize: 13.5, color: const Color(0xFFD4EDE4), height: 1.65, fontStyle: FontStyle.italic), textAlign: TextAlign.left),
+              ]),
             ),
-
             const SizedBox(height: 14),
-
-            // ── 4. Footer: Surah Info & Read Button ──
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFAF7F2),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: const Color(0xFFE8E1D2)),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.menu_book_rounded, size: 12.5, color: Color(0xFF2C7A39)),
-                      const SizedBox(width: 5),
-                      Text(
-                        'Surah ${verse.surahName} [${verse.surahNumber}:${verse.ayahNumber}]',
-                        style: GoogleFonts.inter(
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF4B5E50),
-                        ),
-                      ),
-                    ],
-                  ),
+                  decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.3))),
+                  child: Row(mainAxisSize: MainAxisSize.min, children: [
+                    const Icon(Icons.menu_book_rounded, size: 12.5, color: Color(0xFFD4AF37)),
+                    const SizedBox(width: 5),
+                    Text('Surah ${verse.surahName} [${verse.surahNumber}:${verse.ayahNumber}]', style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w600, color: const Color(0xFFD4EDE4))),
+                  ]),
                 ),
                 GestureDetector(
-                  onTap: () {
-                    context.goNamed(
-                      'verse-by-verse',
-                      pathParameters: {'surahNumber': '${verse.surahNumber}'},
-                      queryParameters: {
-                        'ayah': '${verse.ayahNumber}',
-                        'scrollToAyah': '${verse.ayahNumber}',
-                      },
-                    );
-                  },
+                  onTap: () => context.goNamed('verse-by-verse', pathParameters: {'surahNumber': '${verse.surahNumber}'}, queryParameters: {'ayah': '${verse.ayahNumber}', 'scrollToAyah': '${verse.ayahNumber}'}),
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF2C7A39), Color(0xFF1B4332)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+                      gradient: const LinearGradient(colors: [Color(0xFFD4AF37), Color(0xFFB8962E)], begin: Alignment.topLeft, end: Alignment.bottomRight),
                       borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF2C7A39).withValues(alpha: 0.25),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
+                      boxShadow: [BoxShadow(color: const Color(0xFFD4AF37).withValues(alpha: 0.3), blurRadius: 6, offset: const Offset(0, 2))],
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Read Surah',
-                          style: GoogleFonts.outfit(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        const Icon(Icons.arrow_forward_rounded, size: 13, color: Colors.white),
-                      ],
-                    ),
+                    child: Row(mainAxisSize: MainAxisSize.min, children: [
+                      Text('Read Surah', style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF0D3B26))),
+                      const SizedBox(width: 4),
+                      const Icon(Icons.arrow_forward_rounded, size: 13, color: Color(0xFF0D3B26)),
+                    ]),
                   ),
                 ),
               ],

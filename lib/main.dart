@@ -14,6 +14,7 @@ import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'data/db/db_helper.dart';
 import 'data/db/tafseer_import_service.dart';
+import 'services/app_version_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,6 +44,7 @@ Future<void> main() async {
   );
 
   final prefs = await SharedPreferences.getInstance();
+  await AppVersionService.init();
 
   runApp(
     ProviderScope(

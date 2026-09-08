@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../data/models/full_surah_reciter.dart';
 import '../data/repositories/full_surah_reciter_repository.dart';
 
@@ -26,11 +27,14 @@ final fullSurahAudioServiceProvider =
 });
 
 class FullSurahAudioService extends ChangeNotifier {
+  static const _kSavedFullSurahReciterKey = 'saved_full_surah_reciter_id';
+
   final FullSurahReciterRepository _reciterRepo;
   final AudioPlayer _player = AudioPlayer();
   final Dio _dio = Dio();
 
   int? _currentSurahNumber;
+  int? _activePlayingReciterId;
   FullSurahReciter _currentReciter = FullSurahReciterRepository.kDefaultReciter;
   FullSurahRepeatMode _repeatMode = FullSurahRepeatMode.continuous;
   bool _isUsingFallback = false;
@@ -54,8 +58,19 @@ class FullSurahAudioService extends ChangeNotifier {
   }
 
   Future<void> _initReciter() async {
-    final defaultReciter = await _reciterRepo.getReciterById(123);
-    _currentReciter = defaultReciter;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedId = prefs.getInt(_kSavedFullSurahReciterKey);
+      if (savedId != null) {
+        final savedReciter = await _reciterRepo.getReciterById(savedId);
+        _currentReciter = savedReciter;
+      } else {
+        final defaultReciter = await _reciterRepo.getReciterById(123);
+        _currentReciter = defaultReciter;
+      }
+    } catch (_) {
+      _currentReciter = FullSurahReciterRepository.kDefaultReciter;
+    }
     await refreshDownloadedSurahs();
     notifyListeners();
   }
@@ -72,6 +87,7 @@ class FullSurahAudioService extends ChangeNotifier {
   // ── Getters & Streams ─────────────────────────────────────────────────────
   AudioPlayer get player => _player;
   int? get currentSurahNumber => _currentSurahNumber;
+  int? get activePlayingReciterId => _activePlayingReciterId;
   FullSurahReciter get currentReciter => _currentReciter;
   FullSurahRepeatMode get repeatMode => _repeatMode;
   bool get isUsingFallback => _isUsingFallback;
@@ -97,10 +113,16 @@ class FullSurahAudioService extends ChangeNotifier {
   // ── Reciter Selection ─────────────────────────────────────────────────────
   Future<void> setReciter(FullSurahReciter reciter) async {
     _currentReciter = reciter;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(_kSavedFullSurahReciterKey, reciter.id);
+    } catch (_) {}
     await refreshDownloadedSurahs();
     notifyListeners();
 
-    if (_currentSurahNumber != null && isPlaying) {
+    // If audio is currently playing or loaded on a surah, immediately shift
+    // to the new reciter and start playing the new selected reciter on that surah
+    if (_currentSurahNumber != null) {
       await playSurah(surahNumber: _currentSurahNumber!, reciter: reciter);
     }
   }
@@ -144,7 +166,8 @@ class FullSurahAudioService extends ChangeNotifier {
       await _player.pause();
     } else {
       if (_currentSurahNumber != null) {
-        if (_player.processingState == ProcessingState.idle) {
+        if (_player.processingState == ProcessingState.idle ||
+            _activePlayingReciterId != _currentReciter.id) {
           await playSurah(surahNumber: _currentSurahNumber!);
         } else {
           await _player.play();
@@ -158,6 +181,7 @@ class FullSurahAudioService extends ChangeNotifier {
 
   Future<void> stop() async {
     await _player.stop();
+    _activePlayingReciterId = null;
     notifyListeners();
   }
 
@@ -170,14 +194,30 @@ class FullSurahAudioService extends ChangeNotifier {
     final targetReciter = reciter ?? _currentReciter;
     _currentReciter = targetReciter;
 
-    if (_currentSurahNumber == surahNumber && _player.playing && !forceOnline) {
+    final bool isSameReciter = (_activePlayingReciterId == targetReciter.id);
+    final bool isSameSurah = (_currentSurahNumber == surahNumber);
+
+    // Only skip reloading if the exact same surah with the exact same reciter is already active & playing
+    if (isSameSurah &&
+        isSameReciter &&
+        _player.playing &&
+        _player.processingState != ProcessingState.completed &&
+        !forceOnline) {
       return;
     }
 
     _currentSurahNumber = surahNumber;
+    _activePlayingReciterId = targetReciter.id;
     _isUsingFallback = false;
     _isLoading = true;
     notifyListeners();
+
+    // Instantly stop previous reciter audio to prevent overlap while buffering
+    try {
+      if (_player.playing) {
+        await _player.stop();
+      }
+    } catch (_) {}
 
     // 1. Check local file first
     if (!forceOnline) {
@@ -224,6 +264,7 @@ class FullSurahAudioService extends ChangeNotifier {
       return;
     } catch (fallbackError) {
       _isLoading = false;
+      _activePlayingReciterId = null;
       notifyListeners();
       debugPrint('Fallback MP3Quran stream error: $fallbackError');
       _errorController.add(

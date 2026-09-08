@@ -9,6 +9,7 @@ import '../../../data/ruku_data.dart';
 import 'ayah_end_symbol.dart';
 import 'indopak_ruku_marginal_badge.dart';
 import 'indopak_sajda_marginal_badge.dart';
+import 'surah_header_cartouche.dart';
 
 class MushafPageWidget extends ConsumerStatefulWidget {
   final int pageNumber;
@@ -206,16 +207,10 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
 
     final bottomInset = MediaQuery.paddingOf(context).bottom;
 
-    return InteractiveViewer(
-      minScale: 1.0,
-      maxScale: 3.5,
-      panEnabled: true,
-      scaleEnabled: true,
-      clipBehavior: Clip.none,
-      child: Container(
-        color: const Color(0xFFFBF9F4), // Authentic warm antique paper
-        padding: EdgeInsets.fromLTRB(4, 3, 4, 8 + bottomInset),
-        child: LayoutBuilder(
+    return Container(
+      color: const Color(0xFFFBF9F4), // Authentic warm antique paper
+      padding: EdgeInsets.fromLTRB(4, 3, 4, 8 + bottomInset),
+      child: LayoutBuilder(
         builder: (context, constraints) {
           return Column(
             children: [
@@ -434,7 +429,7 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
           );
         },
       ),
-    ));
+    );
   }
 
   Widget _buildLine(MushafLineData line, double availableWidth) {
@@ -442,47 +437,107 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
     final basmallahWord = line.words.where((w) => w.wordId.startsWith('basmallah:')).firstOrNull;
     final ayahWords = line.words.where((w) => !w.wordId.startsWith('surah_name:') && !w.wordId.startsWith('basmallah:')).toList();
 
-    // If line is exclusively headers
+    // ── If line is exclusively headers ──
     if (ayahWords.isEmpty && (surahNameWord != null || basmallahWord != null)) {
-      return Center(
-        child: Column(
+      if (widget.mushafType == '16_line') {
+        // In 16-Line Mushaf: Bismillah, Surah details, & Verses/Rukus are integrated in the SAME single line!
+        final sNum = surahNameWord != null ? surahNameWord.surah : (basmallahWord?.surah ?? _surahNumber);
+        final sName = surahNameWord?.glyphCode ?? _surahNameArabic;
+        final bText = basmallahWord?.glyphCode ?? 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ';
+        return Center(
+          child: SurahHeader16Widget(
+            surahNumber: sNum,
+            fallbackSurahName: sName,
+            bismillahText: bText,
+          ),
+        );
+      } else {
+        // In 15-Line Mushaf: 2-line layout (Line 1 cartouche, Line 2 Bismillah)
+        if (surahNameWord != null && basmallahWord != null) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _build15LineSurahHeader(surahNameWord),
+                const SizedBox(height: 2),
+                _build15LineBasmallah(basmallahWord),
+              ],
+            ),
+          );
+        } else if (surahNameWord != null) {
+          return Center(child: _build15LineSurahHeader(surahNameWord));
+        } else {
+          return Center(child: _build15LineBasmallah(basmallahWord!));
+        }
+      }
+    }
+
+    // ── If line contains both headers and ayah words (e.g. Surah starts mid-page) ──
+    if (surahNameWord != null || basmallahWord != null) {
+      if (widget.mushafType == '16_line') {
+        final sNum = surahNameWord != null ? surahNameWord.surah : (basmallahWord?.surah ?? _surahNumber);
+        final sName = surahNameWord?.glyphCode ?? _surahNameArabic;
+        final bText = basmallahWord?.glyphCode ?? 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ';
+        return Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            if (surahNameWord != null) _buildSurahNameLine(surahNameWord),
-            if (basmallahWord != null) _buildBasmallahLine(basmallahWord),
-          ],
-        ),
-      );
-    }
-
-    // If line contains both headers and ayah words
-    if (surahNameWord != null || basmallahWord != null) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          if (surahNameWord != null) _buildSurahNameLine(surahNameWord),
-          if (basmallahWord != null) _buildBasmallahLine(basmallahWord),
-          if (ayahWords.isNotEmpty)
-            SizedBox(
-              width: availableWidth,
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: Alignment.center,
-                child: Container(
-                  constraints: BoxConstraints(minWidth: availableWidth),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    mainAxisSize: MainAxisSize.min,
-                    textDirection: TextDirection.rtl,
-                    children: ayahWords.map((word) => _buildWord(word)).toList(),
+            SurahHeader16Widget(
+              surahNumber: sNum,
+              fallbackSurahName: sName,
+              bismillahText: bText,
+            ),
+            if (ayahWords.isNotEmpty) ...[
+              const SizedBox(height: 2),
+              SizedBox(
+                width: availableWidth,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.center,
+                  child: Container(
+                    constraints: BoxConstraints(minWidth: availableWidth),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.min,
+                      textDirection: TextDirection.rtl,
+                      children: ayahWords.map((word) => _buildWord(word)).toList(),
+                    ),
                   ),
                 ),
               ),
-            ),
-        ],
-      );
+            ],
+          ],
+        );
+      } else {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            if (surahNameWord != null) _build15LineSurahHeader(surahNameWord),
+            if (basmallahWord != null) _build15LineBasmallah(basmallahWord),
+            if (ayahWords.isNotEmpty) ...[
+              const SizedBox(height: 2),
+              SizedBox(
+                width: availableWidth,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.center,
+                  child: Container(
+                    constraints: BoxConstraints(minWidth: availableWidth),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.min,
+                      textDirection: TextDirection.rtl,
+                      children: ayahWords.map((word) => _buildWord(word)).toList(),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        );
+      }
     }
 
     // Standard Quranic Line: 100% Full-Width Justified with automatic scale-down protection
@@ -504,305 +559,47 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
     );
   }
 
-  // ── Surah Name Header Dispatcher (15-line vs 16-line) ──────────────────────
-  Widget _buildSurahNameLine(WordLayoutData word) {
-    if (widget.mushafType == '15_line') {
-      return _build15LineSurahHeader(word);
-    } else {
-      return _build16LineSurahHeader(word);
-    }
-  }
-
-  // ── Basmallah Line Dispatcher (15-line vs 16-line) ──────────────────────────
-  Widget _buildBasmallahLine(WordLayoutData word) {
-    if (widget.mushafType == '15_line') {
-      return _build15LineBasmallah(word);
-    } else {
-      return _build16LineBasmallah(word);
-    }
-  }
-
-  // ── 15-Line Mushaf: Line 1 of 2 (Surah Details Illuminated Ribbon) ─────────
+  // ── 15-Line Mushaf: Line 1 of 2 (Royal Illuminated Cartouche) ──────────────
   Widget _build15LineSurahHeader(WordLayoutData word) {
     final surahNum = (word.surah >= 1 && word.surah <= 114) ? word.surah : _surahNumber;
-    final surahInfo = (surahNum >= 1 && surahNum <= 114) ? kSurahList[surahNum - 1] : null;
-    final isMeccan = surahInfo?.isMeccan ?? true;
-    final ayahCountArabic = ArabicNumerals.format(surahInfo?.ayahCount ?? 0);
-    final rukuCountArabic = ArabicNumerals.format(surahInfo?.rukuCount ?? 0);
-    final surahName = surahInfo?.nameArabic ?? word.glyphCode;
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 1.5),
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF2C7A39), Color(0xFF1B4332)],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: const Color(0xFFD97706), width: 1.2),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF1B4332).withValues(alpha: 0.18),
-            blurRadius: 3,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Left: Revelation Medallion Badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFEF9EE),
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: const Color(0xFFD97706), width: 1.0),
-            ),
-            child: Text(
-              isMeccan ? 'مَكِّيَّة' : 'مَدَنِيَّة',
-              textDirection: TextDirection.rtl,
-              style: const TextStyle(
-                fontFamily: 'Scheherazade New',
-                fontSize: 11.5,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF8D4913),
-                height: 1.1,
-              ),
-            ),
-          ),
-
-          // Center: Surah Name in Amiri Calligraphy
-          Expanded(
-            child: Text(
-              'سُورَةُ $surahName',
-              textDirection: TextDirection.rtl,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontFamily: 'Amiri',
-                fontSize: 16.5,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                height: 1.1,
-                shadows: [
-                  Shadow(
-                    color: Color(0xFFF59E0B),
-                    blurRadius: 4,
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Right: Ayahs & Rukus Medallion Badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFEF9EE),
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: const Color(0xFFD97706), width: 1.0),
-            ),
-            child: Text(
-              '$ayahCountArabic آيَات $rukuCountArabic رُكُوْع',
-              textDirection: TextDirection.rtl,
-              style: const TextStyle(
-                fontFamily: 'Scheherazade New',
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF8D4913),
-                height: 1.1,
-              ),
-            ),
-          ),
-        ],
-      ),
+    final surahName = word.glyphCode.isNotEmpty ? word.glyphCode : _surahNameArabic;
+    return SurahHeader15Widget(
+      surahNumber: surahNum,
+      fallbackSurahName: surahName,
     );
   }
 
   // ── 15-Line Mushaf: Line 2 of 2 (Dedicated Centered Bismillah) ─────────────
   Widget _build15LineBasmallah(WordLayoutData word) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
-      child: Row(
-        children: [
-          // Left gold flourish
-          Expanded(
-            child: Container(
-              height: 1,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    const Color(0xFFD97706).withValues(alpha: 0.0),
-                    const Color(0xFFD97706).withValues(alpha: 0.7),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 6),
-          const Icon(Icons.star_rounded, size: 9, color: Color(0xFFD97706)),
-          const SizedBox(width: 8),
-
-          // Center Bismillah Calligraphy
-          Text(
-            word.glyphCode.isNotEmpty ? word.glyphCode : 'بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ',
-            textDirection: TextDirection.rtl,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontFamily: 'Amiri',
-              fontSize: 16.5,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF111111),
-              height: 1.15,
-            ),
-          ),
-
-          const SizedBox(width: 8),
-          const Icon(Icons.star_rounded, size: 9, color: Color(0xFFD97706)),
-          const SizedBox(width: 6),
-
-          // Right gold flourish
-          Expanded(
-            child: Container(
-              height: 1,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    const Color(0xFFD97706).withValues(alpha: 0.7),
-                    const Color(0xFFD97706).withValues(alpha: 0.0),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+    return Bismillah15Widget(
+      text: word.glyphCode.isNotEmpty ? word.glyphCode : 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ',
     );
   }
 
-  // ── 16-Line Mushaf: 1-Line Compact Surah Header ─────────────────────────────
-  Widget _build16LineSurahHeader(WordLayoutData word) {
-    final surahNum = (word.surah >= 1 && word.surah <= 114) ? word.surah : _surahNumber;
-    final surahInfo = (surahNum >= 1 && surahNum <= 114) ? kSurahList[surahNum - 1] : null;
-    final isMeccan = surahInfo?.isMeccan ?? true;
-    final ayahCountArabic = ArabicNumerals.format(surahInfo?.ayahCount ?? 0);
-    final rukuCountArabic = ArabicNumerals.format(surahInfo?.rukuCount ?? 0);
-    final surahName = surahInfo?.nameArabic ?? word.glyphCode;
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 0.5),
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.0),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF2C7A39), Color(0xFF1B4332)],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-        borderRadius: BorderRadius.circular(3),
-        border: Border.all(color: const Color(0xFFD97706), width: 1.0),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Left: Makki/Madani badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0.5),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFEF9EE),
-              borderRadius: BorderRadius.circular(3),
-              border: Border.all(color: const Color(0xFFD97706), width: 0.8),
-            ),
-            child: Text(
-              isMeccan ? 'مَكِّيَّة' : 'مَدَنِيَّة',
-              textDirection: TextDirection.rtl,
-              style: const TextStyle(
-                fontFamily: 'Scheherazade New',
-                fontSize: 10.5,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF8D4913),
-                height: 1.0,
-              ),
-            ),
-          ),
-
-          // Center: Surah Name
-          Expanded(
-            child: Text(
-              'سُورَةُ $surahName',
-              textDirection: TextDirection.rtl,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontFamily: 'Amiri',
-                fontSize: 14.5,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                height: 1.05,
-                shadows: [
-                  Shadow(
-                    color: Color(0xFFF59E0B),
-                    blurRadius: 3,
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Right: Ayahs and Rukus
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0.5),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFEF9EE),
-              borderRadius: BorderRadius.circular(3),
-              border: Border.all(color: const Color(0xFFD97706), width: 0.8),
-            ),
-            child: Text(
-              '$ayahCountArabic آيَات $rukuCountArabic رُكُوْع',
-              textDirection: TextDirection.rtl,
-              style: const TextStyle(
-                fontFamily: 'Scheherazade New',
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF8D4913),
-                height: 1.0,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ── 16-Line Mushaf: Compact Basmallah ───────────────────────────────────────
-  Widget _build16LineBasmallah(WordLayoutData word) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 0.5),
-      child: Text(
-        word.glyphCode.isNotEmpty ? word.glyphCode : 'بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ',
-        textDirection: TextDirection.rtl,
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontFamily: 'Amiri',
-          fontSize: 14.5,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFF111111),
-          height: 1.0,
-        ),
-      ),
-    );
-  }
 
   static (String baseWord, String waqfMark) _splitWordAndWaqf(String rawText) {
     if (rawText.isEmpty) return ('', '');
 
     // Common Arabic Waqf / Stop mark characters:
-    // ؕ (\u0615), ؗ (\u0617), ۖ (\u06D6), ۗ (\u06D7), ۘ (\u06D8), ۙ (\u06D9), ۚ (\u06DA), ۛ (\u06DB), ۜ (\u06DC), ۬ (\u06EC), ۠ (\u06E0), ۦ (\u06E6)
+    // ؕ (\u0615 - ط), ؗ (\u0617 - ز), ۖ (\u06D6 - صلى), ۗ (\u06D7 - قلى), ۘ (\u06D8 - م), ۙ (\u06D9 - لا), ۚ (\u06DA - ج), ۛ (\u06DB - ؞), ۜ (\u06DC - س), ۠ (\u06E0), ۦ (\u06E6), ۫ (\u06EB - ق), ۪ (\u06EA - ص), ۬ (\u06EC - قف), ۭ (\u06ED - م)
     const waqfChars = {
-      '\u0615', '\u0617', '\u06D6', '\u06D7', '\u06D8', '\u06D9',
-      '\u06DA', '\u06DB', '\u06DC', '\u06EC', '\u06E0', '\u06E6'
+      '\u0614', // ص (Takhallus)
+      '\u0615', // ط (Tah / Tawa - Waqf Mutlaq)
+      '\u0617', // ز (Zain - Waqf Mujawwaz)
+      '\u06D6', // صلى (Wasl)
+      '\u06D7', // قلى (Waqf Awla)
+      '\u06D8', // م (Waqf Lazim)
+      '\u06D9', // لا (La Waqf)
+      '\u06DA', // ج (Waqf Jaiz)
+      '\u06DB', // ؞ (Mu'anaqah - Three dots)
+      '\u06DC', // س (Saktah)
+      '\u06E0', // ∘ (Rounded zero)
+      '\u06E2', // م (Small high meem)
+      '\u06E6', // و
+      '\u06EA', // ص (Waqf Murakhkhas - Saad)
+      '\u06EB', // ق (Al-Waqf Awla / Qila - Qaf)
+      '\u06EC', // قف (Waqf Qif)
+      '\u06ED', // م (Small low meem)
     };
 
     final parts = rawText.trimRight().split(' ');
@@ -829,6 +626,37 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
     return (rawText, '');
   }
 
+  /// Maps special Quranic waqf Unicode marks → their visible Arabic letter equivalents.
+  /// These Unicode chars (U+06D6–U+06EC) often render as boxes/dots on Android
+  /// because they are combining superscript marks, not standalone glyphs.
+  /// By converting them to regular Arabic letters, any Arabic font can render them.
+  static String _waqfToVisual(String raw) {
+    final buffer = StringBuffer();
+    for (final char in raw.split('')) {
+      switch (char) {
+        case '\u0615': buffer.write('ط');   // Waqf Mutlaq (Tah / Tawa)
+        case '\u0617': buffer.write('ز');   // Waqf Mujawwaz (Zain)
+        case '\u0614': buffer.write('ص');   // Waqf Murakhkhas (Saad / Takhallus)
+        case '\u06EA': buffer.write('ص');   // Waqf Murakhkhas (Saad)
+        case '\u06EB': buffer.write('ق');   // Al-Waqf Awla / Qila (Qaf)
+        case '\u06EC': buffer.write('قف');  // Waqf Qif
+        case '\u06D6': buffer.write('صلى'); // Wasl — prefer to continue
+        case '\u06D7': buffer.write('قلى'); // Qalā — prefer to stop
+        case '\u06D8': buffer.write('م');   // Waqf Lazim — must stop
+        case '\u06D9': buffer.write('لا');  // Lā Waqf — do not stop
+        case '\u06DA': buffer.write('ج');   // Waqf Jaiz — permissible stop
+        case '\u06DB': buffer.write('؞');   // Three-dot mark (Mu'anaqah)
+        case '\u06DC': buffer.write('س');   // Saktah — small seen
+        case '\u06E0': buffer.write('∘');   // Safr Mustadir — rounded zero
+        case '\u06E2': buffer.write('مـ');  // Small High Meem
+        case '\u06ED': buffer.write('مـ');  // Small Low Meem
+        case '\u06E6': buffer.write('و');   // Small Waw mark
+        default:        buffer.write(char); // Already-readable chars — keep as-is
+      }
+    }
+    return buffer.toString();
+  }
+
   // ── Word Token & Inline Ayah Badge ─────────────────────────────────────────
   Widget _buildWord(WordLayoutData word) {
     final isMarked = widget.markedWordIds.contains(word.wordId);
@@ -842,7 +670,7 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
 
     if (isVerseEnd && word.ayah > 0) {
       String waqfMark = '';
-      final match = RegExp(r'[\u0614\u0615\u0617\u06D6\u06D7\u06D8\u06D9\u06DA\u06DB\u06DC\u06E0\u06EA\u06EB]').firstMatch(word.glyphCode);
+      final match = RegExp(r'[\u0614\u0615\u0617\u06D6\u06D7\u06D8\u06D9\u06DA\u06DB\u06DC\u06E0\u06E2\u06E6\u06EA\u06EB\u06EC\u06ED]').firstMatch(word.glyphCode);
       if (match != null) {
         waqfMark = match.group(0) ?? '';
       }
@@ -896,17 +724,18 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
               height: 1.25,
             ),
           ),
-          // Waqf stop sign exactly centered within the same line
+      // Waqf stop sign — convert special Unicode waqf chars to visible Arabic letters
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 3.0),
             child: Text(
-              waqfMark,
+              _waqfToVisual(waqfMark),
               textDirection: TextDirection.rtl,
               style: const TextStyle(
                 fontFamily: 'Scheherazade New',
-                fontSize: 15.0,
+                fontFamilyFallback: ['Amiri', 'Noto Nastaliq Urdu'],
+                fontSize: 11.0,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF111111),
+                color: Color(0xFF333333),
                 height: 1.25,
               ),
             ),

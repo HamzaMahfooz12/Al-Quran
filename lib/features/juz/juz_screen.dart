@@ -990,7 +990,7 @@ class _JuzScreenState extends ConsumerState<JuzScreen> {
   }
 }
 
-// ── Surah Header Card inside Juz ──────────────────────────────────────────────
+// ── Premium Surah Header Banner inside Juz ──────────────────────────────────
 class _SurahHeader extends StatelessWidget {
   final int surahNumber;
   final String translationName;
@@ -1012,135 +1012,260 @@ class _SurahHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final info = kSurahList[surahNumber - 1];
+    final surahInfo = kSurahList[surahNumber - 1];
+    final isMeccan = surahInfo.revelationType == 'Meccan';
 
     return Container(
-      margin: const EdgeInsets.only(top: 16, bottom: 12),
+      margin: const EdgeInsets.fromLTRB(0, 14, 0, 14),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(22),
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFF2C7A39),
-            Color(0xFF3FA34D),
-            Color(0xFF246630),
+            Color(0xFF1E5B2E), // Rich Islamic Forest Green
+            Color(0xFF144723), // Deep Emerald Shadow
           ],
+        ),
+        border: Border.all(
+          color: const Color(0xFFF59E0B).withValues(alpha: 0.35),
+          width: 1.2,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2C7A39).withValues(alpha: 0.35),
-            blurRadius: 16,
+            color: const Color(0xFF144723).withValues(alpha: 0.35),
+            blurRadius: 18,
             offset: const Offset(0, 6),
           ),
         ],
       ),
-      child: Stack(
+      child: Column(
         children: [
-          Positioned(
-            right: -20,
-            bottom: -20,
-            child: Icon(
-              Icons.auto_stories,
-              size: 130,
-              color: Colors.white.withValues(alpha: 0.05),
-            ),
-          ),
+          // ── 1. Top Gilded Surah Ribbon Row ──────────────────────────────
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            child: Column(
+            padding: const EdgeInsets.fromLTRB(14, 16, 14, 10),
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(8),
+                // Left — Revelation badge in ornate gold medallion pill
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFEF9EE),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFF59E0B), width: 1.4),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.12),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
                       ),
-                      child: Text(
-                        'Surah $surahNumber',
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFFD4A843),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        isMeccan ? 'مَكِّيَّة' : 'مَدَنِيَّة',
+                        style: const TextStyle(
+                          fontFamily: 'Scheherazade New',
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF8D4913),
+                          height: 1.1,
                         ),
                       ),
-                    ),
-                    Text(
-                      info.revelationType == 'Meccan' ? '🕋 Makki' : '🕌 Madani',
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        color: Colors.white70,
+                      Text(
+                        isMeccan ? 'Meccan' : 'Medinan',
+                        style: GoogleFonts.outfit(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF8D4913),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 8),
 
-                Text(
-                  info.nameArabic,
-                  style: const TextStyle(
-                    fontFamily: 'Scheherazade New',
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                Text(
-                  info.nameTransliteration,
-                  style: GoogleFonts.inter(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-                ),
-                Text(
-                  info.nameTranslation,
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: Colors.white70,
-                  ),
-                ),
-                const SizedBox(height: 10),
+                const SizedBox(width: 8),
 
-                // Bismillah (except Surah 9 At-Tawbah)
-                if (surahNumber != 9) ...[
-                  _ornateDivider(),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ',
-                    style: TextStyle(
-                      fontFamily: 'Scheherazade New',
-                      fontSize: 20,
-                      color: Color(0xFFD4A843),
-                    ),
-                    textAlign: TextAlign.center,
+                // Center — Arabic Surah Name & Transliteration
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Arabic Surah Title with subtle gold glow
+                      Text(
+                        'سُورَةُ ${surahInfo.nameArabic}',
+                        style: const TextStyle(
+                          fontFamily: 'Scheherazade New',
+                          fontSize: 27,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          height: 1.25,
+                          shadows: [
+                            Shadow(
+                              color: Color(0xFFF59E0B),
+                              blurRadius: 8,
+                            ),
+                          ],
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${surahInfo.nameTransliteration} • ${surahInfo.nameTranslation}',
+                        style: GoogleFonts.outfit(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFFFEF3C7),
+                          letterSpacing: 0.3,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
-                ],
+                ),
+
+                const SizedBox(width: 8),
+
+                // Right — Verses Count & Rukus Count in ornate gold medallion pill
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFEF9EE),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFF59E0B), width: 1.4),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.12),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '${surahInfo.ayahCount} Verses',
+                        style: GoogleFonts.outfit(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF8D4913),
+                          height: 1.1,
+                        ),
+                      ),
+                      Text(
+                        '${surahInfo.rukuCount} Rukus',
+                        style: GoogleFonts.outfit(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF8D4913),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
+
+          // ── 2. Bismillah Section (Omitted for Surah 9 At-Tawbah) ───────────
+          if (surahNumber != 9) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 1,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFFF59E0B).withValues(alpha: 0.0),
+                            const Color(0xFFF59E0B).withValues(alpha: 0.6),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.star_rounded, size: 10, color: Color(0xFFF59E0B)),
+                        const SizedBox(width: 6),
+                        Container(
+                          width: 4,
+                          height: 4,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFF59E0B),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        const Icon(Icons.star_rounded, size: 10, color: Color(0xFFF59E0B)),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 1,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFFF59E0B).withValues(alpha: 0.6),
+                            const Color(0xFFF59E0B).withValues(alpha: 0.0),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
+              style: TextStyle(
+                fontFamily: 'Scheherazade New',
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFFEF3C7),
+                height: 1.3,
+                shadows: [
+                  Shadow(
+                    color: Color(0xFFF59E0B),
+                    blurRadius: 4,
+                  ),
+                ],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            if (showTranslation && (bismillahTranslationText?.isNotEmpty ?? false)) ...[
+              const SizedBox(height: 4),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  bismillahTranslationText!,
+                  style: const TextStyle(
+                    fontFamily: 'Noto Nastaliq Urdu',
+                    fontSize: 13,
+                    color: Color(0xFFE2E8F0),
+                    height: 1.6,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+            const SizedBox(height: 12),
+          ],
         ],
       ),
-    );
-  }
-
-  Widget _ornateDivider() {
-    return Row(
-      children: [
-        Expanded(child: Container(height: 1, color: Colors.white.withValues(alpha: 0.2))),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6),
-          child: Container(
-            width: 5, height: 5,
-            decoration: const BoxDecoration(color: Color(0xFFD4A843), shape: BoxShape.circle),
-          ),
-        ),
-        Expanded(child: Container(height: 1, color: Colors.white.withValues(alpha: 0.2))),
-      ],
     );
   }
 }

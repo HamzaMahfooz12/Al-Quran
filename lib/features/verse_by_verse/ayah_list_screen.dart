@@ -996,6 +996,9 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
       bottomSheet: (audio.currentPlayingAyahId != null && _ayahs.isNotEmpty)
           ? Container(
               color: Colors.transparent,
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.paddingOf(context).bottom + 10,
+              ),
               child: AudioControlBar(
                 surahNumber: widget.surahNumber,
                 surahName: _surahInfo.nameTransliteration,
@@ -1129,234 +1132,184 @@ class _SurahHeaderBanner extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // ── 1. Top Gilded Surah Ribbon Row ──────────────────────────────
+          // ── 1. Top Gilded Surah Title & Metadata ────────────────────────
           Padding(
-            padding: const EdgeInsets.fromLTRB(14, 16, 14, 10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+            padding: const EdgeInsets.fromLTRB(16, 18, 16, 12),
+            child: Column(
               children: [
-                // Left — Revelation badge in ornate gold medallion pill
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFEF9EE),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFF59E0B), width: 1.4),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.12),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
+                // Arabic Surah Title with subtle gold glow
+                Text(
+                  'سُورَةُ ${surahInfo.nameArabic}',
+                  style: const TextStyle(
+                    fontFamily: 'Scheherazade New',
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    height: 1.25,
+                    shadows: [
+                      Shadow(
+                        color: Color(0xFFF59E0B),
+                        blurRadius: 8,
                       ),
                     ],
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        isMeccan ? 'مَكِّيَّة' : 'مَدَنِيَّة',
-                        style: const TextStyle(
-                          fontFamily: 'Scheherazade New',
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF8D4913),
-                          height: 1.1,
-                        ),
-                      ),
-                      Text(
-                        isMeccan ? 'Meccan' : 'Medinan',
-                        style: GoogleFonts.outfit(
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF8D4913),
-                        ),
-                      ),
-                    ],
-                  ),
+                  textAlign: TextAlign.center,
                 ),
-
-                const SizedBox(width: 8),
-
-                // Center — Arabic Surah Name & Transliteration
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Arabic Surah Title with subtle gold glow
-                      Text(
-                        'سُورَةُ ${surahInfo.nameArabic}',
-                        style: const TextStyle(
-                          fontFamily: 'Scheherazade New',
-                          fontSize: 27,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          height: 1.25,
-                          shadows: [
-                            Shadow(
-                              color: Color(0xFFF59E0B),
-                              blurRadius: 8,
-                            ),
-                          ],
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        '${surahInfo.nameTransliteration} • ${surahInfo.nameTranslation}',
-                        style: GoogleFonts.outfit(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFFFEF3C7),
-                          letterSpacing: 0.3,
-                        ),
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+                const SizedBox(height: 4),
+                // Transliteration & Translation
+                Text(
+                  'Surah ${surahInfo.nameTransliteration} • ${surahInfo.nameTranslation}',
+                  style: GoogleFonts.outfit(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFFFEF3C7),
+                    letterSpacing: 0.3,
                   ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-
-                const SizedBox(width: 8),
-
-                // Right — Verses Count & Rukus Count in ornate gold medallion pill
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFEF9EE),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFF59E0B), width: 1.4),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.12),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
+                const SizedBox(height: 10),
+                // Symmetrical Metadata Info Chips Row (No colliding boxes, no overflow)
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 8,
+                  runSpacing: 6,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFEF9EE),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: const Color(0xFFF59E0B), width: 1.2),
                       ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '${surahInfo.ayahCount} Verses',
-                        style: GoogleFonts.outfit(
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF8D4913),
-                          height: 1.1,
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(isMeccan ? Icons.mosque_rounded : Icons.location_city_rounded, size: 12, color: const Color(0xFF8D4913)),
+                          const SizedBox(width: 4),
+                          Text(
+                            isMeccan ? 'Meccan • مَكِّيَّة' : 'Medinan • مَدَنِيَّة',
+                            style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: const Color(0xFF8D4913)),
+                          ),
+                        ],
                       ),
-                      Text(
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFEF9EE),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: const Color(0xFFF59E0B), width: 1.2),
+                      ),
+                      child: Text(
+                        '${surahInfo.ayahCount} Ayahs',
+                        style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: const Color(0xFF8D4913)),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFEF9EE),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: const Color(0xFFF59E0B), width: 1.2),
+                      ),
+                      child: Text(
                         '${surahInfo.rukuCount} Rukus',
-                        style: GoogleFonts.outfit(
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF8D4913),
-                        ),
+                        style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: const Color(0xFF8D4913)),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
 
-          // ── 2. Interactive Tafseer & Translation Floating Selector Chips ──
+          // ── 2. Separate [Translation] and [Tafsir] Buttons ────────────
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+            padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Tafseer Pill Button (Opens Tafseer modal / Edition picker)
-                InkWell(
-                  onTap: onToggleTafseer,
-                  borderRadius: BorderRadius.circular(16),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6.5),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.menu_book_rounded, size: 14, color: Color(0xFFFEF3C7)),
-                        const SizedBox(width: 5),
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 120),
-                          child: Text(
-                            tafseerName.isNotEmpty ? tafseerName : 'Tafseer',
-                            style: GoogleFonts.outfit(
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                // Translation Button
+                Expanded(
+                  child: InkWell(
+                    onTap: onSelectTranslation,
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+                      decoration: BoxDecoration(
+                        color: showTranslation ? const Color(0xFFFEF3C7) : Colors.white.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: showTranslation ? const Color(0xFFF59E0B) : Colors.white.withValues(alpha: 0.25),
+                          width: 1.1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.translate_rounded,
+                            size: 15,
+                            color: showTranslation ? const Color(0xFF1B2A1E) : Colors.white,
+                          ),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              translationName.isNotEmpty ? translationName : 'Translation',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: showTranslation ? const Color(0xFF1B2A1E) : Colors.white,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: onSelectTafseer,
-                          child: const Padding(
-                            padding: EdgeInsets.only(left: 2),
-                            child: Icon(Icons.arrow_drop_down_rounded, size: 18, color: Colors.white70),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
-
-                const SizedBox(width: 8),
-
-                // Translation Pill Button (Toggles visibility / Opens Edition picker)
-                InkWell(
-                  onTap: onToggleTranslation,
-                  borderRadius: BorderRadius.circular(16),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6.5),
-                    decoration: BoxDecoration(
-                      color: showTranslation ? const Color(0xFFFEF3C7) : Colors.white.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: showTranslation ? const Color(0xFFF59E0B) : Colors.white.withValues(alpha: 0.3),
+                const SizedBox(width: 10),
+                // Tafsir Button
+                Expanded(
+                  child: InkWell(
+                    onTap: onToggleTafseer,
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.3),
+                          width: 1.1,
+                        ),
                       ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.translate_rounded,
-                          size: 14,
-                          color: showTranslation ? const Color(0xFF1B2A1E) : Colors.white,
-                        ),
-                        const SizedBox(width: 5),
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 120),
-                          child: Text(
-                            translationName.isNotEmpty ? translationName : 'Translation',
-                            style: GoogleFonts.outfit(
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.bold,
-                              color: showTranslation ? const Color(0xFF1B2A1E) : Colors.white,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.menu_book_rounded,
+                            size: 15,
+                            color: Color(0xFFFEF3C7),
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: onSelectTranslation,
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 2),
-                            child: Icon(
-                              Icons.arrow_drop_down_rounded,
-                              size: 18,
-                              color: showTranslation ? const Color(0xFF1B2A1E) : Colors.white70,
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              tafseerName.isNotEmpty ? tafseerName : 'Tafsir',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),

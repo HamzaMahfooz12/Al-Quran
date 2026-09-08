@@ -42,6 +42,11 @@ class _AzkarScreenState extends State<AzkarScreen> {
     super.dispose();
   }
 
+  String _todayDateStr() {
+    final now = DateTime.now();
+    return '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+  }
+
   Future<void> _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
     final lang = prefs.getString('azkar_display_language') ?? 'ur';
@@ -55,14 +60,47 @@ class _AzkarScreenState extends State<AzkarScreen> {
       } catch (_) {}
     }
 
+    // ── Daily Count Persistence & Next Day 12:00 AM Auto-Reset ─────────
+    final today = _todayDateStr();
+    final savedDate = prefs.getString('azkar_counts_date');
+    final Map<String, int> loadedCounts = {};
+
+    if (savedDate == today) {
+      // Same day: restore progress
+      final countsRaw = prefs.getString('azkar_daily_counts');
+      if (countsRaw != null) {
+        try {
+          final Map<String, dynamic> decoded = jsonDecode(countsRaw);
+          for (final entry in decoded.entries) {
+            if (entry.value is int) {
+              loadedCounts[entry.key] = entry.value as int;
+            }
+          }
+        } catch (_) {}
+      }
+    } else {
+      // Next day (12:00 AM midnight has passed): reset all counts to 0
+      await prefs.setString('azkar_counts_date', today);
+      await prefs.remove('azkar_daily_counts');
+    }
+
     if (mounted) {
       setState(() {
         _displayLanguage = lang;
         _bookmarkedIds.addAll(bookmarksList);
         _customDuas = customList;
+        _counts.clear();
+        _counts.addAll(loadedCounts);
         _isLoading = false;
       });
     }
+  }
+
+  Future<void> _saveCounts() async {
+    final prefs = await SharedPreferences.getInstance();
+    final today = _todayDateStr();
+    await prefs.setString('azkar_counts_date', today);
+    await prefs.setString('azkar_daily_counts', jsonEncode(_counts));
   }
 
   Future<void> _toggleBookmark(String id) async {
@@ -92,6 +130,7 @@ class _AzkarScreenState extends State<AzkarScreen> {
     if (cur < item.count) {
       final next = cur + 1;
       setState(() => _counts[item.id] = next);
+      _saveCounts();
       Vibration.hasVibrator().then((has) {
         if (has == true) {
           if (next == item.count) {
@@ -106,9 +145,29 @@ class _AzkarScreenState extends State<AzkarScreen> {
 
   void _resetDua(DuaItem item) {
     setState(() => _counts[item.id] = 0);
+    _saveCounts();
     Vibration.hasVibrator().then((has) {
       if (has == true) Vibration.vibrate(duration: 15);
     });
+  }
+
+  void _resetCategory(List<DuaItem> items) {
+    setState(() {
+      for (final it in items) {
+        _counts[it.id] = 0;
+      }
+    });
+    _saveCounts();
+    Vibration.hasVibrator().then((has) {
+      if (has == true) Vibration.vibrate(duration: 30);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Category progress reset for today'),
+        behavior: SnackBarBehavior.floating,
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
 
   void _shareDua(DuaItem item) {
@@ -268,7 +327,7 @@ class _AzkarScreenState extends State<AzkarScreen> {
                   if (_searchQuery.isEmpty) ...[
                     _buildCategoryCards(categories),
                     const SizedBox(height: 12),
-                    _buildProgressBanner(currentCat, completedCount, activeItems.length, progress),
+                    _buildProgressBanner(currentCat, completedCount, activeItems.length, progress, activeItems),
                     const SizedBox(height: 12),
                   ],
                 ],
@@ -460,7 +519,8 @@ class _AzkarScreenState extends State<AzkarScreen> {
     );
   }
 
-  Widget _buildProgressBanner(AzkarCategory cat, int completed, int total, double progress) {
+  Widget _buildProgressBanner(
+      AzkarCategory cat, int completed, int total, double progress, List<DuaItem> items) {
     final isAllDone = completed == total && total > 0;
 
     return Container(
@@ -473,10 +533,11 @@ class _AzkarScreenState extends State<AzkarScreen> {
         ),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(
             isAllDone ? Icons.check_circle_rounded : Icons.pie_chart_outline_rounded,
-            color: isAllDone ? const Color(0xFF2C7A39) : const Color(0xFF2C7A39),
+            color: const Color(0xFF2C7A39),
             size: 22,
           ),
           const SizedBox(width: 10),
@@ -488,20 +549,48 @@ class _AzkarScreenState extends State<AzkarScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      isAllDone ? 'Category Completed! 🎉' : '${cat.title.split(' (').first} Progress',
+                      isAllDone
+                          ? 'Category Completed! 🎉'
+                          : '${cat.title.split(' (').first} Progress',
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         color: isAllDone ? const Color(0xFF1B4332) : const Color(0xFF1B2A1E),
                       ),
                     ),
-                    Text(
-                      '$completed / $total',
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF2C7A39),
-                      ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '$completed / $total',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF2C7A39),
+                          ),
+                        ),
+                        if (completed > 0) ...[
+                          const SizedBox(width: 6),
+                          InkWell(
+                            onTap: () => _resetCategory(items),
+                            borderRadius: BorderRadius.circular(6),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.refresh_rounded, size: 13, color: Color(0xFF6B7280)),
+                                  const SizedBox(width: 2),
+                                  Text(
+                                    'Reset',
+                                    style: GoogleFonts.inter(fontSize: 10.5, color: const Color(0xFF6B7280), fontWeight: FontWeight.w500),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   ],
                 ),
@@ -511,11 +600,24 @@ class _AzkarScreenState extends State<AzkarScreen> {
                   child: LinearProgressIndicator(
                     value: progress,
                     backgroundColor: const Color(0xFFE5EBE6),
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      isAllDone ? const Color(0xFF2C7A39) : const Color(0xFF2C7A39),
-                    ),
+                    valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF2C7A39)),
                     minHeight: 5,
                   ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    const Icon(Icons.schedule_rounded, size: 10.5, color: Color(0xFF6B7280)),
+                    const SizedBox(width: 3),
+                    Text(
+                      'Saved for today • Auto-resets daily at 12:00 AM',
+                      style: GoogleFonts.inter(
+                        fontSize: 10,
+                        color: const Color(0xFF6B7280),
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

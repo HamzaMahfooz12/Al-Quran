@@ -24,6 +24,13 @@ final prayerTimesProvider = FutureProvider.autoDispose<PrayerTimesModel>((ref) a
   return service.getPrayerTimes(location, fiqh: fiqh);
 });
 
+final prayerTimesForDateProvider = FutureProvider.autoDispose.family<PrayerTimesModel, DateTime>((ref, date) async {
+  final location = ref.watch(selectedLocationProvider);
+  final fiqh = ref.watch(selectedFiqhProvider);
+  final service = ref.watch(prayerServiceProvider);
+  return service.getPrayerTimes(location, fiqh: fiqh, date: date);
+});
+
 class SelectedLocationNotifier extends StateNotifier<CityLocation> {
   SelectedLocationNotifier() : super(LocationSearchService.defaultLocation) {
     _load();
@@ -57,19 +64,36 @@ class PrayerService {
     ),
   );
 
-  /// Fetches prayer times from Aladhan API with instant offline astronomical fallback
+  /// Fetches prayer times:
+  /// - For TODAY: tries live Aladhan API, falls back to offline calculator.
+  /// - For OTHER dates: returns instantly from offline astronomical calculator
+  ///   (no network delay at all, making prev/next navigation instant).
   Future<PrayerTimesModel> getPrayerTimes(
     CityLocation location, {
     String fiqh = 'hanafi',
     DateTime? date,
   }) async {
     final targetDate = date ?? DateTime.now();
+    final isToday = _isSameCalendarDay(targetDate, DateTime.now());
     final isHanafi = fiqh == 'hanafi';
     final fiqhLabel = isHanafi ? 'Hanafi' : 'Shafi\'i / Hanbali / Maliki';
 
-    // 1. Attempt live online fetch via Aladhan API
+    // For non-today dates: return offline instantly (no spinner, no wait)
+    if (!isToday) {
+      return PrayerCalculatorService.calculate(
+        date: targetDate,
+        latitude: location.latitude,
+        longitude: location.longitude,
+        method: CalculationMethod.karachi,
+        juristic: isHanafi ? JuristicMethod.hanafi : JuristicMethod.standard,
+        locationName: location.displayName,
+      );
+    }
+
+    // For today: attempt live online fetch via Aladhan API
     try {
-      final dateFormatted = '${targetDate.day.toString().padLeft(2, '0')}-${targetDate.month.toString().padLeft(2, '0')}-${targetDate.year}';
+      final dateFormatted =
+          '${targetDate.day.toString().padLeft(2, '0')}-${targetDate.month.toString().padLeft(2, '0')}-${targetDate.year}';
       final response = await _dio.get(
         'https://api.aladhan.com/v1/timings/$dateFormatted',
         queryParameters: {
@@ -94,7 +118,7 @@ class PrayerService {
       // Offline fallback: Use astronomical calculation engine
     }
 
-    // 2. Offline astronomical solar formula calculation
+    // Offline fallback for today
     return PrayerCalculatorService.calculate(
       date: targetDate,
       latitude: location.latitude,
@@ -104,4 +128,8 @@ class PrayerService {
       locationName: location.displayName,
     );
   }
+
+  static bool _isSameCalendarDay(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
 }
+

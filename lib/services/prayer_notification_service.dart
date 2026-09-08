@@ -63,7 +63,14 @@ class PrayerNotificationService {
       final prayer = entry.key;
       final time = entry.value;
 
-      if (prayer == PrayerType.sunrise) continue; // Sunrise is not a Salah
+      // Only schedule notifications for the 5 Fardh prayers
+      if (prayer == PrayerType.sunrise ||
+          prayer == PrayerType.ishraq ||
+          prayer == PrayerType.chasht ||
+          prayer == PrayerType.zawal ||
+          prayer == PrayerType.sunset) {
+        continue;
+      }
 
       final isEnabled = await isPrayerNotificationEnabled(prayer);
       if (!isEnabled) continue;

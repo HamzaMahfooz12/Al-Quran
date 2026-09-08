@@ -37,7 +37,7 @@ class AudioControlBar extends ConsumerStatefulWidget {
 }
 
 class _AudioControlBarState extends ConsumerState<AudioControlBar> {
-  List<Reciter> _allReciters = [];
+  List<Reciter> _allReciters = ReciterRepository.kDefaultReciters;
   bool _loadingReciters = false;
 
   @override
@@ -48,13 +48,17 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
 
   Future<void> _loadReciters() async {
     setState(() => _loadingReciters = true);
-    final repo = ref.read(reciterRepositoryProvider);
-    final reciters = await repo.getReciters();
-    if (mounted) {
-      setState(() {
-        _allReciters = reciters;
-        _loadingReciters = false;
-      });
+    try {
+      final repo = ref.read(reciterRepositoryProvider);
+      final reciters = await repo.getReciters();
+      if (mounted && reciters.isNotEmpty) {
+        setState(() {
+          _allReciters = reciters;
+          _loadingReciters = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _loadingReciters = false);
     }
   }
 
@@ -151,6 +155,7 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
 
   void _showReciterPicker(BuildContext context, SettingsService settings) {
     String searchQuery = '';
+    final recitersList = _allReciters.isNotEmpty ? _allReciters : ReciterRepository.kDefaultReciters;
 
     showModalBottomSheet(
       context: context,
@@ -161,7 +166,7 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
       ),
       builder: (ctx) => StatefulBuilder(
         builder: (context, setModalState) {
-          final filtered = _allReciters.where((r) {
+          final filtered = recitersList.where((r) {
             final nameMatch =
                 r.name.toLowerCase().contains(searchQuery.toLowerCase());
             final styleMatch = r.style
@@ -256,88 +261,88 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
 
                 // Reciters List
                 Expanded(
-                  child: _loadingReciters
+                  child: _loadingReciters && recitersList.isEmpty
                       ? const Center(
-                          child: CircularProgressIndicator(
-                              color: Color(0xFF2C7A39)))
+                          child: CircularProgressIndicator(color: Color(0xFF2C7A39)))
                       : ListView.separated(
                           itemCount: filtered.length,
                           separatorBuilder: (c, i) => const Divider(
                               height: 1, color: Color(0xFFF0F0F0)),
-                          itemBuilder: (context, idx) {
-                            final r = filtered[idx];
-                            final isSelected =
-                                settings.selectedReciterId == r.id;
+                    itemBuilder: (context, idx) {
+                      final r = filtered[idx];
+                      final isSelected =
+                          settings.selectedReciterId == r.id;
 
-                            final langUpper = r.language.toUpperCase();
-                            final langLabel = r.language == 'ar'
-                                ? 'Arabic'
-                                : (r.language == 'en'
-                                    ? 'English'
-                                    : (r.language == 'ur'
-                                        ? 'Urdu'
-                                        : langUpper));
+                      final langUpper = r.language.toUpperCase();
+                      final langLabel = r.language == 'ar'
+                          ? 'Arabic'
+                          : (r.language == 'en'
+                              ? 'English'
+                              : (r.language == 'ur'
+                                  ? 'Urdu'
+                                  : langUpper));
 
-                            return ListTile(
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
-                              leading: Container(
-                                width: 38,
-                                height: 38,
-                                decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? const Color(0xFF2C7A39)
-                                      : const Color(0xFFEAF6EC),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    langUpper,
-                                    style: GoogleFonts.outfit(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.bold,
-                                      color: isSelected
-                                          ? Colors.white
-                                          : const Color(0xFF2C7A39),
-                                    ),
-                                  ),
-                                ),
+                      return ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        leading: Container(
+                          width: 38,
+                          height: 38,
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? const Color(0xFF2C7A39)
+                                : const Color(0xFFEAF6EC),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              langUpper,
+                              style: GoogleFonts.outfit(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: isSelected
+                                    ? Colors.white
+                                    : const Color(0xFF2C7A39),
                               ),
-                              title: Text(
-                                r.name,
-                                style: GoogleFonts.outfit(
-                                  fontSize: 14.5,
-                                  fontWeight: isSelected
-                                      ? FontWeight.bold
-                                      : FontWeight.w600,
-                                  color: const Color(0xFF1B2A1E),
-                                ),
-                              ),
-                              subtitle: Text(
-                                '$langLabel • ${r.style ?? 'Murattal'}',
-                                style: GoogleFonts.inter(
-                                    fontSize: 12,
-                                    color: const Color(0xFF6B7280)),
-                              ),
-                              trailing: isSelected
-                                  ? const Icon(Icons.check_circle_rounded,
-                                      color: Color(0xFF2C7A39), size: 22)
-                                  : null,
-                              onTap: () async {
-                                HapticFeedback.lightImpact();
-                                ref
-                                    .read(selectedReciterIdProvider.notifier)
-                                    .setReciterId(r.id);
-                                final audioService =
-                                    ref.read(audioServiceProvider);
-                                if (ctx.mounted) {
-                                  Navigator.pop(ctx);
-                                }
-                                await audioService.setReciterAndReplay(r.id);
-                              },
-                            );
-                          },
+                            ),
+                          ),
                         ),
+                        title: Text(
+                          r.name,
+                          style: GoogleFonts.outfit(
+                            fontSize: 14.5,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.w600,
+                            color: const Color(0xFF1B2A1E),
+                          ),
+                        ),
+                        subtitle: Text(
+                          '$langLabel • ${r.style ?? 'Murattal'}',
+                          style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: const Color(0xFF6B7280)),
+                        ),
+                        trailing: isSelected
+                            ? const Icon(Icons.check_circle_rounded,
+                                color: Color(0xFF2C7A39), size: 22)
+                            : null,
+                        onTap: () async {
+                          HapticFeedback.lightImpact();
+                          await ref
+                              .read(selectedReciterIdProvider.notifier)
+                              .setReciterId(r.id);
+                          final audioService =
+                              ref.read(audioServiceProvider);
+                          if (ctx.mounted) {
+                            Navigator.pop(ctx);
+                          }
+                          await audioService.setReciterAndReplay(r.id);
+                          if (mounted) setState(() {});
+                        },
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
@@ -359,333 +364,360 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
     ).name;
 
     final mq = MediaQuery.of(context);
-    final bottomInset = mq.viewPadding.bottom > 0
-        ? mq.viewPadding.bottom
-        : (mq.padding.bottom > 0 ? mq.padding.bottom : 0.0);
-    final effectiveBottomPad = math.max(bottomInset, 8.0) + 8.0;
+    final bottomInset = math.max(mq.padding.bottom, mq.viewPadding.bottom);
+    final effectiveBottomMargin = math.max(bottomInset, 12.0) + 6.0;
 
-    return Container(
-      margin: const EdgeInsets.fromLTRB(10, 0, 10, 8),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [
-            Color(0xFF1E5B2E), // Rich Islamic Forest Green
-            Color(0xFF134221), // Deep Emerald Shadow
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.16),
-          width: 1.1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.32),
-            blurRadius: 18,
-            offset: const Offset(0, 5),
-          ),
-          BoxShadow(
-            color: const Color(0xFF2C7A39).withValues(alpha: 0.25),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      padding: EdgeInsets.fromLTRB(14, 10, 14, effectiveBottomPad),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // ── Main Compact Control Row (Matching Reference Image 1) ────────
-          Row(
-            children: [
-              // 1. Ornamental 8-Point Scalloped Medallion Badge (Left)
-              _IslamicMedallionBadge(number: widget.surahNumber),
-
-              const SizedBox(width: 10),
-
-              // 2. Surah Title & Tappable Reciter Name
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Surah Name (e.g. Surah An-Nisa or Al-Fatiha • 2/7)
-                    Text(
-                      widget.surahName.startsWith('Surah')
-                          ? widget.surahName
-                          : 'Surah ${widget.surahName}',
-                      style: GoogleFonts.outfit(
-                        fontSize: 15.5,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: 0.2,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-
-                    const SizedBox(height: 2),
-
-                    // Reciter Name with dropdown arrow (Tappable)
-                    InkWell(
-                      onTap: () => _showReciterPicker(context, settings),
-                      borderRadius: BorderRadius.circular(6),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            reciterName,
-                            style: GoogleFonts.inter(
-                              fontSize: 12.5,
-                              fontWeight: FontWeight.w500,
-                              color: const Color(0xFFD4ECD8),
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(width: 2),
-                          const Icon(
-                            Icons.keyboard_arrow_down_rounded,
-                            color: Color(0xFFD4ECD8),
-                            size: 15,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // 3. Playback Speed Button (1.0x)
-              InkWell(
-                onTap: () => _showSpeedMenu(context, audioService),
-                borderRadius: BorderRadius.circular(8),
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                  child: Text(
-                    '${audioService.speed}x',
-                    style: GoogleFonts.outfit(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFFFEF3C7),
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(width: 4),
-
-              // 4. Repeat / Loop Toggle Button
-              IconButton(
-                icon: Icon(
-                  audioService.isLooping
-                      ? Icons.repeat_one_rounded
-                      : Icons.repeat_rounded,
-                  color: audioService.isLooping
-                      ? const Color(0xFFFFA000)
-                      : Colors.white60,
-                  size: 20,
-                ),
-                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                padding: const EdgeInsets.all(4),
-                onPressed: () {
-                  HapticFeedback.lightImpact();
-                  setState(() {
-                    audioService.isLooping = !audioService.isLooping;
-                  });
-                },
-                tooltip: audioService.isLooping
-                    ? 'Looping current Ayah'
-                    : 'Repeat Off',
-              ),
-
-              // 5. Skip Previous
-              IconButton(
-                icon: const Icon(Icons.skip_previous_rounded,
-                    color: Colors.white, size: 24),
-                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                padding: const EdgeInsets.all(4),
-                onPressed: widget.onPrevAyah,
-                tooltip: 'Previous Ayah',
-              ),
-
-              // 6. Circular Vibrant Orange Play / Pause Button (Centerpiece)
-              StreamBuilder<PlayerState>(
-                stream: audioService.playerStateStream,
-                builder: (context, snapshot) {
-                  final playerState = snapshot.data;
-                  final processingState = playerState?.processingState;
-                  final isPlaying = playerState?.playing ?? false;
-                  final isBuffering =
-                      processingState == ProcessingState.loading ||
-                          processingState == ProcessingState.buffering;
-
-                  return GestureDetector(
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      if (isPlaying) {
-                        audioService.pause();
-                      } else {
-                        audioService.resume();
-                      }
-                    },
-                    child: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [
-                            Color(0xFFFFA000), // Vibrant Amber-Orange
-                            Color(0xFFF59E0B), // Glowing Gold Accent
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFFFFA000)
-                                .withValues(alpha: 0.4),
-                            blurRadius: 10,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Center(
-                        child: isBuffering
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2.5,
-                                  color: Color(0xFF134221),
-                                ),
-                              )
-                            : Icon(
-                                isPlaying
-                                    ? Icons.pause_rounded
-                                    : Icons.play_arrow_rounded,
-                                size: 26,
-                                color: const Color(0xFF134221),
-                              ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-
-              // 7. Skip Next
-              IconButton(
-                icon: const Icon(Icons.skip_next_rounded,
-                    color: Colors.white, size: 24),
-                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                padding: const EdgeInsets.all(4),
-                onPressed: widget.onNextAyah,
-                tooltip: 'Next Ayah',
-              ),
-
-              // 8. Close Button
-              IconButton(
-                icon: const Icon(Icons.close_rounded,
-                    color: Colors.white60, size: 18),
-                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                padding: const EdgeInsets.all(4),
-                onPressed: () {
-                  audioService.stop();
-                  widget.onClose?.call();
-                },
-                tooltip: 'Close player',
-              ),
+    return SafeArea(
+      top: false,
+      bottom: false,
+      child: Container(
+        margin: EdgeInsets.fromLTRB(10, 0, 10, effectiveBottomMargin),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [
+              Color(0xFF1E5B2E), // Rich Islamic Forest Green
+              Color(0xFF134221), // Deep Emerald Shadow
             ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.16),
+            width: 1.1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.35),
+              blurRadius: 18,
+              offset: const Offset(0, 5),
+            ),
+            BoxShadow(
+              color: const Color(0xFF2C7A39).withValues(alpha: 0.25),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 6),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // ── Main Compact Control Row ──
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // 1. Ornamental 8-Point Scalloped Medallion Badge (Left)
+                _IslamicMedallionBadge(number: widget.surahNumber),
 
-          // ── Live Progress Slider & Time Labels (Matching Reference Image 2) ──
-          StreamBuilder<Duration?>(
-            stream: audioService.positionStream,
-            builder: (context, posSnapshot) {
-              final position = posSnapshot.data ?? Duration.zero;
+                const SizedBox(width: 8),
 
-              return StreamBuilder<Duration?>(
-                stream: audioService.durationStream,
-                builder: (context, durSnapshot) {
-                  final duration = durSnapshot.data ?? Duration.zero;
-                  final maxMs = duration.inMilliseconds > 0
-                      ? duration.inMilliseconds.toDouble()
-                      : 1.0;
-                  final currentMs =
-                      position.inMilliseconds.toDouble().clamp(0.0, maxMs);
-                  final remaining = duration > position
-                      ? duration - position
-                      : Duration.zero;
-
-                  return Column(
+                // 2. Surah Title & Tappable Reciter Name (Stacked with zero collision)
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Thin Vibrant Orange Slider
-                      SliderTheme(
-                        data: SliderThemeData(
-                          trackHeight: 2.8,
-                          thumbShape: const RoundSliderThumbShape(
-                              enabledThumbRadius: 5.5),
-                          overlayShape: const RoundSliderOverlayShape(
-                              overlayRadius: 10),
-                          activeTrackColor: const Color(0xFFFFA000),
-                          inactiveTrackColor:
-                              Colors.white.withValues(alpha: 0.22),
-                          thumbColor: const Color(0xFFFFA000),
-                          overlayColor: const Color(0xFFFFA000)
-                              .withValues(alpha: 0.2),
-                        ),
-                        child: Slider(
-                          value: currentMs,
-                          min: 0.0,
-                          max: maxMs,
-                          onChanged: (val) {
-                            audioService
-                                .seek(Duration(milliseconds: val.toInt()));
-                          },
-                        ),
-                      ),
-
-                      // Time Labels
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              _formatDuration(position),
-                              style: GoogleFonts.inter(
-                                fontSize: 10.5,
-                                color: Colors.white70,
-                                fontWeight: FontWeight.w500,
+                      // Line 1: Surah Name + Speed & Repeat Chips
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              widget.surahName.startsWith('Surah')
+                                  ? widget.surahName
+                                  : 'Surah ${widget.surahName}',
+                              style: GoogleFonts.outfit(
+                                fontSize: 14.5,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                letterSpacing: 0.2,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          // Playback Speed Button (1.0x)
+                          InkWell(
+                            onTap: () => _showSpeedMenu(context, audioService),
+                            borderRadius: BorderRadius.circular(6),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 5, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                '${audioService.speed}x',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFFFEF3C7),
+                                ),
                               ),
                             ),
-                            Text(
-                              '-${_formatDuration(remaining)}',
-                              style: GoogleFonts.inter(
-                                fontSize: 10.5,
-                                color: const Color(0xFFFEF3C7),
-                                fontWeight: FontWeight.w500,
+                          ),
+                          const SizedBox(width: 4),
+                          // Repeat / Loop Toggle Button
+                          InkWell(
+                            onTap: () {
+                              HapticFeedback.lightImpact();
+                              setState(() {
+                                audioService.isLooping = !audioService.isLooping;
+                              });
+                            },
+                            borderRadius: BorderRadius.circular(6),
+                            child: Padding(
+                              padding: const EdgeInsets.all(2),
+                              child: Icon(
+                                audioService.isLooping
+                                    ? Icons.repeat_one_rounded
+                                    : Icons.repeat_rounded,
+                                color: audioService.isLooping
+                                    ? const Color(0xFFFFA000)
+                                    : Colors.white70,
+                                size: 16,
                               ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 2),
+
+                      // Line 2: Reciter Name with dropdown arrow (Tappable)
+                      InkWell(
+                        onTap: () => _showReciterPicker(context, settings),
+                        borderRadius: BorderRadius.circular(6),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.record_voice_over_rounded,
+                              color: Color(0xFFD4ECD8),
+                              size: 13,
+                            ),
+                            const SizedBox(width: 4),
+                            Flexible(
+                              child: Text(
+                                reciterName,
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color(0xFFD4ECD8),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 2),
+                            const Icon(
+                              Icons.keyboard_arrow_down_rounded,
+                              color: Color(0xFFD4ECD8),
+                              size: 15,
                             ),
                           ],
                         ),
                       ),
                     ],
-                  );
-                },
-              );
-            },
-          ),
-        ],
+                  ),
+                ),
+
+                const SizedBox(width: 4),
+
+                // 3. Playback Controls (Skip Prev, Play/Pause, Skip Next, Close)
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Skip Previous
+                    IconButton(
+                      icon: const Icon(Icons.skip_previous_rounded,
+                          color: Colors.white, size: 22),
+                      constraints:
+                          const BoxConstraints(minWidth: 30, minHeight: 30),
+                      padding: EdgeInsets.zero,
+                      onPressed: widget.onPrevAyah,
+                      tooltip: 'Previous Ayah',
+                    ),
+                    const SizedBox(width: 2),
+
+                    // Circular Vibrant Orange Play / Pause Button
+                    StreamBuilder<PlayerState>(
+                      stream: audioService.playerStateStream,
+                      builder: (context, snapshot) {
+                        final playerState = snapshot.data;
+                        final processingState = playerState?.processingState;
+                        final isPlaying = playerState?.playing ?? false;
+                        final isBuffering =
+                            processingState == ProcessingState.loading ||
+                                processingState == ProcessingState.buffering;
+
+                        return GestureDetector(
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            if (isPlaying) {
+                              audioService.pause();
+                            } else {
+                              audioService.resume();
+                            }
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [
+                                  Color(0xFFFFA000), // Vibrant Amber-Orange
+                                  Color(0xFFF59E0B), // Glowing Gold Accent
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFFFFA000)
+                                      .withValues(alpha: 0.4),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: isBuffering
+                                  ? const SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.2,
+                                        color: Color(0xFF134221),
+                                      ),
+                                    )
+                                  : Icon(
+                                      isPlaying
+                                          ? Icons.pause_rounded
+                                          : Icons.play_arrow_rounded,
+                                      size: 24,
+                                      color: const Color(0xFF134221),
+                                    ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(width: 2),
+
+                    // Skip Next
+                    IconButton(
+                      icon: const Icon(Icons.skip_next_rounded,
+                          color: Colors.white, size: 22),
+                      constraints:
+                          const BoxConstraints(minWidth: 30, minHeight: 30),
+                      padding: EdgeInsets.zero,
+                      onPressed: widget.onNextAyah,
+                      tooltip: 'Next Ayah',
+                    ),
+
+                    // Close Button
+                    IconButton(
+                      icon: const Icon(Icons.close_rounded,
+                          color: Colors.white60, size: 18),
+                      constraints:
+                          const BoxConstraints(minWidth: 26, minHeight: 26),
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        audioService.stop();
+                        widget.onClose?.call();
+                      },
+                      tooltip: 'Close player',
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            // ── Live Progress Slider & Time Labels ──
+            StreamBuilder<Duration?>(
+              stream: audioService.positionStream,
+              builder: (context, posSnapshot) {
+                final position = posSnapshot.data ?? Duration.zero;
+
+                return StreamBuilder<Duration?>(
+                  stream: audioService.durationStream,
+                  builder: (context, durSnapshot) {
+                    final duration = durSnapshot.data ?? Duration.zero;
+                    final maxMs = duration.inMilliseconds > 0
+                        ? duration.inMilliseconds.toDouble()
+                        : 1.0;
+                    final currentMs =
+                        position.inMilliseconds.toDouble().clamp(0.0, maxMs);
+                    final remaining = duration > position
+                        ? duration - position
+                        : Duration.zero;
+
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Thin Vibrant Orange Slider
+                        SliderTheme(
+                          data: SliderThemeData(
+                            trackHeight: 2.5,
+                            thumbShape: const RoundSliderThumbShape(
+                                enabledThumbRadius: 5.0),
+                            overlayShape: const RoundSliderOverlayShape(
+                                overlayRadius: 9),
+                            activeTrackColor: const Color(0xFFFFA000),
+                            inactiveTrackColor:
+                                Colors.white.withValues(alpha: 0.22),
+                            thumbColor: const Color(0xFFFFA000),
+                            overlayColor: const Color(0xFFFFA000)
+                                .withValues(alpha: 0.2),
+                          ),
+                          child: Slider(
+                            value: currentMs,
+                            min: 0.0,
+                            max: maxMs,
+                            onChanged: (val) {
+                              audioService
+                                  .seek(Duration(milliseconds: val.toInt()));
+                            },
+                          ),
+                        ),
+
+                        // Time Labels
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                _formatDuration(position),
+                                style: GoogleFonts.inter(
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFFD4ECD8),
+                                ),
+                              ),
+                              Text(
+                                '-${_formatDuration(remaining)}',
+                                style: GoogleFonts.inter(
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFFD4ECD8),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -695,61 +727,53 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
 class _IslamicMedallionBadge extends StatelessWidget {
   final int number;
 
-  const _IslamicMedallionBadge({
-    required this.number,
-  });
-
-  static const double size = 42.0;
+  const _IslamicMedallionBadge({required this.number});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: size,
-      height: size,
+    return Container(
+      width: 38,
+      height: 38,
+      decoration: BoxDecoration(
+        color: const Color(0xFFFEF9EE), // Ivory cream core
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: const Color(0xFFF59E0B), // Radiant gold rim
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFF59E0B).withValues(alpha: 0.35),
+            blurRadius: 6,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // 45-degree rotated rounded square
+          // 45-degree Rotated Diamond Inset for Islamic 8-Point Medallion look
           Transform.rotate(
             angle: math.pi / 4,
             child: Container(
-              width: size * 0.74,
-              height: size * 0.74,
+              width: 22,
+              height: 22,
               decoration: BoxDecoration(
-                color: const Color(0xFFFEF9EE),
-                borderRadius: BorderRadius.circular(6),
+                color: const Color(0xFFFEF3C7),
+                borderRadius: BorderRadius.circular(3),
                 border: Border.all(
-                  color: const Color(0xFFF59E0B),
-                  width: 1.5,
+                  color: const Color(0xFFD97706).withValues(alpha: 0.5),
+                  width: 0.8,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.15),
-                    blurRadius: 3,
-                    offset: const Offset(0, 1),
-                  ),
-                ],
               ),
             ),
           ),
-          // 0-degree square
-          Container(
-            width: size * 0.74,
-            height: size * 0.74,
-            decoration: BoxDecoration(
-              color: const Color(0xFFFEF9EE),
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(
-                color: const Color(0xFFF59E0B),
-                width: 1.5,
-              ),
-            ),
-          ),
-          // Center Number
+
+          // Bold Gold/Amber Number
           Text(
             '$number',
             style: GoogleFonts.outfit(
-              fontSize: size * 0.38,
+              fontSize: 14.5,
               fontWeight: FontWeight.w900,
               color: const Color(0xFF8D4913),
               height: 1.0,

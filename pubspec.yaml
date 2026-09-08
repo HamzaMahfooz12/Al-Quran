@@ -82,6 +82,8 @@ flutter:
     - assets/app_database.sqlite.gz
     - assets/downloadable_editions.json
     - assets/data/
+    - assets/version.json
+    - version.json
 
   fonts:
     - family: Scheherazade New

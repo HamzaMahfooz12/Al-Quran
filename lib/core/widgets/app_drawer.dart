@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../services/app_version_service.dart';
 import '../theme/app_theme.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -200,7 +201,7 @@ class AppDrawer extends StatelessWidget {
                 const Icon(Icons.verified_rounded, color: Color(0xFF2D6A4F), size: 18),
                 const SizedBox(width: 8),
                 Text(
-                  'Hifz ul Quran • v1.0.0',
+                  'Hifz ul Quran • ${AppVersionService.displayVersion}',
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,

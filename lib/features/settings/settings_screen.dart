@@ -10,7 +10,7 @@ import '../../data/repositories/reciter_repository.dart';
 import '../../services/audio_cache_service.dart';
 import '../../services/settings_service.dart';
 import '../../services/update_service.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+import '../../services/app_version_service.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -941,7 +941,7 @@ class _UpdateCheckTileState extends State<_UpdateCheckTile> {
   double _downloadProgress = 0;
   String _statusMessage = '';
   AppUpdateInfo? _updateInfo;
-  String _currentVersion = '';
+  String _currentVersion = '${AppVersionService.displayVersion} (Build ${AppVersionService.buildNumber})';
 
   @override
   void initState() {
@@ -950,9 +950,9 @@ class _UpdateCheckTileState extends State<_UpdateCheckTile> {
   }
 
   Future<void> _loadCurrentVersion() async {
-    final info = await PackageInfo.fromPlatform();
+    await AppVersionService.init();
     if (mounted) {
-      setState(() => _currentVersion = '${info.version}+${info.buildNumber}');
+      setState(() => _currentVersion = '${AppVersionService.displayVersion} (Build ${AppVersionService.buildNumber})');
     }
   }
 

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart' hide TextDirection;
 import '../../core/theme/app_theme.dart';
 import '../../data/models/bookmark.dart';
 import '../../data/models/surah_info.dart';
@@ -383,81 +382,87 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
                             itemBuilder: (ctx, idx) {
                               final b = filteredBookmarks[idx];
                               final info = kSurahList[b.surah - 1];
-                              final dateStr = DateFormat('MMM dd, yyyy').format(b.createdAt);
 
-                              return Card(
-                                elevation: 0.8,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  side: const BorderSide(color: Color(0xFFE8ECE9)),
+                              return Dismissible(
+                                key: Key('bm_${b.surah}_${b.ayah}'),
+                                direction: DismissDirection.endToStart,
+                                background: Container(
+                                  alignment: Alignment.centerRight,
+                                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red.shade50,
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  child: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 24),
                                 ),
-                                child: InkWell(
-                                  onTap: () => _openVerse(b.surah, b.ayah),
-                                  borderRadius: BorderRadius.circular(14),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(12),
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          width: 44,
-                                          height: 44,
-                                          decoration: BoxDecoration(
-                                            color: AppTheme.primarySurface,
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              '${b.ayah}',
-                                              style: GoogleFonts.outfit(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.bold,
-                                                color: AppTheme.primary,
+                                confirmDismiss: (_) async {
+                                  _deleteBookmark(b);
+                                  return false;
+                                },
+                                child: Card(
+                                  elevation: 0.8,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                    side: const BorderSide(color: Color(0xFFE8ECE9)),
+                                  ),
+                                  child: InkWell(
+                                    onTap: () => _openVerse(b.surah, b.ayah),
+                                    borderRadius: BorderRadius.circular(14),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        children: [
+                                          // Ayah Index Badge
+                                          Container(
+                                            width: 44,
+                                            height: 44,
+                                            decoration: BoxDecoration(
+                                              gradient: const LinearGradient(
+                                                colors: [Color(0xFF1B4332), Color(0xFF2C7A39)],
+                                                begin: Alignment.topLeft,
+                                                end: Alignment.bottomRight,
+                                              ),
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                '${b.ayah}',
+                                                style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Text(
-                                                    '${info.nameTransliteration} (${info.number})',
-                                                    style: GoogleFonts.inter(
-                                                      fontSize: 14.5,
-                                                      fontWeight: FontWeight.bold,
-                                                      color: AppTheme.textPrimary,
+                                          const SizedBox(width: 12),
+                                          // Surah Info
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                      info.nameTransliteration,
+                                                      style: GoogleFonts.outfit(fontSize: 14.5, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
                                                     ),
-                                                  ),
-                                                  Text(
-                                                    info.nameArabic,
-                                                    style: GoogleFonts.amiri(
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight.bold,
-                                                      color: AppTheme.gold,
+                                                    Text(
+                                                      info.nameArabic,
+                                                      style: GoogleFonts.amiri(fontSize: 17, fontWeight: FontWeight.bold, color: AppTheme.gold),
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 4),
-                                              Text(
-                                                b.label != null && b.label!.isNotEmpty
-                                                    ? 'Note: ${b.label}\nSaved on $dateStr'
-                                                    : 'Verse ${b.ayah} • Saved on $dateStr',
-                                                style: GoogleFonts.inter(fontSize: 11.5, color: AppTheme.textMuted),
-                                              ),
-                                            ],
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 2),
+                                                Text(
+                                                  'Surah ${b.surah} • Ayah ${b.ayah}',
+                                                  style: GoogleFonts.inter(fontSize: 11.5, color: AppTheme.textMuted),
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 22),
-                                          tooltip: 'Remove',
-                                          onPressed: () => _deleteBookmark(b),
-                                        ),
-                                      ],
+                                          const SizedBox(width: 8),
+                                          // Open button
+                                          const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppTheme.primary),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -490,65 +495,39 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // Header: Sajdah Number & Surah Info & Type Badge
+                        // Header: Sajdah # + Surah Name
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF1B4332),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    'Sajdah ${s.index}',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.bold,
-                                      color: const Color(0xFFFFD54F),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Surah ${s.surahName} [${s.surah}:${s.ayah}]',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppTheme.textPrimary,
-                                  ),
-                                ),
-                              ],
-                            ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              width: 36,
+                              height: 36,
                               decoration: BoxDecoration(
-                                color: s.type == 'Wajib'
-                                    ? const Color(0xFFE8F5E9)
-                                    : const Color(0xFFFFF8E1),
-                                borderRadius: BorderRadius.circular(6),
-                                border: Border.all(
-                                  color: s.type == 'Wajib'
-                                      ? const Color(0xFF2E7D32).withValues(alpha: 0.4)
-                                      : const Color(0xFFFFA000).withValues(alpha: 0.4),
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFF1B4332), Color(0xFF2C7A39)],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
                                 ),
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                              child: Text(
-                                '${s.type} • Juz ${s.juz}',
-                                style: GoogleFonts.inter(
-                                  fontSize: 10.5,
-                                  fontWeight: FontWeight.w600,
-                                  color: s.type == 'Wajib' ? const Color(0xFF1B5E20) : const Color(0xFFE65100),
-                                ),
+                              child: Center(
+                                child: Text('${s.index}', style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: const Color(0xFFFFD54F))),
                               ),
                             ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('${s.surahName} [${s.surah}:${s.ayah}]', style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.textPrimary)),
+                                  Text('Sajdah ${s.index} • ${s.type}', style: GoogleFonts.inter(fontSize: 11.5, color: AppTheme.textMuted)),
+                                ],
+                              ),
+                            ),
+                            Text(s.surahNameArabic, style: GoogleFonts.amiri(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.gold)),
                           ],
                         ),
-                        const SizedBox(height: 12),
-
-                        // Arabic Verse Text with Sajdah Mark
+                        const SizedBox(height: 10),
+                        // Arabic Verse Text
                         Text(
                           s.arabicText,
                           textAlign: TextAlign.right,
@@ -561,31 +540,12 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
                             height: 1.8,
                           ),
                         ),
-                        const SizedBox(height: 8),
-
-                        // Translation snippet
-                        Text(
-                          s.translation,
-                          style: GoogleFonts.inter(
-                            fontSize: 12.5,
-                            color: AppTheme.textSecondary,
-                            height: 1.45,
-                          ),
-                        ),
                         const SizedBox(height: 10),
-
-                        // Bottom Action Link
+                        // Open in Quran link
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            Text(
-                              'Open in Quran',
-                              style: GoogleFonts.inter(
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.primary,
-                              ),
-                            ),
+                            Text('Open in Quran', style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.bold, color: AppTheme.primary)),
                             const SizedBox(width: 4),
                             const Icon(Icons.arrow_forward_rounded, size: 14, color: AppTheme.primary),
                           ],

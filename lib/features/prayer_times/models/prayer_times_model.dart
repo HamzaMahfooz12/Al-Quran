@@ -4,8 +4,12 @@ import 'package:intl/intl.dart';
 enum PrayerType {
   fajr,
   sunrise,
+  ishraq,
+  chasht,
+  zawal,
   dhuhr,
   asr,
+  sunset,
   maghrib,
   isha,
 }
@@ -79,11 +83,27 @@ class PrayerTimesModel {
     this.fiqhName = 'Hanafi',
   });
 
+  /// Ishraq starts ~15-20 min after sunrise
+  DateTime get ishraq => sunrise.add(const Duration(minutes: 15));
+
+  /// Chasht (Salat al-Duha) starts ~45 min after sunrise (when sun reaches spear-height)
+  DateTime get chasht => sunrise.add(const Duration(minutes: 45));
+
+  /// Zawal (prohibited zenith time) is ~10 min before Dhuhr starts
+  DateTime get zawal => dhuhr.subtract(const Duration(minutes: 10));
+
+  /// Sunset time (coincides with Maghrib entrance)
+  DateTime get sunset => maghrib;
+
   Map<PrayerType, DateTime> get allPrayers => {
         PrayerType.fajr: fajr,
         PrayerType.sunrise: sunrise,
+        PrayerType.ishraq: ishraq,
+        PrayerType.chasht: chasht,
+        PrayerType.zawal: zawal,
         PrayerType.dhuhr: dhuhr,
         PrayerType.asr: asr,
+        PrayerType.sunset: sunset,
         PrayerType.maghrib: maghrib,
         PrayerType.isha: isha,
       };
@@ -94,10 +114,18 @@ class PrayerTimesModel {
         return 'Fajr';
       case PrayerType.sunrise:
         return 'Sunrise';
+      case PrayerType.ishraq:
+        return 'Ishraq';
+      case PrayerType.chasht:
+        return 'Chasht (Duha)';
+      case PrayerType.zawal:
+        return 'Zawal (Noon)';
       case PrayerType.dhuhr:
         return 'Dhuhr';
       case PrayerType.asr:
         return 'Asr';
+      case PrayerType.sunset:
+        return 'Sunset';
       case PrayerType.maghrib:
         return 'Maghrib';
       case PrayerType.isha:
@@ -111,10 +139,18 @@ class PrayerTimesModel {
         return 'الفجر';
       case PrayerType.sunrise:
         return 'الشروق';
+      case PrayerType.ishraq:
+        return 'الإشراق';
+      case PrayerType.chasht:
+        return 'الضحى';
+      case PrayerType.zawal:
+        return 'الزوال';
       case PrayerType.dhuhr:
         return 'الظهر';
       case PrayerType.asr:
         return 'العصر';
+      case PrayerType.sunset:
+        return 'الغروب';
       case PrayerType.maghrib:
         return 'المغرب';
       case PrayerType.isha:

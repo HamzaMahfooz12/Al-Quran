@@ -9,8 +9,8 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:open_filex/open_filex.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
+import 'app_version_service.dart';
 
 class AppUpdateInfo {
   final String latestVersion;
@@ -39,9 +39,9 @@ class UpdateService {
 
   /// Check for updates by comparing current version with remote version.json
   static Future<AppUpdateInfo> checkForUpdate() async {
-    final packageInfo = await PackageInfo.fromPlatform();
-    final currentVersion = packageInfo.version; // e.g. "1.0.0"
-    final currentBuild = int.tryParse(packageInfo.buildNumber) ?? 1;
+    await AppVersionService.init();
+    final currentVersion = AppVersionService.version;
+    final currentBuild = AppVersionService.buildNumber;
 
     try {
       // Append cache-busting timestamp so GitHub raw CDN is never stale
