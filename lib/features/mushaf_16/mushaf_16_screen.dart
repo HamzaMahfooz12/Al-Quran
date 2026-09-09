@@ -45,6 +45,14 @@ class _Mushaf16ScreenState extends ConsumerState<Mushaf16Screen> {
   final Map<int, Offset> _pointerPositions = {};
   double _initialPinchDistance = 0.0;
   Offset _initialPinchMidpoint = Offset.zero;
+  late final ValueNotifier<Matrix4> _transformNotifier;
+  late final ValueNotifier<double> _zoomScaleNotifier;
+
+  void _updateTransform() {
+    _transformNotifier.value = Matrix4.diagonal3Values(_zoomScale, _zoomScale, 1.0)
+      ..setTranslationRaw(_panX, 0.0, 0.0);
+    _zoomScaleNotifier.value = _zoomScale;
+  }
 
   void _onPointerDown(PointerDownEvent event) {
     _pointerPositions[event.pointer] = event.position;
@@ -59,47 +67,80 @@ class _Mushaf16ScreenState extends ConsumerState<Mushaf16Screen> {
 
   void _onPointerMove(PointerMoveEvent event) {
     _pointerPositions[event.pointer] = event.position;
+    final screenWidth = MediaQuery.sizeOf(context).width;
+
     if (_pointerPositions.length == 2) {
+      // ── Two-finger Pinch Zoom & Pan (Focal-point aware) ──
       final points = _pointerPositions.values.toList();
       final currentDistance = (points[0] - points[1]).distance;
       final currentMidpoint = (points[0] + points[1]) / 2;
+
       if (_initialPinchDistance > 10.0) {
-        final newScale = (_baseZoomScale * (currentDistance / _initialPinchDistance)).clamp(1.0, 2.5);
-        final deltaX = currentMidpoint.dx - _initialPinchMidpoint.dx;
-        final maxPanX = (MediaQuery.sizeOf(context).width * (newScale - 1.0)) / 2;
-        setState(() {
-          _zoomScale = newScale;
-          _panX = (_basePanX + deltaX).clamp(-maxPanX, maxPanX);
-        });
+        final scaleRatio = currentDistance / _initialPinchDistance;
+        final newScale = (_baseZoomScale * scaleRatio).clamp(1.0, 3.0);
+
+        // Maximum pan allows seeing both edges with comfortable breathing room
+        final maxPanX = (screenWidth * (newScale - 1.0)) / 2 + 24.0;
+
+        // Shift pan with two-finger movement
+        final deltaMidpointX = currentMidpoint.dx - _initialPinchMidpoint.dx;
+
+        // Anchor zoom around the midpoint between fingers so zoom focuses on touched area
+        final focalOffsetFromCenter = _initialPinchMidpoint.dx - (screenWidth / 2);
+        final focalShift = -focalOffsetFromCenter * (newScale / _baseZoomScale - 1.0);
+
+        _zoomScale = newScale;
+        _panX = (_basePanX + deltaMidpointX + focalShift).clamp(-maxPanX, maxPanX);
+        _updateTransform();
       }
+    } else if (_pointerPositions.length == 1 && _zoomScale > 1.01) {
+      // ── One-finger Pan while Zoomed In ──
+      // Instant, smooth horizontal panning to see the start or end of ayahs without delay or lag
+      final maxPanX = (screenWidth * (_zoomScale - 1.0)) / 2 + 24.0;
+      _panX = (_panX + event.delta.dx).clamp(-maxPanX, maxPanX);
+      _updateTransform();
     }
   }
 
   void _onPointerUp(PointerUpEvent event) {
     _pointerPositions.remove(event.pointer);
-    if (_pointerPositions.length < 2) {
+    if (_pointerPositions.length == 1) {
+      // Smoothly transition from two fingers to one finger panning
+      _baseZoomScale = _zoomScale;
+      _basePanX = _panX;
+    } else if (_pointerPositions.isEmpty) {
       _baseZoomScale = _zoomScale;
       _basePanX = _panX;
       if (_zoomScale <= 1.03) {
-        setState(() {
-          _zoomScale = 1.0;
-          _panX = 0.0;
-        });
+        _zoomScale = 1.0;
+        _panX = 0.0;
+        _baseZoomScale = 1.0;
+        _basePanX = 0.0;
+        _updateTransform();
       }
     }
   }
 
   void _onPointerCancel(PointerCancelEvent event) {
     _pointerPositions.remove(event.pointer);
-    if (_pointerPositions.length < 2) {
+    if (_pointerPositions.isEmpty) {
       _baseZoomScale = _zoomScale;
       _basePanX = _panX;
+      if (_zoomScale <= 1.03) {
+        _zoomScale = 1.0;
+        _panX = 0.0;
+        _baseZoomScale = 1.0;
+        _basePanX = 0.0;
+        _updateTransform();
+      }
     }
   }
 
   @override
   void initState() {
     super.initState();
+    _transformNotifier = ValueNotifier<Matrix4>(Matrix4.identity());
+    _zoomScaleNotifier = ValueNotifier<double>(1.0);
     _loadInitialPage();
     _setupAudioService();
   }
@@ -162,6 +203,8 @@ class _Mushaf16ScreenState extends ConsumerState<Mushaf16Screen> {
     _scrollTimer?.cancel();
     _pageCtrl?.removeListener(_onScrollPage);
     _pageCtrl?.dispose();
+    _transformNotifier.dispose();
+    _zoomScaleNotifier.dispose();
     super.dispose();
   }
 
@@ -350,10 +393,15 @@ class _Mushaf16ScreenState extends ConsumerState<Mushaf16Screen> {
               onPointerUp: _onPointerUp,
               onPointerCancel: _onPointerCancel,
               child: ClipRect(
-                child: Transform(
-                  transform: Matrix4.diagonal3Values(_zoomScale, _zoomScale, 1.0)
-                    ..setTranslationRaw(_panX, 0.0, 0.0),
-                  alignment: Alignment.center,
+                child: ValueListenableBuilder<Matrix4>(
+                  valueListenable: _transformNotifier,
+                  builder: (context, matrix, child) {
+                    return Transform(
+                      transform: matrix,
+                      alignment: Alignment.center,
+                      child: child,
+                    );
+                  },
                   child: NotificationListener<UserScrollNotification>(
                     onNotification: (notification) {
                       if (notification.direction == ScrollDirection.reverse) {
@@ -393,46 +441,50 @@ class _Mushaf16ScreenState extends ConsumerState<Mushaf16Screen> {
           ),
 
           // ── Floating Zoom Indicator (Tap to Reset) ──────────────────────
-          if (_zoomScale > 1.03)
-            Positioned(
-              top: 12,
-              right: 12,
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
+          Positioned(
+            top: 12,
+            right: 12,
+            child: ValueListenableBuilder<double>(
+              valueListenable: _zoomScaleNotifier,
+              builder: (context, scale, _) {
+                if (scale <= 1.03) return const SizedBox.shrink();
+                return GestureDetector(
+                  onTap: () {
                     _zoomScale = 1.0;
                     _panX = 0.0;
                     _baseZoomScale = 1.0;
                     _basePanX = 0.0;
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1B2A1E).withValues(alpha: 0.85),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: const [
-                      BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2)),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '${(_zoomScale * 100).round()}%',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
+                    _updateTransform();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1B2A1E).withValues(alpha: 0.85),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: const [
+                        BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2)),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '${(scale * 100).round()}%',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 4),
-                      const Icon(Icons.refresh, color: Colors.white70, size: 14),
-                    ],
+                        const SizedBox(width: 4),
+                        const Icon(Icons.refresh, color: Colors.white70, size: 14),
+                      ],
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
+          ),
 
           // ── Audio Bar Overlay (floats above page, doesn't resize it) ────
           if (isAudioActive)
