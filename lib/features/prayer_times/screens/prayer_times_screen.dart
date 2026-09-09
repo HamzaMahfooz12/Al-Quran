@@ -285,7 +285,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1B4332).withValues(alpha: 0.2),
+            color: const Color(0xFF0F2038).withValues(alpha: 0.2),
             blurRadius: 18,
             offset: const Offset(0, 6),
           ),
@@ -309,9 +309,9 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      const Color(0xFF1B2A1E).withValues(alpha: 0.88),
-                      const Color(0xFF2C7A39).withValues(alpha: 0.72),
-                      const Color(0xFF1B2A1E).withValues(alpha: 0.92),
+                      const Color(0xFF0F2038).withValues(alpha: 0.88),
+                      const Color(0xFF1E3A60).withValues(alpha: 0.72),
+                      const Color(0xFF0B192C).withValues(alpha: 0.92),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -462,7 +462,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
                                 style: GoogleFonts.outfit(
                                   fontSize: 22,
                                   fontWeight: FontWeight.w800,
-                                  color: const Color(0xFF1B4332),
+                                  color: const Color(0xFF0F2038),
                                   letterSpacing: 0.8,
                                 ),
                               ),
@@ -471,7 +471,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
                                 style: GoogleFonts.inter(
                                   fontSize: 9.5,
                                   fontWeight: FontWeight.w800,
-                                  color: const Color(0xFF2D6A4F),
+                                  color: const Color(0xFF1E3A60),
                                   letterSpacing: 0.8,
                                 ),
                               ),

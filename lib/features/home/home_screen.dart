@@ -286,7 +286,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1B4332).withValues(alpha: 0.18),
+            color: const Color(0xFF0F2038).withValues(alpha: 0.18),
             blurRadius: 18,
             offset: const Offset(0, 6),
           ),
@@ -311,9 +311,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      const Color(0xFF1B2A1E).withValues(alpha: 0.85),
-                      const Color(0xFF2C7A39).withValues(alpha: 0.70),
-                      const Color(0xFF1B2A1E).withValues(alpha: 0.90),
+                      const Color(0xFF0F2038).withValues(alpha: 0.88),
+                      const Color(0xFF1E3A60).withValues(alpha: 0.72),
+                      const Color(0xFF0B192C).withValues(alpha: 0.92),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -342,8 +342,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    Text('Namaz times available offline', style: GoogleFonts.inter(color: Colors.white70)),
                   ],
                 ),
                 data: (model) {
@@ -479,7 +477,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   style: GoogleFonts.outfit(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w800,
-                                    color: const Color(0xFF1B4332),
+                                    color: const Color(0xFF0F2038),
                                     letterSpacing: 0.8,
                                   ),
                                 ),
@@ -488,7 +486,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   style: GoogleFonts.inter(
                                     fontSize: 9,
                                     fontWeight: FontWeight.w800,
-                                    color: const Color(0xFF2D6A4F),
+                                    color: const Color(0xFF1E3A60),
                                     letterSpacing: 0.8,
                                   ),
                                 ),
@@ -534,7 +532,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: const Color(0xFF0D2818),
+          color: const Color(0xFF0F2038),
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
@@ -564,7 +562,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
       child: Column(
         children: [
-          Icon(icon, color: const Color(0xFF2D6A4F), size: 14),
+          Icon(icon, color: const Color(0xFF1E3A60), size: 14),
           const SizedBox(height: 2),
           Text(
             name,
@@ -572,7 +570,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
           Text(
             time.split(' ').first,
-            style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.w600, color: const Color(0xFF1B4332)),
+            style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.w600, color: const Color(0xFF0F2038)),
           ),
         ],
       ),
@@ -592,9 +590,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 6, 16, 10),
       decoration: BoxDecoration(
-        color: const Color(0xFFF2F8F4),
+        color: const Color(0xFFF2F5FA),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFDCECE2)),
+        border: Border.all(color: const Color(0xFFDCE4F0)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -631,11 +629,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     width: 44,
                     height: 44,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF2E6A4F),
+                      color: const Color(0xFF1E3A60),
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF2E6A4F).withValues(alpha: 0.25),
+                          color: const Color(0xFF1E3A60).withValues(alpha: 0.25),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -655,7 +653,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           style: GoogleFonts.inter(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
-                            color: const Color(0xFF2D6A4F),
+                            color: const Color(0xFF1E3A60),
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -664,7 +662,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           style: GoogleFonts.outfit(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: const Color(0xFF1B4332),
+                            color: const Color(0xFF0F2038),
                           ),
                         ),
                         const SizedBox(height: 6),
@@ -676,8 +674,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 child: LinearProgressIndicator(
                                   value: progress,
                                   minHeight: 5,
-                                  backgroundColor: const Color(0xFFD4E8DC),
-                                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF2D6A4F)),
+                                  backgroundColor: const Color(0xFFE2E8F0),
+                                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF1E3A60)),
                                 ),
                               ),
                             ),
@@ -687,7 +685,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               style: GoogleFonts.inter(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w700,
-                                color: const Color(0xFF2D6A4F),
+                                color: const Color(0xFF1E3A60),
                               ),
                             ),
                           ],
@@ -707,7 +705,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1B4332),
+                      backgroundColor: const Color(0xFF1E3A60),
                       foregroundColor: Colors.white,
                       elevation: 2,
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -758,10 +756,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       style: GoogleFonts.inter(
                         fontSize: 12.5,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF2D6A4F),
+                        color: const Color(0xFF1E3A60),
                       ),
                     ),
-                    const Icon(Icons.chevron_right_rounded, size: 16, color: Color(0xFF2D6A4F)),
+                    const Icon(Icons.chevron_right_rounded, size: 16, color: Color(0xFF1E3A60)),
                   ],
                 ),
               ),
@@ -777,7 +775,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   title: 'Surah Index',
                   subtitle: '114 Surahs with Audio & Translations',
                   icon: Icons.menu_book_rounded,
-                  accentColor: const Color(0xFF2E7D32),
+                  accentColor: const Color(0xFF1E3A60),
                   onTap: () => context.goNamed('simple-quran', queryParameters: {'tab': '0'}),
                 ),
               ),
@@ -962,7 +960,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   style: GoogleFonts.outfit(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF1B4332),
+                    color: const Color(0xFF0F2038),
                     height: 1.2,
                   ),
                   maxLines: 1,
@@ -995,7 +993,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       margin: const EdgeInsets.fromLTRB(16, 8, 16, 6),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF0D3B26), Color(0xFF165B37), Color(0xFF0F2F1E)],
+          colors: [Color(0xFF0F2038), Color(0xFF162D4A), Color(0xFF0B192C)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -1003,7 +1001,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.45), width: 1.4),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0D3B26).withValues(alpha: 0.35),
+            color: const Color(0xFF0F2038).withValues(alpha: 0.35),
             blurRadius: 20,
             offset: const Offset(0, 6),
           ),
@@ -1059,7 +1057,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ));
                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                           content: Text('Copy verse'),
-                          backgroundColor: Color(0xFF1B4332),
+                          backgroundColor: Color(0xFF0F2038),
                           behavior: SnackBarBehavior.floating,
                           duration: Duration(seconds: 2),
                         ));
@@ -1106,14 +1104,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.25)),
               ),
               child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                Row(children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                    decoration: BoxDecoration(color: const Color(0xFFD4AF37).withValues(alpha: 0.18), borderRadius: BorderRadius.circular(6)),
-                    child: Text('English Translation', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.bold, color: const Color(0xFFD4AF37))),
-                  ),
-                ]),
-                const SizedBox(height: 8),
                 Text(verse.english, style: GoogleFonts.inter(fontSize: 13.5, color: const Color(0xFFD4EDE4), height: 1.65, fontStyle: FontStyle.italic), textAlign: TextAlign.left),
               ]),
             ),
@@ -1140,9 +1130,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       boxShadow: [BoxShadow(color: const Color(0xFFD4AF37).withValues(alpha: 0.3), blurRadius: 6, offset: const Offset(0, 2))],
                     ),
                     child: Row(mainAxisSize: MainAxisSize.min, children: [
-                      Text('Read Surah', style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF0D3B26))),
+                      Text('Read Surah', style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF0F2038))),
                       const SizedBox(width: 4),
-                      const Icon(Icons.arrow_forward_rounded, size: 13, color: Color(0xFF0D3B26)),
+                      const Icon(Icons.arrow_forward_rounded, size: 13, color: Color(0xFF0F2038)),
                     ]),
                   ),
                 ),

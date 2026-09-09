@@ -5,23 +5,23 @@ import 'package:google_fonts/google_fonts.dart';
 class AppTheme {
   AppTheme._();
 
-  // ── Color Palette: Meadow Jade & Warm Amber ────────────────────────────────
-  static const Color primary        = Color(0xFF3FA34D);   // Meadow Jade Green
-  static const Color primaryLight   = Color(0xFF56BA64);   // Fresh Mint Jade
-  static const Color primaryDark    = Color(0xFF2C7A39);   // Deep Meadow
-  static const Color primarySurface = Color(0xFFEAF6EC);   // Soft Jade Tint
-  static const Color gold           = Color(0xFFF59E0B);   // Warm Radiant Amber
-  static const Color goldLight      = Color(0xFFFBBF24);   // Light Amber
-  static const Color goldDark       = Color(0xFFD97706);   // Deep Amber
+  // ── Color Palette: Royal Midnight Sapphire & Brushed Gold ─────────────────
+  static const Color primary        = Color(0xFF1E3A60);   // Deep Royal Sapphire
+  static const Color primaryLight   = Color(0xFF2563EB);   // Luminous Sapphire Blue
+  static const Color primaryDark    = Color(0xFF0F2038);   // Midnight Sapphire
+  static const Color primarySurface = Color(0xFFEEF4FC);   // Soft Sapphire Tint
+  static const Color gold           = Color(0xFFD4AF37);   // Radiant Brushed Gold
+  static const Color goldLight      = Color(0xFFFBBF24);   // Light Amber Gold
+  static const Color goldDark       = Color(0xFFB8860B);   // Antique Gold
   static const Color goldSurface    = Color(0xFFFEF3C7);   // Soft Amber Tint
   static const Color surface        = Color(0xFFFFFFFF);   // Pure Ivory Surface
-  static const Color background     = Color(0xFFFAF7F2);   // Soft Cream Linen Parchment
+  static const Color background     = Color(0xFFFAF9F6);   // Soft Cream Linen Parchment
   static const Color cardBg         = Color(0xFFFFFFFF);   // Clean Elevated Card Surface
-  static const Color cardBgSecondary= Color(0xFFF5EFE6);   // Warm Parchment Card
-  static const Color textPrimary    = Color(0xFF1B2A1E);   // Deep Forest Charcoal
-  static const Color textSecondary  = Color(0xFF4B5E50);   // Warm Olive Slate
-  static const Color textMuted      = Color(0xFF8D9E92);   // Warm Khaki Taupe
-  static const Color divider        = Color(0xFFE8E1D2);   // Warm Linen Border
+  static const Color cardBgSecondary= Color(0xFFF3F5F9);   // Cool Parchment Card
+  static const Color textPrimary    = Color(0xFF0F172A);   // Deep Slate Charcoal
+  static const Color textSecondary  = Color(0xFF334155);   // Slate
+  static const Color textMuted      = Color(0xFF64748B);   // Muted Slate
+  static const Color divider        = Color(0xFFE2E8F0);   // Light Slate Border
   static const Color error          = Color(0xFFE53E3E);
 
   // ── Arabic font size ──────────────────────────────────────────────────────

@@ -326,7 +326,7 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
                   onChanged: (val) => setState(() => _searchQuery = val),
                   decoration: InputDecoration(
                     hintText: 'Search saved bookmarks...',
-                    prefixIcon: const Icon(Icons.search, color: Color(0xFF2D6A4F)),
+                    prefixIcon: const Icon(Icons.search, color: Color(0xFF1E3A60)),
                     filled: true,
                     fillColor: Colors.white,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -336,7 +336,7 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFE0EAE3)),
+                      borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
                     ),
                   ),
                 ),
@@ -344,7 +344,7 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
 
               Expanded(
                 child: _loading
-                    ? const Center(child: CircularProgressIndicator(color: Color(0xFF1B4332)))
+                    ? const Center(child: CircularProgressIndicator(color: Color(0xFF1E3A60)))
                     : filteredBookmarks.isEmpty
                         ? Center(
                             child: Padding(
@@ -418,7 +418,7 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
                                             height: 44,
                                             decoration: BoxDecoration(
                                               gradient: const LinearGradient(
-                                                colors: [Color(0xFF1B4332), Color(0xFF2C7A39)],
+                                                colors: [Color(0xFF0F2038), Color(0xFF1E3A60)],
                                                 begin: Alignment.topLeft,
                                                 end: Alignment.bottomRight,
                                               ),
@@ -503,7 +503,7 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
                               height: 36,
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
-                                  colors: [Color(0xFF1B4332), Color(0xFF2C7A39)],
+                                  colors: [Color(0xFF0F2038), Color(0xFF1E3A60)],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),

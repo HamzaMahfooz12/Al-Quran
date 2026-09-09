@@ -205,8 +205,6 @@ class LocationSearchService {
       }
     }
 
-    if (pos == null) return null;
-
     // Format coordinates as a short display label (always shown as subtitle)
     final latStr = pos.latitude.toStringAsFixed(5);
     final lonStr = pos.longitude.toStringAsFixed(5);

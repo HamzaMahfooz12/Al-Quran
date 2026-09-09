@@ -80,7 +80,7 @@ class MushafBottomControlBar extends StatelessWidget {
                           padding: const EdgeInsets.all(4),
                           decoration: isAutoScrolling
                               ? BoxDecoration(
-                                  color: const Color(0xFF3FA34D).withValues(alpha: 0.18),
+                                  color: const Color(0xFF1E3A60).withValues(alpha: 0.15),
                                   shape: BoxShape.circle,
                                 )
                               : null,
@@ -88,7 +88,7 @@ class MushafBottomControlBar extends StatelessWidget {
                             isAutoScrolling
                                 ? Icons.pause_circle_filled_rounded
                                 : Icons.keyboard_arrow_down_rounded,
-                            color: isAutoScrolling ? const Color(0xFF2C7A39) : const Color(0xFF2C3E50),
+                            color: isAutoScrolling ? const Color(0xFF1E3A60) : const Color(0xFF2C3E50),
                             size: 26,
                           ),
                         ),
@@ -98,7 +98,7 @@ class MushafBottomControlBar extends StatelessWidget {
                           style: GoogleFonts.inter(
                             fontSize: 11,
                             fontWeight: isAutoScrolling ? FontWeight.w700 : FontWeight.w600,
-                            color: isAutoScrolling ? const Color(0xFF2C7A39) : const Color(0xFF2C3E50),
+                            color: isAutoScrolling ? const Color(0xFF1E3A60) : const Color(0xFF2C3E50),
                           ),
                         ),
                       ],
@@ -117,7 +117,7 @@ class MushafBottomControlBar extends StatelessWidget {
                     height: 58,
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF2C7A39), Color(0xFF3FA34D)],
+                        colors: [Color(0xFF0F2038), Color(0xFF1E3A60)],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                       ),
@@ -125,7 +125,7 @@ class MushafBottomControlBar extends StatelessWidget {
                       border: Border.all(color: Colors.white, width: 3.5),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF3FA34D).withValues(alpha: 0.4),
+                          color: const Color(0xFF1E3A60).withValues(alpha: 0.4),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
@@ -166,7 +166,7 @@ class MushafBottomControlBar extends StatelessWidget {
                           padding: const EdgeInsets.all(4),
                           decoration: isMarkMistakesMode
                               ? BoxDecoration(
-                                  color: const Color(0xFF3FA34D).withValues(alpha: 0.18),
+                                  color: const Color(0xFF1E3A60).withValues(alpha: 0.15),
                                   shape: BoxShape.circle,
                                 )
                               : null,
@@ -174,7 +174,7 @@ class MushafBottomControlBar extends StatelessWidget {
                             isMarkMistakesMode
                                 ? Icons.edit_note_rounded
                                 : Icons.visibility_outlined,
-                            color: isMarkMistakesMode ? const Color(0xFF2C7A39) : const Color(0xFF2C3E50),
+                            color: isMarkMistakesMode ? const Color(0xFF1E3A60) : const Color(0xFF2C3E50),
                             size: 26,
                           ),
                         ),
@@ -184,7 +184,7 @@ class MushafBottomControlBar extends StatelessWidget {
                           style: GoogleFonts.inter(
                             fontSize: 11,
                             fontWeight: isMarkMistakesMode ? FontWeight.w700 : FontWeight.w600,
-                            color: isMarkMistakesMode ? const Color(0xFF2C7A39) : const Color(0xFF2C3E50),
+                            color: isMarkMistakesMode ? const Color(0xFF1E3A60) : const Color(0xFF2C3E50),
                           ),
                         ),
                       ],

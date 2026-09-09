@@ -45,9 +45,9 @@ class _MainShellState extends ConsumerState<MainShell> {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: const Color(0xFFFFFFFF),
-          border: const Border(top: BorderSide(color: Color(0xFFE8E1D2), width: 1.0)),
+          border: const Border(top: BorderSide(color: Color(0xFFE2E8F0), width: 1.0)),
           boxShadow: [
-            BoxShadow(color: const Color(0xFF1B2A1E).withValues(alpha: 0.04), blurRadius: 10, offset: const Offset(0, -2)),
+            BoxShadow(color: const Color(0xFF0F172A).withValues(alpha: 0.04), blurRadius: 10, offset: const Offset(0, -2)),
           ],
         ),
         child: SafeArea(
@@ -100,7 +100,7 @@ class _NavItem extends StatelessWidget {
               child: Icon(
                 isActive ? activeIcon : icon,
                 key: ValueKey(isActive),
-                color: isActive ? const Color(0xFF3FA34D) : const Color(0xFF8D9E92),
+                color: isActive ? const Color(0xFF1E3A60) : const Color(0xFF64748B),
                 size: 24,
               ),
             ),
@@ -110,7 +110,7 @@ class _NavItem extends StatelessWidget {
               style: GoogleFonts.inter(
                 fontSize: 11,
                 fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                color: isActive ? const Color(0xFF2C7A39) : const Color(0xFF8D9E92),
+                color: isActive ? const Color(0xFF1E3A60) : const Color(0xFF64748B),
               ),
             ),
             const SizedBox(height: 3),
@@ -119,7 +119,7 @@ class _NavItem extends StatelessWidget {
               width: 16,
               height: 3,
               decoration: BoxDecoration(
-                color: isActive ? const Color(0xFFF59E0B) : Colors.transparent,
+                color: isActive ? const Color(0xFFD4AF37) : Colors.transparent,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -138,9 +138,9 @@ class _MoreScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final bottomPad = MediaQuery.paddingOf(context).bottom;
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF7F2),
+      backgroundColor: const Color(0xFFFAF9F6),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFAF7F2),
+        backgroundColor: const Color(0xFFFAF9F6),
         elevation: 0,
         centerTitle: true,
         automaticallyImplyLeading: false,
@@ -149,7 +149,7 @@ class _MoreScreen extends ConsumerWidget {
           style: GoogleFonts.outfit(
             fontSize: 19,
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF1B4332),
+            color: const Color(0xFF0F2038),
           ),
         ),
       ),
@@ -166,7 +166,7 @@ class _MoreScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(22),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF1B4332).withValues(alpha: 0.2),
+                    color: const Color(0xFF0F2038).withValues(alpha: 0.2),
                     blurRadius: 14,
                     offset: const Offset(0, 4),
                   ),
@@ -191,8 +191,8 @@ class _MoreScreen extends ConsumerWidget {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              const Color(0xFF0D2818).withValues(alpha: 0.90),
-                              const Color(0xFF1B4332).withValues(alpha: 0.70),
+                              const Color(0xFF0F2038).withValues(alpha: 0.92),
+                              const Color(0xFF1E3A60).withValues(alpha: 0.75),
                               Colors.transparent,
                             ],
                             stops: const [0.0, 0.55, 1.0],
@@ -246,7 +246,7 @@ class _MoreScreen extends ConsumerWidget {
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFF2D6A4F),
+                                    color: const Color(0xFF1E3A60),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Text(
@@ -280,7 +280,7 @@ class _MoreScreen extends ConsumerWidget {
                 width: 14,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF2D6A4F),
+                  color: const Color(0xFF1E3A60),
                   borderRadius: BorderRadius.circular(3),
                 ),
               ),
@@ -445,7 +445,7 @@ class _MoreTile extends StatelessWidget {
                         style: GoogleFonts.outfit(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFF1B2A1E),
+                          color: const Color(0xFF0F172A),
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -453,7 +453,7 @@ class _MoreTile extends StatelessWidget {
                         subtitle,
                         style: GoogleFonts.inter(
                           fontSize: 11.5,
-                          color: const Color(0xFF4B5E50),
+                          color: const Color(0xFF334155),
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

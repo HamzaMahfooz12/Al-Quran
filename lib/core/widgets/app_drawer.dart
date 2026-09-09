@@ -16,7 +16,7 @@ class AppDrawer extends StatelessWidget {
       backgroundColor: AppTheme.background,
       child: Column(
         children: [
-          // ── Meadow Jade & Warm Amber Header ──
+          // ── Royal Midnight Sapphire & Brushed Gold Header ──
           Container(
             width: double.infinity,
             padding: EdgeInsets.fromLTRB(20, 48 + MediaQuery.paddingOf(context).top * 0.3, 20, 20),
@@ -24,7 +24,7 @@ class AppDrawer extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Color(0xFF2C7A39), Color(0xFF3FA34D)],
+                colors: [Color(0xFF0F2038), Color(0xFF1E3A60)],
               ),
             ),
             child: Column(
@@ -35,7 +35,7 @@ class AppDrawer extends StatelessWidget {
                   height: 56,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0xFFF59E0B), width: 2.0),
+                    border: Border.all(color: const Color(0xFFD4AF37), width: 2.0),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.25),
@@ -198,7 +198,7 @@ class AppDrawer extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.verified_rounded, color: Color(0xFF2D6A4F), size: 18),
+                const Icon(Icons.verified_rounded, color: Color(0xFF2563EB), size: 18),
                 const SizedBox(width: 8),
                 Text(
                   'Hifz ul Quran • ${AppVersionService.displayVersion}',

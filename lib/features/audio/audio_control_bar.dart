@@ -90,11 +90,11 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                 Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEAF6EC),
+                    color: const Color(0xFFEEF4FC),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(Icons.speed_rounded,
-                      color: Color(0xFF2C7A39), size: 20),
+                      color: Color(0xFF1E3A60), size: 20),
                 ),
                 const SizedBox(width: 10),
                 Text(
@@ -102,7 +102,7 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                   style: GoogleFonts.outfit(
                     fontSize: 17,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF1B2A1E),
+                    color: const Color(0xFF0F2038),
                   ),
                 ),
               ],
@@ -120,20 +120,20 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                       fontWeight: FontWeight.bold,
                       fontSize: 13.5,
                       color:
-                          isSelected ? Colors.white : const Color(0xFF1B4332),
+                          isSelected ? Colors.white : const Color(0xFF0F2038),
                     ),
                   ),
                   selected: isSelected,
-                  selectedColor: const Color(0xFF2C7A39),
-                  backgroundColor: const Color(0xFFF2F8F4),
+                  selectedColor: const Color(0xFF1E3A60),
+                  backgroundColor: const Color(0xFFEEF4FC),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                     side: BorderSide(
                       color: isSelected
-                          ? const Color(0xFF2C7A39)
-                          : const Color(0xFFD3E7D7),
+                          ? const Color(0xFF1E3A60)
+                          : const Color(0xFFBFDBFE),
                     ),
                   ),
                   onSelected: (selected) {
@@ -200,11 +200,11 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                     Container(
                       padding: const EdgeInsets.all(7),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFEAF6EC),
+                        color: const Color(0xFFEEF4FC),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: const Icon(Icons.record_voice_over_rounded,
-                          color: Color(0xFF2C7A39), size: 22),
+                          color: Color(0xFF1E3A60), size: 22),
                     ),
                     const SizedBox(width: 10),
                     Column(
@@ -215,7 +215,7 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                           style: GoogleFonts.outfit(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: const Color(0xFF1B2A1E),
+                            color: const Color(0xFF0F2038),
                           ),
                         ),
                         Text(
@@ -237,23 +237,23 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                     hintStyle: GoogleFonts.inter(
                         fontSize: 13.5, color: const Color(0xFF9CA3AF)),
                     prefixIcon: const Icon(Icons.search_rounded,
-                        color: Color(0xFF2C7A39), size: 20),
+                        color: Color(0xFF1E3A60), size: 20),
                     filled: true,
-                    fillColor: const Color(0xFFF4FAF5),
+                    fillColor: const Color(0xFFF8FAFC),
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 14, vertical: 10),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: Color(0xFFD6E8DB)),
+                      borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: Color(0xFFD6E8DB)),
+                      borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
                       borderSide: const BorderSide(
-                          color: Color(0xFF2C7A39), width: 1.5),
+                          color: Color(0xFF1E3A60), width: 1.5),
                     ),
                   ),
                 ),
@@ -263,7 +263,7 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                 Expanded(
                   child: _loadingReciters && recitersList.isEmpty
                       ? const Center(
-                          child: CircularProgressIndicator(color: Color(0xFF2C7A39)))
+                          child: CircularProgressIndicator(color: Color(0xFF1E3A60)))
                       : ListView.separated(
                           itemCount: filtered.length,
                           separatorBuilder: (c, i) => const Divider(
@@ -290,8 +290,8 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                           height: 38,
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? const Color(0xFF2C7A39)
-                                : const Color(0xFFEAF6EC),
+                                ? const Color(0xFF1E3A60)
+                                : const Color(0xFFEEF4FC),
                             shape: BoxShape.circle,
                           ),
                           child: Center(
@@ -302,7 +302,7 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                                 fontWeight: FontWeight.bold,
                                 color: isSelected
                                     ? Colors.white
-                                    : const Color(0xFF2C7A39),
+                                    : const Color(0xFF1E3A60),
                               ),
                             ),
                           ),
@@ -314,7 +314,7 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                             fontWeight: isSelected
                                 ? FontWeight.bold
                                 : FontWeight.w600,
-                            color: const Color(0xFF1B2A1E),
+                            color: const Color(0xFF0F2038),
                           ),
                         ),
                         subtitle: Text(
@@ -325,7 +325,7 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                         ),
                         trailing: isSelected
                             ? const Icon(Icons.check_circle_rounded,
-                                color: Color(0xFF2C7A39), size: 22)
+                                color: Color(0xFF1E3A60), size: 22)
                             : null,
                         onTap: () async {
                           HapticFeedback.lightImpact();
@@ -375,15 +375,15 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [
-              Color(0xFF1E5B2E), // Rich Islamic Forest Green
-              Color(0xFF134221), // Deep Emerald Shadow
+              Color(0xFF1E3A60), // Midnight Sapphire
+              Color(0xFF0F2038), // Deep Royal Navy Shadow
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
-            color: Colors.white.withValues(alpha: 0.16),
+            color: const Color(0xFFD4AF37).withValues(alpha: 0.35),
             width: 1.1,
           ),
           boxShadow: [
@@ -393,7 +393,7 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
               offset: const Offset(0, 5),
             ),
             BoxShadow(
-              color: const Color(0xFF2C7A39).withValues(alpha: 0.25),
+              color: const Color(0xFF1E3A60).withValues(alpha: 0.25),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -495,7 +495,7 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                           children: [
                             const Icon(
                               Icons.record_voice_over_rounded,
-                              color: Color(0xFFD4ECD8),
+                              color: Color(0xFFC5D5E8),
                               size: 13,
                             ),
                             const SizedBox(width: 4),
@@ -505,7 +505,7 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                                 style: GoogleFonts.inter(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
-                                  color: const Color(0xFFD4ECD8),
+                                  color: const Color(0xFFC5D5E8),
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -514,7 +514,7 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                             const SizedBox(width: 2),
                             const Icon(
                               Icons.keyboard_arrow_down_rounded,
-                              color: Color(0xFFD4ECD8),
+                              color: Color(0xFFC5D5E8),
                               size: 15,
                             ),
                           ],
@@ -591,7 +591,7 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                                       height: 18,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2.2,
-                                        color: Color(0xFF134221),
+                                        color: Color(0xFF0F2038),
                                       ),
                                     )
                                   : Icon(
@@ -599,7 +599,7 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                                           ? Icons.pause_rounded
                                           : Icons.play_arrow_rounded,
                                       size: 24,
-                                      color: const Color(0xFF134221),
+                                      color: const Color(0xFF0F2038),
                                     ),
                             ),
                           ),
@@ -696,7 +696,7 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                                 style: GoogleFonts.inter(
                                   fontSize: 10.5,
                                   fontWeight: FontWeight.w600,
-                                  color: const Color(0xFFD4ECD8),
+                                  color: const Color(0xFFC5D5E8),
                                 ),
                               ),
                               Text(
@@ -704,7 +704,7 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                                 style: GoogleFonts.inter(
                                   fontSize: 10.5,
                                   fontWeight: FontWeight.w600,
-                                  color: const Color(0xFFD4ECD8),
+                                  color: const Color(0xFFC5D5E8),
                                 ),
                               ),
                             ],

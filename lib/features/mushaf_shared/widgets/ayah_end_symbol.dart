@@ -17,7 +17,7 @@ class AyahEndSymbol extends StatelessWidget {
     required this.ayahNumber,
     this.waqfMark = '',
     this.isRukuEnd = false,
-    this.color = const Color(0xFF2C7A39),
+    this.color = const Color(0xFF1E3A60),
     this.circleSize = 19.0,
   });
 
@@ -78,7 +78,7 @@ class AyahEndSymbol extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   color: isRukuEnd
                       ? const Color(0xFF8B0000)
-                      : (topMarkText == 'لا' ? const Color(0xFFC62828) : const Color(0xFF1B4332)),
+                      : (topMarkText == 'لا' ? const Color(0xFFC62828) : const Color(0xFF0F2038)),
                   height: 1.0,
                 ),
               ),

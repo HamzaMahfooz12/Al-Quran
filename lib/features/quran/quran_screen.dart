@@ -217,15 +217,15 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
     final isQueryActive = _query.isNotEmpty;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF7F2),
+      backgroundColor: const Color(0xFFFAF9F6),
       drawer: const AppDrawer(),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFAF7F2),
+        backgroundColor: const Color(0xFFFAF9F6),
         elevation: 0,
         centerTitle: true,
         leading: Builder(
           builder: (ctx) => IconButton(
-            icon: const Icon(Icons.menu_rounded, color: Color(0xFF3FA34D), size: 26),
+            icon: const Icon(Icons.menu_rounded, color: Color(0xFF1E3A60), size: 26),
             onPressed: () => Scaffold.of(ctx).openDrawer(),
           ),
         ),
@@ -234,12 +234,12 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
           style: GoogleFonts.outfit(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF1B2A1E),
+            color: const Color(0xFF0F172A),
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.bookmark_border_rounded, color: Color(0xFF3FA34D), size: 24),
+            icon: const Icon(Icons.bookmark_border_rounded, color: Color(0xFF1E3A60), size: 24),
             tooltip: 'Bookmarks & Sajdas',
             onPressed: () => context.goNamed('bookmarks'),
           ),
@@ -274,13 +274,13 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: _query.isNotEmpty ? const Color(0xFF3FA34D) : const Color(0xFFE8E1D2),
+          color: _query.isNotEmpty ? const Color(0xFF1E3A60) : const Color(0xFFE2E8F0),
           width: _query.isNotEmpty ? 1.4 : 1.0,
         ),
         boxShadow: [
           BoxShadow(
             color: _query.isNotEmpty
-                ? const Color(0xFF3FA34D).withValues(alpha: 0.10)
+                ? const Color(0xFF1E3A60).withValues(alpha: 0.10)
                 : Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 3),
@@ -292,18 +292,18 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
         style: GoogleFonts.inter(
           fontSize: 14.5,
           fontWeight: FontWeight.w500,
-          color: const Color(0xFF1B2A1E),
+          color: const Color(0xFF0F172A),
         ),
         decoration: InputDecoration(
           hintText: 'Search verses, Surahs, keywords (e.g. 2:255, Baqarah, mercy)...',
           hintStyle: GoogleFonts.inter(
             fontSize: 13,
-            color: const Color(0xFF8D9E92),
+            color: const Color(0xFF94A3B8),
           ),
-          prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF3FA34D), size: 22),
+          prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF1E3A60), size: 22),
           suffixIcon: _query.isNotEmpty
               ? IconButton(
-                  icon: const Icon(Icons.close_rounded, color: Color(0xFF4B5E50), size: 18),
+                  icon: const Icon(Icons.close_rounded, color: Color(0xFF64748B), size: 18),
                   tooltip: 'Clear Search',
                   onPressed: () {
                     _searchCtrl.clear();
@@ -336,10 +336,10 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: const BoxDecoration(
-                color: Color(0xFFEAF6EC),
+                color: Color(0xFFEEF4FC),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.search_off_rounded, size: 36, color: Color(0xFF3FA34D)),
+              child: const Icon(Icons.search_off_rounded, size: 36, color: Color(0xFF1E3A60)),
             ),
             const SizedBox(height: 14),
             Text(
@@ -421,7 +421,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                 height: 24,
                 child: CircularProgressIndicator(
                   strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF3FA34D)),
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF1E3A60)),
                 ),
               ),
             ),
@@ -443,11 +443,11 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFFE8E1D2)),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
             ),
             child: Text(
               'No verses containing "$_query" in Arabic or translation.',
-              style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF8D9E92)),
+              style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF94A3B8)),
             ),
           ),
       ],
@@ -457,14 +457,14 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
   Widget _suggestionHeader(String title, IconData icon) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: const Color(0xFF2C7A39)),
+        Icon(icon, size: 16, color: const Color(0xFF1E3A60)),
         const SizedBox(width: 6),
         Text(
           title,
           style: GoogleFonts.outfit(
             fontSize: 13.5,
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF2C7A39),
+            color: const Color(0xFF1E3A60),
             letterSpacing: 0.2,
           ),
         ),
@@ -560,9 +560,9 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEAF6EC),
+                    color: const Color(0xFFEEF4FC),
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: const Color(0xFF56BA64), width: 1.2),
+                    border: Border.all(color: const Color(0xFFBFDBFE), width: 1.2),
                   ),
                   child: Center(
                     child: Text(
@@ -570,7 +570,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                       style: GoogleFonts.outfit(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xFF2C7A39),
+                        color: const Color(0xFF1E3A60),
                       ),
                     ),
                   ),
@@ -654,20 +654,20 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3.5),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFEAF6EC),
+                        color: const Color(0xFFEEF4FC),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.menu_book_rounded, size: 12, color: Color(0xFF2C7A39)),
+                          const Icon(Icons.menu_book_rounded, size: 12, color: Color(0xFF1E3A60)),
                           const SizedBox(width: 4),
                           Text(
                             'Surah ${r.surahInfo.nameTransliteration} (${r.ayah.surah}:${r.ayah.ayahNumber})',
                             style: GoogleFonts.inter(
                               fontSize: 11.5,
                               fontWeight: FontWeight.w700,
-                              color: const Color(0xFF2C7A39),
+                              color: const Color(0xFF1E3A60),
                             ),
                           ),
                         ],
@@ -773,11 +773,11 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                     width: 44,
                     height: 44,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF3FA34D),
+                      color: const Color(0xFF1E3A60),
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF3FA34D).withValues(alpha: 0.25),
+                          color: const Color(0xFF1E3A60).withValues(alpha: 0.25),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -797,7 +797,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                           style: GoogleFonts.inter(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
-                            color: const Color(0xFF2C7A39),
+                            color: const Color(0xFF1E3A60),
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -806,7 +806,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                           style: GoogleFonts.outfit(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: const Color(0xFF1B2A1E),
+                            color: const Color(0xFF0F172A),
                           ),
                         ),
                         Text(
@@ -814,7 +814,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: const Color(0xFF4B5E50),
+                            color: const Color(0xFF64748B),
                           ),
                         ),
                         const SizedBox(height: 6),
@@ -826,8 +826,8 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                                 child: LinearProgressIndicator(
                                   value: progress,
                                   minHeight: 5,
-                                  backgroundColor: const Color(0xFFEAF6EC),
-                                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF3FA34D)),
+                                  backgroundColor: const Color(0xFFEEF4FC),
+                                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF1E3A60)),
                                 ),
                               ),
                             ),
@@ -837,7 +837,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                               style: GoogleFonts.inter(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w700,
-                                color: const Color(0xFF2C7A39),
+                                color: const Color(0xFF1E3A60),
                               ),
                             ),
                           ],
@@ -857,7 +857,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3FA34D),
+                      backgroundColor: const Color(0xFF1E3A60),
                       foregroundColor: Colors.white,
                       elevation: 2,
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -868,7 +868,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                       children: [
                         Text('Resume', style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.bold)),
                         const SizedBox(width: 4),
-                        const Icon(Icons.arrow_forward_ios_rounded, size: 11),
+                        const Icon(Icons.arrow_forward_rounded, size: 14),
                       ],
                     ),
                   ),
@@ -894,7 +894,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
               style: GoogleFonts.outfit(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF1B2A1E),
+                color: const Color(0xFF0F172A),
               ),
             ),
             InkWell(
@@ -906,10 +906,10 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                     style: GoogleFonts.inter(
                       fontSize: 12.5,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF2C7A39),
+                      color: const Color(0xFF1E3A60),
                     ),
                   ),
-                  const Icon(Icons.chevron_right_rounded, size: 16, color: Color(0xFF2C7A39)),
+                  const Icon(Icons.chevron_right_rounded, size: 16, color: Color(0xFF1E3A60)),
                 ],
               ),
             ),
@@ -925,7 +925,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                 title: 'Surah Index',
                 subtitle: '114 Surahs with Audio & Translations',
                 icon: Icons.menu_book_rounded,
-                accentColor: const Color(0xFF3FA34D),
+                accentColor: const Color(0xFF1E3A60),
                 onTap: () => context.goNamed('simple-quran', queryParameters: {'tab': '0'}),
               ),
             ),
@@ -1003,7 +1003,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                 title: 'Full Surah Audio',
                 subtitle: 'Stream & Download 114 Surahs from 172+ Reciters',
                 icon: Icons.headset_mic_rounded,
-                accentColor: const Color(0xFF2C7A39),
+                accentColor: const Color(0xFF2563EB),
                 onTap: () => context.push('/home/full-surah-audio'),
               ),
             ),

@@ -83,7 +83,7 @@ class _DuasSettingsScreenState extends State<DuasSettingsScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('New Dua successfully added!'),
-                backgroundColor: Color(0xFF2C7A39),
+                backgroundColor: Color(0xFF1E3A60),
                 behavior: SnackBarBehavior.floating,
                 duration: Duration(seconds: 2),
               ),
@@ -99,13 +99,13 @@ class _DuasSettingsScreenState extends State<DuasSettingsScreen> {
     final bottomPad = MediaQuery.paddingOf(context).bottom;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF7F2),
+      backgroundColor: const Color(0xFFFAF9F6),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFAF7F2),
+        backgroundColor: const Color(0xFFFAF9F6),
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF2C7A39), size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF1E3A60), size: 20),
           onPressed: () => context.pop(true),
         ),
         title: Text(
@@ -113,12 +113,12 @@ class _DuasSettingsScreenState extends State<DuasSettingsScreen> {
           style: GoogleFonts.outfit(
             fontSize: 19,
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF1B2A1E),
+            color: const Color(0xFF0F172A),
           ),
         ),
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF2C7A39)))
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFF1E3A60)))
           : ListView(
               padding: EdgeInsets.fromLTRB(16, 8, 16, 32 + bottomPad),
               children: [
@@ -196,7 +196,7 @@ class _DuasSettingsScreenState extends State<DuasSettingsScreen> {
           return Column(
             children: [
               Material(
-                color: isSelected ? const Color(0xFFF0F8F3) : Colors.transparent,
+                color: isSelected ? const Color(0xFFEEF4FC) : Colors.transparent,
                 borderRadius: BorderRadius.circular(18),
                 child: InkWell(
                   onTap: () => _setLanguage(lang['code']!),
@@ -211,7 +211,7 @@ class _DuasSettingsScreenState extends State<DuasSettingsScreen> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: isSelected ? const Color(0xFF2C7A39) : const Color(0xFFD1D5DB),
+                              color: isSelected ? const Color(0xFF1E3A60) : const Color(0xFFD1D5DB),
                               width: isSelected ? 6.5 : 1.5,
                             ),
                           ),
@@ -228,7 +228,7 @@ class _DuasSettingsScreenState extends State<DuasSettingsScreen> {
                                     style: GoogleFonts.outfit(
                                       fontSize: 15,
                                       fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                                      color: isSelected ? const Color(0xFF2C7A39) : const Color(0xFF1B2A1E),
+                                      color: isSelected ? const Color(0xFF1E3A60) : const Color(0xFF0F172A),
                                     ),
                                   ),
                                   if (lang['code'] == 'ur') ...[
@@ -279,14 +279,14 @@ class _DuasSettingsScreenState extends State<DuasSettingsScreen> {
     return Container(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF2C7A39), Color(0xFF1B4332)],
+          colors: [Color(0xFF0F2038), Color(0xFF1E3A60)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2C7A39).withValues(alpha: 0.25),
+            color: const Color(0xFF0F2038).withValues(alpha: 0.25),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -371,14 +371,14 @@ class _DuasSettingsScreenState extends State<DuasSettingsScreen> {
               width: 36,
               height: 36,
               decoration: const BoxDecoration(
-                color: Color(0xFFEAF6EC),
+                color: Color(0xFFEEF4FC),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.menu_book_rounded, color: Color(0xFF2C7A39), size: 18),
+              child: const Icon(Icons.menu_book_rounded, color: Color(0xFF1E3A60), size: 18),
             ),
             title: Text(
               title,
-              style: GoogleFonts.outfit(fontSize: 14.5, fontWeight: FontWeight.bold, color: const Color(0xFF1B2A1E)),
+              style: GoogleFonts.outfit(fontSize: 14.5, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
             ),
             subtitle: Text(
               '$category • $arabic',
@@ -528,11 +528,11 @@ class _AddDuaModalState extends State<_AddDuaModal> {
                       child: DropdownButton<String>(
                         value: _selectedCategory,
                         isExpanded: true,
-                        icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF2C7A39)),
+                        icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF1E3A60)),
                         items: _categories.map((c) {
                           return DropdownMenuItem<String>(
                             value: c,
-                            child: Text(c, style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF1B2A1E))),
+                            child: Text(c, style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF0F172A))),
                           );
                         }).toList(),
                         onChanged: (val) {
@@ -668,7 +668,7 @@ class _AddDuaModalState extends State<_AddDuaModal> {
                     child: ElevatedButton(
                       onPressed: _submit,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2C7A39),
+                        backgroundColor: const Color(0xFF1E3A60),
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         elevation: 2,
@@ -693,10 +693,10 @@ class _AddDuaModalState extends State<_AddDuaModal> {
       hintText: hint,
       hintStyle: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF9E9E9E)),
       filled: true,
-      fillColor: const Color(0xFFFAF7F2),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE8E1D2))),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE8E1D2))),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF2C7A39), width: 1.5)),
+      fillColor: const Color(0xFFFAF9F6),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF1E3A60), width: 1.5)),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
     );
   }

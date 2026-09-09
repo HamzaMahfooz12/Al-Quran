@@ -120,7 +120,7 @@ class _FullSurahAudioPlayerScreenState
     final bottomPad = MediaQuery.paddingOf(context).bottom;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F1A12),
+      backgroundColor: const Color(0xFF081220),
       body: Stack(
         children: [
           // ── 1. Spiritual Dawn Backdrop Image ──
@@ -135,15 +135,15 @@ class _FullSurahAudioPlayerScreenState
             ),
           ),
 
-          // ── 2. Atmospheric Dark Forest Gradient Overlay ──
+          // ── 2. Atmospheric Dark Midnight Gradient Overlay ──
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    const Color(0xFF0F1A12).withValues(alpha: 0.65),
-                    const Color(0xFF1B2A1E).withValues(alpha: 0.85),
-                    const Color(0xFF0A140D).withValues(alpha: 0.95),
+                    const Color(0xFF081220).withValues(alpha: 0.65),
+                    const Color(0xFF0F2038).withValues(alpha: 0.85),
+                    const Color(0xFF050B14).withValues(alpha: 0.95),
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
@@ -206,11 +206,11 @@ class _FullSurahAudioPlayerScreenState
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: const RadialGradient(
-                        colors: [Color(0xFF3FA34D), Color(0xFF1B4332)],
+                        colors: [Color(0xFF1E3A60), Color(0xFF0F2038)],
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF3FA34D).withValues(alpha: 0.45),
+                          color: const Color(0xFF1E3A60).withValues(alpha: 0.45),
                           blurRadius: 30,
                           spreadRadius: 4,
                         ),
@@ -579,11 +579,11 @@ class _FullSurahAudioPlayerScreenState
     return Container(
       decoration: BoxDecoration(
         color: isActive
-            ? const Color(0xFF3FA34D).withValues(alpha: 0.3)
+            ? const Color(0xFF1E3A60).withValues(alpha: 0.5)
             : Colors.white.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: isActive ? const Color(0xFF56BA64) : Colors.white.withValues(alpha: 0.15),
+          color: isActive ? const Color(0xFF2563EB) : Colors.white.withValues(alpha: 0.15),
         ),
       ),
       child: Material(
@@ -721,7 +721,7 @@ class _SurahPickerModalState extends State<_SurahPickerModal> {
                 decoration: InputDecoration(
                   hintText: 'Search Surah...',
                   hintStyle: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF8D9E92)),
-                  prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF3FA34D), size: 20),
+                  prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF1E3A60), size: 20),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                 ),
@@ -889,7 +889,7 @@ class _PlayerReciterPickerModalState extends ConsumerState<_PlayerReciterPickerM
                 decoration: InputDecoration(
                   hintText: 'Search reciters...',
                   hintStyle: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF8D9E92)),
-                  prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF3FA34D), size: 20),
+                  prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF1E3A60), size: 20),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                 ),
@@ -898,20 +898,20 @@ class _PlayerReciterPickerModalState extends ConsumerState<_PlayerReciterPickerM
           ),
           Expanded(
             child: _loading
-                ? const Center(child: CircularProgressIndicator(color: Color(0xFF3FA34D)))
+                ? const Center(child: CircularProgressIndicator(color: Color(0xFF1E3A60)))
                 : ListView.separated(
                     padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
                     itemCount: _filtered.length,
-                    separatorBuilder: (_, _) => const Divider(height: 1, color: Color(0xFFE8E1D2)),
+                    separatorBuilder: (_, _) => const Divider(height: 1, color: Color(0xFFE2E8F0)),
                     itemBuilder: (ctx, idx) {
                       final r = _filtered[idx];
                       final isSelected = widget.selectedReciter?.id == r.id;
                       return ListTile(
                         leading: CircleAvatar(
-                          backgroundColor: isSelected ? const Color(0xFF3FA34D) : const Color(0xFFEAF6EC),
+                          backgroundColor: isSelected ? const Color(0xFF1E3A60) : const Color(0xFFEEF4FC),
                           child: Icon(
                             Icons.person_rounded,
-                            color: isSelected ? Colors.white : const Color(0xFF2C7A39),
+                            color: isSelected ? Colors.white : const Color(0xFF1E3A60),
                             size: 20,
                           ),
                         ),
@@ -920,18 +920,18 @@ class _PlayerReciterPickerModalState extends ConsumerState<_PlayerReciterPickerM
                           style: GoogleFonts.outfit(
                             fontSize: 14.5,
                             fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                            color: isSelected ? const Color(0xFF2C7A39) : const Color(0xFF1B2A1E),
+                            color: isSelected ? const Color(0xFF1E3A60) : const Color(0xFF0F172A),
                           ),
                         ),
                         subtitle: Text(
                           r.arabicName,
                           style: GoogleFonts.amiri(
                             fontSize: 13,
-                            color: const Color(0xFF4B5E50),
+                            color: const Color(0xFF334155),
                           ),
                         ),
                         trailing: isSelected
-                            ? const Icon(Icons.check_circle_rounded, color: Color(0xFF3FA34D), size: 22)
+                            ? const Icon(Icons.check_circle_rounded, color: Color(0xFF1E3A60), size: 22)
                             : null,
                         onTap: () {
                           widget.onSelected(r);
@@ -999,14 +999,14 @@ class _SleepTimerModal extends StatelessWidget {
             return ListTile(
               leading: Icon(
                 isOff ? Icons.timer_off_rounded : Icons.alarm_rounded,
-                color: isOff ? const Color(0xFFE53935) : const Color(0xFF3FA34D),
+                color: isOff ? const Color(0xFFE53935) : const Color(0xFF1E3A60),
               ),
               title: Text(
                 title,
                 style: GoogleFonts.inter(
                   fontSize: 14.5,
                   fontWeight: FontWeight.w600,
-                  color: isOff ? const Color(0xFFE53935) : const Color(0xFF1B2A1E),
+                  color: isOff ? const Color(0xFFE53935) : const Color(0xFF0F2038),
                 ),
               ),
               onTap: () {

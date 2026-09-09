@@ -377,7 +377,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [Color(0xFF2C7A39), Color(0xFF3FA34D)],
+                colors: [Color(0xFF0F2038), Color(0xFF1E3A60)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),

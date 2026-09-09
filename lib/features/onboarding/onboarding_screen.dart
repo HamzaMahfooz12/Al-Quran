@@ -79,7 +79,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1B2A1E),
+      backgroundColor: const Color(0xFF0B1728),
       body: SafeArea(
         child: Column(
           children: [
@@ -217,7 +217,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [Color(0xFF1B4332), Color(0xFF133624)],
+                colors: [Color(0xFF0F2038), Color(0xFF1E3A60)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -545,7 +545,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
     return Container(
       padding: EdgeInsets.fromLTRB(24, 14, 24, 16 + MediaQuery.paddingOf(context).bottom),
       decoration: BoxDecoration(
-        color: const Color(0xFF0A2013),
+        color: const Color(0xFF07101C),
         border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
       ),
       child: Column(
@@ -570,7 +570,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
               onPressed: _onNext,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.gold,
-                foregroundColor: const Color(0xFF0D2818),
+                foregroundColor: const Color(0xFF0F2038),
                 elevation: 4,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),

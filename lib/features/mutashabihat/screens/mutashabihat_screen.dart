@@ -325,7 +325,7 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                         decoration: BoxDecoration(
-                          color: isSelected ? Colors.white.withValues(alpha: 0.25) : const Color(0xFFE8F5E9),
+                          color: isSelected ? Colors.white.withValues(alpha: 0.25) : AppTheme.primarySurface,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -439,7 +439,7 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                             style: GoogleFonts.outfit(
                               fontSize: 11.5,
                               fontWeight: FontWeight.bold,
-                              color: const Color(0xFF1B4332),
+                              color: const Color(0xFF0F2038),
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -447,16 +447,16 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFE8F5E9),
+                              color: const Color(0xFFEEF4FC),
                               borderRadius: BorderRadius.circular(6),
-                              border: Border.all(color: const Color(0xFFA5D6A7), width: 0.8),
+                              border: Border.all(color: const Color(0xFFBFDBFE), width: 0.8),
                             ),
                             child: Text(
                               'Ayah ${group.srcAyah}',
                               style: GoogleFonts.inter(
                                 fontSize: 9.5,
                                 fontWeight: FontWeight.bold,
-                                color: const Color(0xFF1B5E20),
+                                color: const Color(0xFF1E3A60),
                               ),
                             ),
                           ),
@@ -469,7 +469,7 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFE8F5E9),
+                          color: const Color(0xFFEEF4FC),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Row(
@@ -480,11 +480,11 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                               style: GoogleFonts.inter(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
-                                color: const Color(0xFF1B5E20),
+                                color: const Color(0xFF1E3A60),
                               ),
                             ),
                             const SizedBox(width: 2),
-                            const Icon(Icons.chevron_right, size: 13, color: Color(0xFF1B5E20)),
+                            const Icon(Icons.chevron_right, size: 13, color: Color(0xFF1E3A60)),
                           ],
                         ),
                       ),
@@ -495,9 +495,9 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEBF5EE), // Distinct soft emerald canvas
+                    color: const Color(0xFFF0F4FA), // Distinct soft royal sapphire canvas
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: const Color(0xFFA5D6A7), width: 1.2),
+                    border: Border.all(color: const Color(0xFFC5D5E8), width: 1.2),
                   ),
                   child: Text(
                     group.srcArabic ?? '...',
@@ -505,7 +505,7 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                       fontFamily: 'Scheherazade New',
                       fontSize: 19.5,
                       height: 1.85,
-                      color: Color(0xFF0F3825), // Rich deep emerald text
+                      color: Color(0xFF0F2038), // Rich deep sapphire text
                       fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.right,

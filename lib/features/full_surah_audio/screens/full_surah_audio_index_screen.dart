@@ -70,13 +70,13 @@ class _FullSurahAudioIndexScreenState
     final isAudioActive = audioService.currentSurahNumber != null;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF7F2),
+      backgroundColor: const Color(0xFFFAF9F6),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFAF7F2),
+        backgroundColor: const Color(0xFFFAF9F6),
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF2C7A39), size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF1E3A60), size: 20),
           onPressed: () => context.pop(),
         ),
         title: Text(
@@ -84,7 +84,7 @@ class _FullSurahAudioIndexScreenState
           style: GoogleFonts.outfit(
             fontSize: 19,
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF1B2A1E),
+            color: const Color(0xFF0F2038),
           ),
         ),
         actions: [
@@ -94,7 +94,7 @@ class _FullSurahAudioIndexScreenState
               children: [
                 const Icon(
                   Icons.download_for_offline_rounded,
-                  color: Color(0xFF2C7A39),
+                  color: Color(0xFF1E3A60),
                   size: 24,
                 ),
                 if (audioService.downloadedSurahs.isNotEmpty)
@@ -113,7 +113,7 @@ class _FullSurahAudioIndexScreenState
                         style: GoogleFonts.outfit(
                           fontSize: 9.5,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFF1B2A1E),
+                          color: const Color(0xFF0F2038),
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -125,7 +125,7 @@ class _FullSurahAudioIndexScreenState
             onPressed: () => context.push('/home/full-surah-audio/downloads'),
           ),
           IconButton(
-            icon: const Icon(Icons.record_voice_over_rounded, color: Color(0xFF3FA34D), size: 22),
+            icon: const Icon(Icons.record_voice_over_rounded, color: Color(0xFF1E3A60), size: 22),
             tooltip: 'Change Reciter',
             onPressed: () => _openReciterPicker(audioService),
           ),
@@ -156,7 +156,7 @@ class _FullSurahAudioIndexScreenState
                     style: GoogleFonts.outfit(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF1B2A1E),
+                      color: const Color(0xFF0F2038),
                     ),
                   ),
                   Text(
@@ -164,7 +164,7 @@ class _FullSurahAudioIndexScreenState
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF2C7A39),
+                      color: const Color(0xFF1E3A60),
                     ),
                   ),
                 ],
@@ -206,14 +206,14 @@ class _FullSurahAudioIndexScreenState
     return Container(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF2C7A39), Color(0xFF1B4332)],
+          colors: [Color(0xFF1E3A60), Color(0xFF0F2038)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2C7A39).withValues(alpha: 0.25),
+            color: const Color(0xFF1E3A60).withValues(alpha: 0.25),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -306,7 +306,7 @@ class _FullSurahAudioIndexScreenState
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE8E1D2)),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.02),
@@ -320,7 +320,7 @@ class _FullSurahAudioIndexScreenState
         decoration: InputDecoration(
           hintText: 'Search 114 Surahs by name or number...',
           hintStyle: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF9E9E9E)),
-          prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF2C7A39), size: 20),
+          prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF1E3A60), size: 20),
           suffixIcon: _query.isNotEmpty
               ? IconButton(
                   icon: const Icon(Icons.clear_rounded, size: 18),
@@ -378,9 +378,9 @@ class _FullSurahAudioIndexScreenState
                 IslamicStarBadge(
                   number: s.number,
                   size: 38,
-                  borderColor: isPlayingThis ? const Color(0xFFF59E0B) : const Color(0xFF56BA64),
-                  fillColor: isPlayingThis ? const Color(0xFFFEF3C7) : const Color(0xFFEAF6EC),
-                  textColor: isPlayingThis ? const Color(0xFFB45309) : const Color(0xFF2C7A39),
+                  borderColor: isPlayingThis ? const Color(0xFFF59E0B) : const Color(0xFF1E3A60),
+                  fillColor: isPlayingThis ? const Color(0xFFFEF3C7) : const Color(0xFFEEF4FC),
+                  textColor: isPlayingThis ? const Color(0xFFB45309) : const Color(0xFF1E3A60),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -392,14 +392,14 @@ class _FullSurahAudioIndexScreenState
                         style: GoogleFonts.outfit(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFF1B2A1E),
+                          color: const Color(0xFF0F2038),
                         ),
                       ),
                       Text(
                         '${s.nameTranslation} • ${s.ayahCount} Verses • ${s.revelationType}',
                         style: GoogleFonts.inter(
                           fontSize: 11,
-                          color: const Color(0xFF4B5E50),
+                          color: const Color(0xFF64748B),
                         ),
                       ),
                     ],
@@ -428,14 +428,14 @@ class _FullSurahAudioIndexScreenState
                         child: CircularProgressIndicator(
                           value: progress,
                           strokeWidth: 2.5,
-                          valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF3FA34D)),
+                          valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF1E3A60)),
                         ),
                       );
                     }
 
                     if (isDownloaded) {
                       return IconButton(
-                        icon: const Icon(Icons.check_circle_rounded, color: Color(0xFF3FA34D), size: 22),
+                        icon: const Icon(Icons.check_circle_rounded, color: Color(0xFF1E3A60), size: 22),
                         tooltip: 'Downloaded (Tap to delete)',
                         onPressed: () {
                           audioService.deleteDownloadedSurah(s.number, reciter.id);
@@ -458,7 +458,7 @@ class _FullSurahAudioIndexScreenState
                   width: 34,
                   height: 34,
                   decoration: BoxDecoration(
-                    color: isPlayingThis ? const Color(0xFFF59E0B) : const Color(0xFF3FA34D),
+                    color: isPlayingThis ? const Color(0xFFF59E0B) : const Color(0xFF1E3A60),
                     shape: BoxShape.circle,
                   ),
                   child: Center(
@@ -502,14 +502,14 @@ class _FullSurahAudioIndexScreenState
     return Container(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF2C7A39), Color(0xFF1B4332)],
+          colors: [Color(0xFF1E3A60), Color(0xFF0F2038)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2C7A39).withValues(alpha: 0.35),
+            color: const Color(0xFF1E3A60).withValues(alpha: 0.35),
             blurRadius: 14,
             offset: const Offset(0, 4),
           ),
@@ -678,7 +678,7 @@ class _ReciterPickerModalState extends ConsumerState<_ReciterPickerModal> {
                   style: GoogleFonts.outfit(
                     fontSize: 17,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF1B2A1E),
+                    color: const Color(0xFF0F2038),
                   ),
                 ),
                 IconButton(
@@ -692,16 +692,16 @@ class _ReciterPickerModalState extends ConsumerState<_ReciterPickerModal> {
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 10),
             child: Container(
               decoration: BoxDecoration(
-                color: const Color(0xFFFAF7F2),
+                color: const Color(0xFFFAF9F6),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFE8E1D2)),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
               ),
               child: TextField(
                 controller: _filterCtrl,
                 decoration: InputDecoration(
                   hintText: 'Search reciters by name (e.g. Sudais, Alafasy)...',
                   hintStyle: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF8D9E92)),
-                  prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF3FA34D), size: 20),
+                  prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF1E3A60), size: 20),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                 ),
@@ -710,21 +710,21 @@ class _ReciterPickerModalState extends ConsumerState<_ReciterPickerModal> {
           ),
           Expanded(
             child: _loading
-                ? const Center(child: CircularProgressIndicator(color: Color(0xFF3FA34D)))
+                ? const Center(child: CircularProgressIndicator(color: Color(0xFF1E3A60)))
                 : ListView.separated(
                     padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
                     itemCount: _filtered.length,
-                    separatorBuilder: (_, _) => const Divider(height: 1, color: Color(0xFFE8E1D2)),
+                    separatorBuilder: (_, _) => const Divider(height: 1, color: Color(0xFFE2E8F0)),
                     itemBuilder: (ctx, idx) {
                       final r = _filtered[idx];
                       final isSelected = widget.selectedReciter?.id == r.id;
                       return ListTile(
                         contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         leading: CircleAvatar(
-                          backgroundColor: isSelected ? const Color(0xFF3FA34D) : const Color(0xFFEAF6EC),
+                          backgroundColor: isSelected ? const Color(0xFF1E3A60) : const Color(0xFFEEF4FC),
                           child: Icon(
                             Icons.person_rounded,
-                            color: isSelected ? Colors.white : const Color(0xFF2C7A39),
+                            color: isSelected ? Colors.white : const Color(0xFF1E3A60),
                             size: 20,
                           ),
                         ),
@@ -733,18 +733,18 @@ class _ReciterPickerModalState extends ConsumerState<_ReciterPickerModal> {
                           style: GoogleFonts.outfit(
                             fontSize: 14.5,
                             fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                            color: isSelected ? const Color(0xFF2C7A39) : const Color(0xFF1B2A1E),
+                            color: isSelected ? const Color(0xFF1E3A60) : const Color(0xFF0F2038),
                           ),
                         ),
                         subtitle: Text(
                           r.arabicName,
                           style: GoogleFonts.amiri(
                             fontSize: 13,
-                            color: const Color(0xFF4B5E50),
+                            color: const Color(0xFF475569),
                           ),
                         ),
                         trailing: isSelected
-                            ? const Icon(Icons.check_circle_rounded, color: Color(0xFF3FA34D), size: 22)
+                            ? const Icon(Icons.check_circle_rounded, color: Color(0xFF1E3A60), size: 22)
                             : null,
                         onTap: () {
                           widget.onSelected(r);

@@ -160,7 +160,7 @@ class _AyahTafseerModalContentState
             ),
           ],
         ),
-        backgroundColor: const Color(0xFF1B4332),
+        backgroundColor: const Color(0xFF0F2038),
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -605,11 +605,11 @@ class _AyahTafseerModalContentState
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 14, vertical: 8),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFF1B4332)
+                                    color: const Color(0xFF0F2038)
                                         .withValues(alpha: 0.35),
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(
-                                      color: const Color(0xFF4CAF50)
+                                      color: const Color(0xFF2563EB)
                                           .withValues(alpha: 0.4),
                                     ),
                                   ),

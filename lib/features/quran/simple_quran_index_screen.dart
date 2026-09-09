@@ -52,9 +52,9 @@ class IslamicStarBadge extends StatelessWidget {
     super.key,
     required this.number,
     this.size = 40,
-    this.borderColor = const Color(0xFF56BA64),
-    this.fillColor = const Color(0xFFEAF6EC),
-    this.textColor = const Color(0xFF2C7A39),
+    this.borderColor = const Color(0xFFBFDBFE),
+    this.fillColor = const Color(0xFFEEF4FC),
+    this.textColor = const Color(0xFF1E3A60),
   });
 
   @override
@@ -180,26 +180,26 @@ class _SimpleQuranIndexScreenState extends State<SimpleQuranIndexScreen> with Si
     final bottomPad = MediaQuery.paddingOf(context).bottom;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF7F2),
+      backgroundColor: const Color(0xFFFAF9F6),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFAF7F2),
+        backgroundColor: const Color(0xFFFAF9F6),
         elevation: 0,
         title: Text(
           'Quran Index',
           style: GoogleFonts.outfit(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF1B2A1E),
+            color: const Color(0xFF0F172A),
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search_rounded, color: Color(0xFF3FA34D), size: 24),
+            icon: const Icon(Icons.search_rounded, color: Color(0xFF1E3A60), size: 24),
             tooltip: 'Global Quran Search',
             onPressed: () => context.goNamed('search'),
           ),
           IconButton(
-            icon: const Icon(Icons.bookmarks_outlined, color: Color(0xFF3FA34D), size: 24),
+            icon: const Icon(Icons.bookmarks_outlined, color: Color(0xFF1E3A60), size: 24),
             tooltip: 'Bookmarks & Sajdas',
             onPressed: () => context.goNamed('bookmarks'),
           ),
@@ -215,7 +215,7 @@ class _SimpleQuranIndexScreenState extends State<SimpleQuranIndexScreen> with Si
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(28),
-                border: Border.all(color: const Color(0xFFE8E1D2)),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.025),
@@ -232,13 +232,13 @@ class _SimpleQuranIndexScreenState extends State<SimpleQuranIndexScreen> with Si
                       : 'Search 30 Paras / Chapters',
                   hintStyle: GoogleFonts.inter(
                     fontSize: 13,
-                    color: const Color(0xFF8D9E92),
+                    color: const Color(0xFF94A3B8),
                     fontWeight: FontWeight.w400,
                   ),
-                  prefixIcon: const Icon(Icons.search, color: Color(0xFF3FA34D), size: 20),
+                  prefixIcon: const Icon(Icons.search, color: Color(0xFF1E3A60), size: 20),
                   suffixIcon: _query.isNotEmpty
                       ? IconButton(
-                          icon: const Icon(Icons.clear, size: 18, color: Color(0xFF8D9E92)),
+                          icon: const Icon(Icons.clear, size: 18, color: Color(0xFF94A3B8)),
                           onPressed: () => _searchCtrl.clear(),
                         )
                       : null,
@@ -352,16 +352,16 @@ class _SimpleQuranIndexScreenState extends State<SimpleQuranIndexScreen> with Si
         curve: Curves.easeInOut,
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF3FA34D) : Colors.white,
+          color: isSelected ? const Color(0xFF1E3A60) : Colors.white,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: isSelected ? const Color(0xFF3FA34D) : const Color(0xFFE8E1D2),
+            color: isSelected ? const Color(0xFF1E3A60) : const Color(0xFFE2E8F0),
             width: 1.0,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: const Color(0xFF3FA34D).withValues(alpha: 0.25),
+                    color: const Color(0xFF1E3A60).withValues(alpha: 0.25),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -380,7 +380,7 @@ class _SimpleQuranIndexScreenState extends State<SimpleQuranIndexScreen> with Si
             Icon(
               icon,
               size: 15,
-              color: isSelected ? Colors.white : const Color(0xFF3FA34D),
+              color: isSelected ? Colors.white : const Color(0xFF1E3A60),
             ),
             const SizedBox(width: 5),
             Flexible(
@@ -389,7 +389,7 @@ class _SimpleQuranIndexScreenState extends State<SimpleQuranIndexScreen> with Si
                 style: GoogleFonts.inter(
                   fontSize: 12,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                  color: isSelected ? Colors.white : const Color(0xFF1B2A1E),
+                  color: isSelected ? Colors.white : const Color(0xFF0F172A),
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -407,7 +407,7 @@ class _SimpleQuranIndexScreenState extends State<SimpleQuranIndexScreen> with Si
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE8E1D2), width: 1.0),
+        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.02),
@@ -445,7 +445,7 @@ class _SimpleQuranIndexScreenState extends State<SimpleQuranIndexScreen> with Si
                         style: GoogleFonts.outfit(
                           fontSize: 15.5,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFF1B2A1E),
+                          color: const Color(0xFF0F172A),
                         ),
                       ),
                       const SizedBox(height: 3),
@@ -454,7 +454,7 @@ class _SimpleQuranIndexScreenState extends State<SimpleQuranIndexScreen> with Si
                           Icon(
                             Icons.location_on_outlined,
                             size: 12,
-                            color: surah.isMeccan ? const Color(0xFF3FA34D) : const Color(0xFF1565C0),
+                            color: surah.isMeccan ? const Color(0xFFD4AF37) : const Color(0xFF2563EB),
                           ),
                           const SizedBox(width: 2),
                           Text(

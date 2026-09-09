@@ -58,9 +58,9 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
     final accuracyScore = (100.0 - (totalMistakes * 0.15)).clamp(0.0, 100.0);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF7F2),
+      backgroundColor: const Color(0xFFFAF9F6),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF3FA34D),
+        backgroundColor: const Color(0xFF0F2038),
         elevation: 0,
         title: Text(
           'Mistakes Analytics & Report',
@@ -68,7 +68,7 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
         ),
         bottom: TabBar(
           controller: _tabCtrl,
-          indicatorColor: const Color(0xFFF59E0B),
+          indicatorColor: const Color(0xFFD4AF37),
           indicatorWeight: 3,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
@@ -81,7 +81,7 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
         ),
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF3FA34D)))
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFF1E3A60)))
           : Column(
               children: [
                 // Top Summary Header Cards
@@ -108,7 +108,7 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
       padding: const EdgeInsets.all(16),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF2C7A39), Color(0xFF3FA34D)],
+          colors: [Color(0xFF0F2038), Color(0xFF1E3A60)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -208,7 +208,7 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
                           children: [
                             Text(
                               'Juz $juzNum (پارہ $juzNum)',
-                              style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(0xFF1B4332)),
+                              style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(0xFF0F172A)),
                             ),
                             Text(
                               count == 0 ? 'No mistakes logged' : '$count mistake${count > 1 ? 's' : ''} recorded',
@@ -251,7 +251,7 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.check_circle_outline, size: 54, color: Color(0xFF2D6A4F)),
+            const Icon(Icons.check_circle_outline, size: 54, color: Color(0xFF2563EB)),
             const SizedBox(height: 12),
             Text('No Mistakes Recorded!', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 4),
@@ -297,7 +297,7 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
             trailing: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFF1B4332),
+                color: const Color(0xFF1E3A60),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(

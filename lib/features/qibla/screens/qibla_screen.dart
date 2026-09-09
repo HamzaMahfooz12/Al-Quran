@@ -170,14 +170,14 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
         title: Row(
           children: [
             const Icon(Icons.screen_rotation_rounded,
-                color: Color(0xFF2C7A39), size: 24),
+                color: Color(0xFF1E3A60), size: 24),
             const SizedBox(width: 10),
             Text(
               'Calibrate Compass',
               style: GoogleFonts.outfit(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF1B2A1E)),
+                  color: const Color(0xFF0F172A)),
             ),
           ],
         ),
@@ -190,7 +190,7 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
               style: GoogleFonts.inter(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: const Color(0xFF1B2A1E)),
+                  color: const Color(0xFF0F172A)),
             ),
             const SizedBox(height: 10),
             _calibrationStep(
@@ -206,7 +206,7 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
         actions: [
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2C7A39),
+              backgroundColor: const Color(0xFF1E3A60),
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
@@ -228,7 +228,7 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
           width: 22,
           height: 22,
           decoration: const BoxDecoration(
-            color: Color(0xFFEAF6EC),
+            color: Color(0xFFEEF4FC),
             shape: BoxShape.circle,
           ),
           child: Center(
@@ -237,7 +237,7 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
               style: GoogleFonts.outfit(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF2C7A39),
+                color: const Color(0xFF1E3A60),
               ),
             ),
           ),
@@ -267,15 +267,15 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
     final alignmentDegreesOff = (angleDiff > 180) ? 360 - angleDiff : angleDiff;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF7F2),
+      backgroundColor: const Color(0xFFFAF9F6),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFAF7F2),
+        backgroundColor: const Color(0xFFFAF9F6),
         elevation: 0,
         centerTitle: true,
         leading: Navigator.canPop(context)
             ? IconButton(
                 icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                    color: Color(0xFF2C7A39), size: 20),
+                    color: Color(0xFF1E3A60), size: 20),
                 onPressed: () => Navigator.pop(context),
               )
             : null,
@@ -286,14 +286,14 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
               style: GoogleFonts.outfit(
                 fontSize: 19,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF1B2A1E),
+                color: const Color(0xFF0F172A),
               ),
             ),
             Text(
               'بوصلة القبلة المشرفة',
               style: GoogleFonts.amiri(
                 fontSize: 12,
-                color: const Color(0xFF2C7A39),
+                color: const Color(0xFFD4AF37),
                 height: 1.1,
               ),
             ),
@@ -302,13 +302,13 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline_rounded,
-                color: Color(0xFF2C7A39), size: 22),
+                color: Color(0xFF1E3A60), size: 22),
             tooltip: 'Compass Calibration',
             onPressed: _showCalibrationDialog,
           ),
           IconButton(
             icon: const Icon(Icons.tune_rounded,
-                color: Color(0xFF2C7A39), size: 22),
+                color: Color(0xFF1E3A60), size: 22),
             tooltip: 'Change Location',
             onPressed: () => LocationPickerBottomSheet.show(context),
           ),
@@ -333,18 +333,18 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
                   gradient: LinearGradient(
                     colors: [
                       Colors.white,
-                      const Color(0xFF2C7A39).withValues(alpha: 0.04),
+                      const Color(0xFF1E3A60).withValues(alpha: 0.04),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(
-                      color: const Color(0xFF2C7A39).withValues(alpha: 0.2),
+                      color: const Color(0xFFC5D5E8),
                       width: 1.1),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF2C7A39).withValues(alpha: 0.04),
+                      color: const Color(0xFF1E3A60).withValues(alpha: 0.04),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -357,18 +357,18 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
                       height: 40,
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color(0xFFEAF6EC), Color(0xFFD6EEDB)],
+                          colors: [Color(0xFFEEF4FC), Color(0xFFDBEAFE)],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
                         shape: BoxShape.circle,
                         border: Border.all(
-                            color: const Color(0xFF2C7A39)
+                            color: const Color(0xFF1E3A60)
                                 .withValues(alpha: 0.25)),
                       ),
                       child: const Center(
                         child: Icon(Icons.location_on_rounded,
-                            color: Color(0xFF2C7A39), size: 22),
+                            color: Color(0xFF1E3A60), size: 22),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -383,7 +383,7 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
                                 style: GoogleFonts.outfit(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF1B2A1E),
+                                  color: const Color(0xFF0F172A),
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -412,14 +412,14 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
                             'Distance to Kaaba: ${distanceKm.toStringAsFixed(0)} km • ${_getCardinalDirection(qiblaBearing)}',
                             style: GoogleFonts.inter(
                               fontSize: 11.5,
-                              color: const Color(0xFF526E5B),
+                              color: const Color(0xFF64748B),
                             ),
                           ),
                         ],
                       ),
                     ),
                     const Icon(Icons.chevron_right_rounded,
-                        color: Color(0xFF2C7A39), size: 22),
+                        color: Color(0xFF1E3A60), size: 22),
                   ],
                 ),
               ),
@@ -467,9 +467,9 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
                                   shape: BoxShape.circle,
                                   gradient: RadialGradient(
                                     colors: [
-                                      const Color(0xFF2C7A39)
+                                      const Color(0xFF1E3A60)
                                           .withValues(alpha: 0.35),
-                                      const Color(0xFFF59E0B)
+                                      const Color(0xFFD4AF37)
                                           .withValues(alpha: 0.15),
                                       Colors.transparent,
                                     ],
@@ -489,23 +489,23 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
                           shape: BoxShape.circle,
                           gradient: const LinearGradient(
                             colors: [
-                              Color(0xFFFAF7F2),
+                              Color(0xFFFAF9F6),
                               Color(0xFFEFE7D8),
-                              Color(0xFFFAF7F2),
+                              Color(0xFFFAF9F6),
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                           border: Border.all(
                             color: isAligned
-                                ? const Color(0xFF2C7A39)
-                                : const Color(0xFFD4AF37),
+                                ? const Color(0xFFD4AF37)
+                                : const Color(0xFFC5D5E8),
                             width: isAligned ? 2.5 : 2.0,
                           ),
                           boxShadow: [
                             BoxShadow(
                               color: isAligned
-                                  ? const Color(0xFF2C7A39)
+                                  ? const Color(0xFFD4AF37)
                                       .withValues(alpha: 0.3)
                                   : Colors.black.withValues(alpha: 0.08),
                               blurRadius: isAligned ? 24 : 16,
@@ -524,7 +524,7 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
                           shape: BoxShape.circle,
                           color: Colors.white,
                           border: Border.all(
-                              color: const Color(0xFFE8E1D2), width: 1.2),
+                              color: const Color(0xFFE2E8F0), width: 1.2),
                         ),
                       ),
 
@@ -553,7 +553,7 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 6, vertical: 1),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFF2C7A39)
+                                    color: const Color(0xFF1E3A60)
                                         .withValues(alpha: 0.12),
                                     borderRadius: BorderRadius.circular(6),
                                   ),
@@ -562,7 +562,7 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
                                     style: GoogleFonts.outfit(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w900,
-                                      color: const Color(0xFF2C7A39),
+                                      color: const Color(0xFF1E3A60),
                                     ),
                                   ),
                                 ),
@@ -712,8 +712,8 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
                             Icon(
                               Icons.explore_rounded,
                               color: isAligned
-                                  ? const Color(0xFF2C7A39)
-                                  : const Color(0xFFF59E0B),
+                                  ? const Color(0xFFD4AF37)
+                                  : const Color(0xFF1E3A60),
                               size: 15,
                             ),
                             const SizedBox(width: 6),
@@ -722,7 +722,7 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
                               style: GoogleFonts.inter(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: const Color(0xFF6B7280),
+                                color: const Color(0xFF64748B),
                               ),
                             ),
                           ],
@@ -734,8 +734,8 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
                             fontSize: 28,
                             fontWeight: FontWeight.w800,
                             color: isAligned
-                                ? const Color(0xFF2C7A39)
-                                : const Color(0xFF1B2A1E),
+                                ? const Color(0xFF1E3A60)
+                                : const Color(0xFF0F172A),
                           ),
                         ),
                       ],
@@ -755,7 +755,7 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
               decoration: BoxDecoration(
                 gradient: isAligned
                     ? const LinearGradient(
-                        colors: [Color(0xFF2C7A39), Color(0xFF1B4332)],
+                        colors: [Color(0xFF0F2038), Color(0xFF1E3A60)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       )
@@ -764,13 +764,13 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
                 borderRadius: BorderRadius.circular(18),
                 border: Border.all(
                   color: isAligned
-                      ? const Color(0xFF2C7A39)
-                      : const Color(0xFFE8E1D2),
+                      ? const Color(0xFFD4AF37)
+                      : const Color(0xFFE2E8F0),
                 ),
                 boxShadow: [
                   BoxShadow(
                     color: isAligned
-                        ? const Color(0xFF2C7A39).withValues(alpha: 0.3)
+                        ? const Color(0xFF0F2038).withValues(alpha: 0.3)
                         : Colors.black.withValues(alpha: 0.02),
                     blurRadius: 10,
                     offset: const Offset(0, 3),
@@ -794,7 +794,7 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
                             ? Icons.check_circle_rounded
                             : Icons.near_me_rounded,
                         color: isAligned
-                            ? const Color(0xFF1B4332)
+                            ? const Color(0xFF0F2038)
                             : const Color(0xFFD97706),
                         size: 20,
                       ),
@@ -934,7 +934,7 @@ class _RealisticCompassDialPainter extends CustomPainter {
               ? 1.5
               : 0.9;
       tickPaint.color = isCardinal
-          ? (i == 0 ? const Color(0xFF2C7A39) : const Color(0xFF4B5E50))
+          ? (i == 0 ? const Color(0xFF1E3A60) : const Color(0xFF4B5E50))
           : isMajor
               ? const Color(0xFFD4AF37)
               : const Color(0xFFD1D5DB);
@@ -997,7 +997,7 @@ class _Faceted3DQiblaNeedlePainter extends CustomPainter {
       ..shader = LinearGradient(
         colors: isAligned
             ? [const Color(0xFFFFE082), const Color(0xFFF59E0B)]
-            : [const Color(0xFF56BA64), const Color(0xFF38A14A)],
+            : [const Color(0xFF3B82F6), const Color(0xFF2563EB)],
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
       ).createShader(Rect.fromPoints(tip, leftMid));
@@ -1014,7 +1014,7 @@ class _Faceted3DQiblaNeedlePainter extends CustomPainter {
       ..shader = LinearGradient(
         colors: isAligned
             ? [const Color(0xFFD97706), const Color(0xFFB45309)]
-            : [const Color(0xFF2C7A39), const Color(0xFF1B4332)],
+            : [const Color(0xFF1E3A60), const Color(0xFF0F2038)],
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
       ).createShader(Rect.fromPoints(tip, rightMid));
@@ -1056,7 +1056,7 @@ class _Faceted3DQiblaNeedlePainter extends CustomPainter {
       ..strokeWidth = 1.0;
     canvas.drawLine(tip, center, ridgePaint);
 
-    // ── 7. Multi-Layered Brass & Emerald Pivot Center Cap ──
+    // ── 7. Multi-Layered Brass & Sapphire/Gold Pivot Center Cap ──
     // Outer Gold Ring
     final pivotOuterPaint = Paint()
       ..shader = RadialGradient(
@@ -1069,7 +1069,7 @@ class _Faceted3DQiblaNeedlePainter extends CustomPainter {
     // Inner Jewel Ring
     final pivotJewelPaint = Paint()
       ..color =
-          isAligned ? const Color(0xFF1B4332) : const Color(0xFF2C7A39);
+          isAligned ? const Color(0xFFD4AF37) : const Color(0xFF1E3A60);
     canvas.drawCircle(center, 9, pivotJewelPaint);
 
     // Center Gold Gem Core

@@ -236,8 +236,8 @@ class _AzkarScreenState extends State<AzkarScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Scaffold(
-        backgroundColor: Color(0xFFFAF7F2),
-        body: Center(child: CircularProgressIndicator(color: Color(0xFF2C7A39))),
+        backgroundColor: Color(0xFFFAF9F6),
+        body: Center(child: CircularProgressIndicator(color: Color(0xFF1E3A60))),
       );
     }
 
@@ -258,9 +258,9 @@ class _AzkarScreenState extends State<AzkarScreen> {
     final progress = activeItems.isNotEmpty ? completedCount / activeItems.length : 0.0;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF7F2),
+      backgroundColor: const Color(0xFFFAF9F6),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFAF7F2),
+        backgroundColor: const Color(0xFFFAF9F6),
         elevation: 0,
         centerTitle: false,
         title: Row(
@@ -270,23 +270,23 @@ class _AzkarScreenState extends State<AzkarScreen> {
               style: GoogleFonts.outfit(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF1B2A1E),
+                color: const Color(0xFF0F172A),
               ),
             ),
             const SizedBox(width: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF6EC),
+                color: const Color(0xFFEEF4FC),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFFC7E6CE)),
+                border: Border.all(color: const Color(0xFFBFDBFE)),
               ),
               child: const Text(
                 'الأذكار',
                 style: TextStyle(
                   fontFamily: 'Scheherazade New',
                   fontSize: 14,
-                  color: Color(0xFF2C7A39),
+                  color: Color(0xFF1E3A60),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -298,11 +298,11 @@ class _AzkarScreenState extends State<AzkarScreen> {
             icon: Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF6EC),
+                color: const Color(0xFFEEF4FC),
                 shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFC7E6CE)),
+                border: Border.all(color: const Color(0xFFBFDBFE)),
               ),
-              child: const Icon(Icons.settings_outlined, color: Color(0xFF2C7A39), size: 20),
+              child: const Icon(Icons.settings_outlined, color: Color(0xFF1E3A60), size: 20),
             ),
             tooltip: 'Duas Settings',
             onPressed: () async {
@@ -385,7 +385,7 @@ class _AzkarScreenState extends State<AzkarScreen> {
         decoration: InputDecoration(
           hintText: 'Search supplications (e.g. morning, sleep, travel)...',
           hintStyle: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF9CA3AF)),
-          prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF2C7A39), size: 22),
+          prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF1E3A60), size: 22),
           suffixIcon: _searchQuery.isNotEmpty
               ? IconButton(
                   icon: const Icon(Icons.clear_rounded, size: 18, color: Color(0xFF6B7280)),
@@ -401,7 +401,7 @@ class _AzkarScreenState extends State<AzkarScreen> {
 
   Widget _buildCategoryCards(List<AzkarCategory> categories) {
     final categoryStyles = [
-      {'color': const Color(0xFF2C7A39), 'icon': Icons.wb_sunny_rounded, 'sub': 'صبح و شام'},
+      {'color': const Color(0xFF1E3A60), 'icon': Icons.wb_sunny_rounded, 'sub': 'صبح و شام'},
       {'color': const Color(0xFF1E3A8A), 'icon': Icons.mosque_rounded, 'sub': 'نماز کے بعد'},
       {'color': const Color(0xFF581C87), 'icon': Icons.bedtime_rounded, 'sub': 'سوتے وقت'},
       {'color': const Color(0xFFBE185D), 'icon': Icons.flight_takeoff_rounded, 'sub': 'سفر'},
@@ -537,7 +537,7 @@ class _AzkarScreenState extends State<AzkarScreen> {
         children: [
           Icon(
             isAllDone ? Icons.check_circle_rounded : Icons.pie_chart_outline_rounded,
-            color: const Color(0xFF2C7A39),
+            color: const Color(0xFF1E3A60),
             size: 22,
           ),
           const SizedBox(width: 10),
@@ -555,7 +555,7 @@ class _AzkarScreenState extends State<AzkarScreen> {
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: isAllDone ? const Color(0xFF1B4332) : const Color(0xFF1B2A1E),
+                        color: isAllDone ? const Color(0xFF1E3A60) : const Color(0xFF0F172A),
                       ),
                     ),
                     Row(
@@ -566,7 +566,7 @@ class _AzkarScreenState extends State<AzkarScreen> {
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
-                            color: const Color(0xFF2C7A39),
+                            color: const Color(0xFF1E3A60),
                           ),
                         ),
                         if (completed > 0) ...[
@@ -599,8 +599,8 @@ class _AzkarScreenState extends State<AzkarScreen> {
                   borderRadius: BorderRadius.circular(4),
                   child: LinearProgressIndicator(
                     value: progress,
-                    backgroundColor: const Color(0xFFE5EBE6),
-                    valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF2C7A39)),
+                    backgroundColor: const Color(0xFFEEF4FC),
+                    valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF1E3A60)),
                     minHeight: 5,
                   ),
                 ),
@@ -669,8 +669,8 @@ class _AzkarScreenState extends State<AzkarScreen> {
                   Container(
                     width: 32,
                     height: 32,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFEAF6EC),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFEEF4FC),
                       shape: BoxShape.circle,
                     ),
                     child: Center(
@@ -679,7 +679,7 @@ class _AzkarScreenState extends State<AzkarScreen> {
                         style: GoogleFonts.outfit(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFF2C7A39),
+                          color: const Color(0xFF1E3A60),
                         ),
                       ),
                     ),
@@ -910,9 +910,9 @@ class _AzkarScreenState extends State<AzkarScreen> {
                   child: ElevatedButton(
                     onPressed: isDone ? null : () => _tapDua(item),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: isDone ? const Color(0xFF2C7A39) : const Color(0xFF2C7A39),
+                      backgroundColor: isDone ? const Color(0xFF1E3A60) : const Color(0xFF1E3A60),
                       foregroundColor: Colors.white,
-                      disabledBackgroundColor: const Color(0xFF2C7A39),
+                      disabledBackgroundColor: const Color(0xFF1E3A60),
                       disabledForegroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

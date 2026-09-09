@@ -122,7 +122,7 @@ class _FullSurahDownloadsScreenState
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Surah ${s.nameTransliteration} removed from downloads'),
-            backgroundColor: const Color(0xFF1B4332),
+            backgroundColor: const Color(0xFF0F2038),
             behavior: SnackBarBehavior.floating,
             duration: const Duration(seconds: 2),
           ),
@@ -177,7 +177,7 @@ class _FullSurahDownloadsScreenState
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('All downloaded audio files removed'),
-            backgroundColor: Color(0xFF1B4332),
+            backgroundColor: Color(0xFF0F2038),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -200,13 +200,13 @@ class _FullSurahDownloadsScreenState
     final filtered = _filteredDownloads;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF7F2),
+      backgroundColor: const Color(0xFFFAF9F6),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFAF7F2),
+        backgroundColor: const Color(0xFFFAF9F6),
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF2C7A39), size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF1E3A60), size: 20),
           onPressed: () => context.pop(),
         ),
         title: Column(
@@ -216,14 +216,14 @@ class _FullSurahDownloadsScreenState
               style: GoogleFonts.outfit(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF1B2A1E),
+                color: const Color(0xFF0F2038),
               ),
             ),
             Text(
               'التنزيلات المحفوظة',
               style: GoogleFonts.amiri(
                 fontSize: 12,
-                color: const Color(0xFF2C7A39),
+                color: const Color(0xFF1E3A60),
                 height: 1.1,
               ),
             ),
@@ -237,7 +237,7 @@ class _FullSurahDownloadsScreenState
               onPressed: _deleteAll,
             ),
           IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Color(0xFF2C7A39), size: 22),
+            icon: const Icon(Icons.refresh_rounded, color: Color(0xFF1E3A60), size: 22),
             tooltip: 'Refresh Downloads',
             onPressed: _loadDownloads,
           ),
@@ -248,7 +248,7 @@ class _FullSurahDownloadsScreenState
         children: [
           if (_isLoading)
             const Center(
-              child: CircularProgressIndicator(color: Color(0xFF2C7A39)),
+              child: CircularProgressIndicator(color: Color(0xFF1E3A60)),
             )
           else if (_downloads.isEmpty)
             _buildEmptyState()
@@ -275,7 +275,7 @@ class _FullSurahDownloadsScreenState
                       style: GoogleFonts.outfit(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xFF1B2A1E),
+                        color: const Color(0xFF0F2038),
                       ),
                     ),
                     Text(
@@ -283,7 +283,7 @@ class _FullSurahDownloadsScreenState
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF2C7A39),
+                        color: const Color(0xFF1E3A60),
                       ),
                     ),
                   ],
@@ -338,14 +338,14 @@ class _FullSurahDownloadsScreenState
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF2C7A39), Color(0xFF1B4332)],
+          colors: [Color(0xFF1E3A60), Color(0xFF0F2038)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2C7A39).withValues(alpha: 0.25),
+            color: const Color(0xFF1E3A60).withValues(alpha: 0.25),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -385,7 +385,7 @@ class _FullSurahDownloadsScreenState
                       'Storage Used: ${_formatTotalBytes(_totalBytes)} • 100% Offline',
                       style: GoogleFonts.inter(
                         fontSize: 12,
-                        color: const Color(0xFFA5D6A7),
+                        color: const Color(0xFF93C5FD),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -427,7 +427,7 @@ class _FullSurahDownloadsScreenState
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE8E1D2)),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.02),
@@ -441,7 +441,7 @@ class _FullSurahDownloadsScreenState
         decoration: InputDecoration(
           hintText: 'Search downloaded surahs or reciters...',
           hintStyle: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF9CA3AF)),
-          prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF2C7A39), size: 20),
+          prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF1E3A60), size: 20),
           suffixIcon: _query.isNotEmpty
               ? IconButton(
                   icon: const Icon(Icons.close_rounded, size: 18, color: Color(0xFF6B7280)),
@@ -465,7 +465,7 @@ class _FullSurahDownloadsScreenState
         color: isPlayingThis ? const Color(0xFFFAF2E6) : Colors.white,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: isPlayingThis ? const Color(0xFFF59E0B) : const Color(0xFFE8E1D2),
+          color: isPlayingThis ? const Color(0xFFF59E0B) : const Color(0xFFE2E8F0),
           width: isPlayingThis ? 1.5 : 1.0,
         ),
         boxShadow: [
@@ -489,9 +489,9 @@ class _FullSurahDownloadsScreenState
                 IslamicStarBadge(
                   number: s.number,
                   size: 40,
-                  borderColor: isPlayingThis ? const Color(0xFFF59E0B) : const Color(0xFF56BA64),
-                  fillColor: isPlayingThis ? const Color(0xFFFEF3C7) : const Color(0xFFEAF6EC),
-                  textColor: isPlayingThis ? const Color(0xFFB45309) : const Color(0xFF2C7A39),
+                  borderColor: isPlayingThis ? const Color(0xFFF59E0B) : const Color(0xFF1E3A60),
+                  fillColor: isPlayingThis ? const Color(0xFFFEF3C7) : const Color(0xFFEEF4FC),
+                  textColor: isPlayingThis ? const Color(0xFFB45309) : const Color(0xFF1E3A60),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -506,7 +506,7 @@ class _FullSurahDownloadsScreenState
                               style: GoogleFonts.outfit(
                                 fontSize: 15.5,
                                 fontWeight: FontWeight.bold,
-                                color: const Color(0xFF1B2A1E),
+                                color: const Color(0xFF0F2038),
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -515,7 +515,7 @@ class _FullSurahDownloadsScreenState
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFEAF6EC),
+                              color: const Color(0xFFEEF4FC),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
@@ -523,7 +523,7 @@ class _FullSurahDownloadsScreenState
                               style: GoogleFonts.inter(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w700,
-                                color: const Color(0xFF2C7A39),
+                                color: const Color(0xFF1E3A60),
                               ),
                             ),
                           ),
@@ -535,7 +535,7 @@ class _FullSurahDownloadsScreenState
                         style: GoogleFonts.inter(
                           fontSize: 11.5,
                           fontWeight: FontWeight.w500,
-                          color: const Color(0xFF4B5E50),
+                          color: const Color(0xFF475569),
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -545,7 +545,7 @@ class _FullSurahDownloadsScreenState
                         '${s.nameTranslation} • ${s.ayahCount} Verses',
                         style: GoogleFonts.inter(
                           fontSize: 10.5,
-                          color: const Color(0xFF8D9E92),
+                          color: const Color(0xFF64748B),
                         ),
                       ),
                     ],
@@ -558,7 +558,7 @@ class _FullSurahDownloadsScreenState
                     fontFamily: 'Scheherazade New',
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1B2A1E),
+                    color: Color(0xFF0F2038),
                   ),
                   textDirection: TextDirection.rtl,
                 ),
@@ -578,11 +578,11 @@ class _FullSurahDownloadsScreenState
                     width: 36,
                     height: 36,
                     decoration: BoxDecoration(
-                      color: isPlayingThis ? const Color(0xFFF59E0B) : const Color(0xFF3FA34D),
+                      color: isPlayingThis ? const Color(0xFFF59E0B) : const Color(0xFF1E3A60),
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: (isPlayingThis ? const Color(0xFFF59E0B) : const Color(0xFF3FA34D))
+                          color: (isPlayingThis ? const Color(0xFFF59E0B) : const Color(0xFF1E3A60))
                               .withValues(alpha: 0.3),
                           blurRadius: 6,
                           offset: const Offset(0, 2),
@@ -621,20 +621,20 @@ class _FullSurahDownloadsScreenState
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    const Color(0xFF2C7A39).withValues(alpha: 0.15),
-                    const Color(0xFFF59E0B).withValues(alpha: 0.1),
+                    const Color(0xFF1E3A60).withValues(alpha: 0.15),
+                    const Color(0xFFD4AF37).withValues(alpha: 0.15),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFF56BA64).withValues(alpha: 0.3), width: 1.5),
+                border: Border.all(color: const Color(0xFF1E3A60).withValues(alpha: 0.3), width: 1.5),
               ),
               child: const Center(
                 child: Icon(
                   Icons.cloud_download_outlined,
                   size: 48,
-                  color: Color(0xFF2C7A39),
+                  color: Color(0xFF1E3A60),
                 ),
               ),
             ),
@@ -644,7 +644,7 @@ class _FullSurahDownloadsScreenState
               style: GoogleFonts.outfit(
                 fontSize: 21,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF1B2A1E),
+                color: const Color(0xFF0F2038),
               ),
             ),
             const SizedBox(height: 8),
@@ -666,7 +666,7 @@ class _FullSurahDownloadsScreenState
                 style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.bold),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2C7A39),
+                backgroundColor: const Color(0xFF1E3A60),
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -687,14 +687,14 @@ class _FullSurahDownloadsScreenState
     return Container(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF2C7A39), Color(0xFF1B4332)],
+          colors: [Color(0xFF1E3A60), Color(0xFF0F2038)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1B4332).withValues(alpha: 0.35),
+            color: const Color(0xFF0F2038).withValues(alpha: 0.35),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),

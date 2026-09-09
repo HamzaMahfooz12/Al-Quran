@@ -11,6 +11,7 @@ import '../audio/audio_control_bar.dart';
 import '../mushaf_shared/widgets/mushaf_bottom_control_bar.dart';
 import '../mushaf_shared/widgets/mushaf_page_widget.dart';
 import '../shared/jump_navigation_dialog.dart';
+import '../mark_mistakes/mistakes_report_screen.dart';
 
 class Mushaf16Screen extends ConsumerStatefulWidget {
   final int initialPage; // 1-548
@@ -341,7 +342,7 @@ class _Mushaf16ScreenState extends ConsumerState<Mushaf16Screen> {
   Widget build(BuildContext context) {
     if (_loadingLastRead) {
       return const Scaffold(
-        backgroundColor: Color(0xFF1B4332),
+        backgroundColor: Color(0xFF0F2038),
         body: Center(
           child: CircularProgressIndicator(color: Colors.white),
         ),
@@ -358,9 +359,9 @@ class _Mushaf16ScreenState extends ConsumerState<Mushaf16Screen> {
     final isAudioActive = audio.currentPlayingAyahId != null;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1B4332),
+      backgroundColor: const Color(0xFF0F2038),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1B4332),
+        backgroundColor: const Color(0xFF0F2038),
         elevation: 0,
         title: Text(
           '16-Line Indo-Pak Mushaf',
@@ -373,11 +374,25 @@ class _Mushaf16ScreenState extends ConsumerState<Mushaf16Screen> {
             tooltip: 'Jump to Location',
             onPressed: () => JumpNavigationDialog.show(
               context,
-              mushafType: '16_line',
-              onJumpToPage: (targetPage) {
-                _pageCtrl?.jumpToPage(targetPage - 1);
-                _currentPage = targetPage;
-              },
+              mushafType: 'mushaf_16',
+              onJumpToPage: (p) => _pageCtrl?.jumpToPage(p - 1),
+            ),
+          ),
+          // Mark Mistakes Report / Toggle
+          IconButton(
+            icon: Icon(
+              _isMarkMistakesMode ? Icons.edit_note : Icons.edit_note_outlined,
+              color: _isMarkMistakesMode ? Colors.amberAccent : Colors.white,
+            ),
+            tooltip: 'Mark Mistakes Mode',
+            onPressed: _toggleMarkMistakes,
+          ),
+          // View Marked Mistakes Report
+          IconButton(
+            icon: const Icon(Icons.fact_check_outlined, color: Colors.white),
+            tooltip: 'Mistakes Report',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const MistakesReportScreen()),
             ),
           ),
         ],
@@ -437,52 +452,6 @@ class _Mushaf16ScreenState extends ConsumerState<Mushaf16Screen> {
                   ),
                 ),
               ),
-            ),
-          ),
-
-          // ── Floating Zoom Indicator (Tap to Reset) ──────────────────────
-          Positioned(
-            top: 12,
-            right: 12,
-            child: ValueListenableBuilder<double>(
-              valueListenable: _zoomScaleNotifier,
-              builder: (context, scale, _) {
-                if (scale <= 1.03) return const SizedBox.shrink();
-                return GestureDetector(
-                  onTap: () {
-                    _zoomScale = 1.0;
-                    _panX = 0.0;
-                    _baseZoomScale = 1.0;
-                    _basePanX = 0.0;
-                    _updateTransform();
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1B2A1E).withValues(alpha: 0.85),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: const [
-                        BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2)),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '${(scale * 100).round()}%',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        const Icon(Icons.refresh, color: Colors.white70, size: 14),
-                      ],
-                    ),
-                  ),
-                );
-              },
             ),
           ),
 

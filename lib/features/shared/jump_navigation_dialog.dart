@@ -92,7 +92,7 @@ class _JumpNavigationDialogState extends ConsumerState<JumpNavigationDialog>
             style: GoogleFonts.inter(
               fontSize: 17,
               fontWeight: FontWeight.bold,
-              color: const Color(0xFF1B4332),
+              color: const Color(0xFF1E3A60),
             ),
           ),
           const SizedBox(height: 10),
@@ -100,8 +100,8 @@ class _JumpNavigationDialogState extends ConsumerState<JumpNavigationDialog>
           // Tabs
           TabBar(
             controller: _tabCtrl,
-            indicatorColor: const Color(0xFF2D6A4F),
-            labelColor: const Color(0xFF1B4332),
+            indicatorColor: const Color(0xFF1E3A60),
+            labelColor: const Color(0xFF1E3A60),
             unselectedLabelColor: Colors.grey[600],
             labelStyle: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
             tabs: const [
@@ -136,7 +136,7 @@ class _JumpNavigationDialogState extends ConsumerState<JumpNavigationDialog>
         children: [
           Text(
             'Enter Page Number (1 - 610)',
-            style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(0xFF1B4332)),
+            style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(0xFF1E3A60)),
           ),
           const SizedBox(height: 16),
           Row(
@@ -153,7 +153,7 @@ class _JumpNavigationDialogState extends ConsumerState<JumpNavigationDialog>
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFF2D6A4F)),
+                      borderSide: const BorderSide(color: Color(0xFF1E3A60)),
                     ),
                   ),
                   onSubmitted: (v) {
@@ -167,7 +167,7 @@ class _JumpNavigationDialogState extends ConsumerState<JumpNavigationDialog>
               const SizedBox(width: 12),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1B4332),
+                  backgroundColor: const Color(0xFF1E3A60),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -211,7 +211,7 @@ class _JumpNavigationDialogState extends ConsumerState<JumpNavigationDialog>
                     alignment: Alignment.center,
                     child: Text(
                       'P. $pageNum',
-                      style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: const Color(0xFF1B4332)),
+                      style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: const Color(0xFF1E3A60)),
                     ),
                   ),
                 );
@@ -508,7 +508,7 @@ class _JumpNavigationDialogState extends ConsumerState<JumpNavigationDialog>
             style: GoogleFonts.outfit(
               fontSize: size * 0.36,
               fontWeight: FontWeight.w800,
-              color: const Color(0xFF1B4332),
+              color: const Color(0xFF1E3A60),
             ),
           ),
         ],

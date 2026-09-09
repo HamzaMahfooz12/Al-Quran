@@ -289,11 +289,11 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
 
                     const SizedBox(width: 2),
 
-                    // ── 2. Authentic Double-Ruled Page Frame (Themed Forest Green & Gold) ──
+                    // ── 2. Authentic Double-Ruled Page Frame (Themed Midnight Sapphire & Gold) ──
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
-                          border: Border.all(color: const Color(0xFF2C7A39), width: 1.2), // Outer Forest Green hairline
+                          border: Border.all(color: const Color(0xFF1E3A60), width: 1.2), // Outer Midnight Sapphire hairline
                           borderRadius: BorderRadius.circular(4),
                         ),
                         padding: const EdgeInsets.all(2.5), // Frame Gutter
@@ -309,8 +309,8 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4.0),
                                 decoration: const BoxDecoration(
-                                  color: Color(0xFFF0F7F2), // Soft tinted sage background
-                                  border: Border(bottom: BorderSide(color: Color(0xFF2C7A39), width: 1.0)),
+                                  color: Color(0xFFF0F4FA), // Soft tinted sapphire background
+                                  border: Border(bottom: BorderSide(color: Color(0xFF1E3A60), width: 1.0)),
                                 ),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -324,7 +324,7 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
                                         fontFamily: 'Amiri',
                                         fontSize: 13.5,
                                         fontWeight: FontWeight.bold,
-                                        color: Color(0xFF1B2A1E),
+                                        color: Color(0xFF0F172A),
                                         height: 1.1,
                                       ),
                                     ),
@@ -335,7 +335,7 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
                                       decoration: BoxDecoration(
                                         color: Colors.white,
                                         borderRadius: BorderRadius.circular(8),
-                                        border: Border.all(color: const Color(0xFFC7E6CE), width: 0.8),
+                                        border: Border.all(color: const Color(0xFFC5D5E8), width: 0.8),
                                       ),
                                       child: Text(
                                         ArabicNumerals.format(widget.pageNumber),
@@ -344,7 +344,7 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
                                           fontFamily: 'Amiri',
                                           fontSize: 13.5,
                                           fontWeight: FontWeight.bold,
-                                          color: Color(0xFF2C7A39),
+                                          color: Color(0xFF1E3A60),
                                           height: 1.1,
                                         ),
                                       ),
@@ -358,7 +358,7 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
                                         fontFamily: 'Amiri',
                                         fontSize: 13.5,
                                         fontWeight: FontWeight.bold,
-                                        color: Color(0xFF1B2A1E),
+                                        color: Color(0xFF0F172A),
                                         height: 1.1,
                                       ),
                                     ),
@@ -408,9 +408,9 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 1.5),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF0F7F2),
+                    color: const Color(0xFFF0F4FA),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: const Color(0xFFC7E6CE), width: 0.8),
+                    border: Border.all(color: const Color(0xFFC5D5E8), width: 0.8),
                   ),
                   child: Text(
                     'مَنْزِل ${ArabicNumerals.format(_manzilNumber)}',
@@ -419,7 +419,7 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
                       fontFamily: 'Amiri',
                       fontSize: 12.0,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF2C7A39),
+                      color: Color(0xFF1E3A60),
                       height: 1.0,
                     ),
                   ),
@@ -768,7 +768,7 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
         ),
       ];
     } else if (isVerseActive) {
-      containerBgColor = const Color(0xFFC8E6C9).withValues(alpha: 0.40); // Soft emerald verse tint
+      containerBgColor = const Color(0xFFBFDBFE).withValues(alpha: 0.40); // Soft sapphire verse tint
     }
 
     Widget wordChild = Container(
