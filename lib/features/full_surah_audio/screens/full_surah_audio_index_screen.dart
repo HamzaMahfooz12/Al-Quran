@@ -444,7 +444,7 @@ class _FullSurahAudioIndexScreenState
                     }
 
                     return IconButton(
-                      icon: const Icon(Icons.arrow_circle_down_rounded, color: Color(0xFF8D9E92), size: 22),
+                      icon: const Icon(Icons.arrow_circle_down_rounded, color: Color(0xFF64748B), size: 22),
                       tooltip: 'Download for Offline',
                       onPressed: () {
                         audioService.downloadSurah(s.number, reciter);
@@ -700,7 +700,7 @@ class _ReciterPickerModalState extends ConsumerState<_ReciterPickerModal> {
                 controller: _filterCtrl,
                 decoration: InputDecoration(
                   hintText: 'Search reciters by name (e.g. Sudais, Alafasy)...',
-                  hintStyle: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF8D9E92)),
+                  hintStyle: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF64748B)),
                   prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF1E3A60), size: 20),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),

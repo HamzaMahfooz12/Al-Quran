@@ -89,12 +89,12 @@ class _FullSurahDownloadsScreenState
           style: GoogleFonts.outfit(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF1B2A1E),
+            color: const Color(0xFF0F172A),
           ),
         ),
         content: Text(
           'Remove Surah ${s.nameTransliteration} (${item.reciter.name}) from offline storage? (${item.formattedSize})',
-          style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF4B5E50)),
+          style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF334155)),
         ),
         actions: [
           TextButton(
@@ -149,7 +149,7 @@ class _FullSurahDownloadsScreenState
         ),
         content: Text(
           'This will remove all ${_downloads.length} downloaded Surahs (${_formatTotalBytes(_totalBytes)}) from your device storage.',
-          style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF4B5E50)),
+          style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF334155)),
         ),
         actions: [
           TextButton(
@@ -739,7 +739,7 @@ class _FullSurahDownloadsScreenState
                         reciterName,
                         style: GoogleFonts.inter(
                           fontSize: 11,
-                          color: const Color(0xFFA5D6A7),
+                          color: const Color(0xFFCBD5E1),
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

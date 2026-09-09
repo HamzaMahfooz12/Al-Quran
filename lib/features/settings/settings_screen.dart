@@ -267,7 +267,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           color: isHanafi ? AppTheme.primarySurface : const Color(0xFFFBFDFC),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: isHanafi ? AppTheme.primary : const Color(0xFFE2E8E4),
+                            color: isHanafi ? AppTheme.primary : const Color(0xFFE2E8F0),
                             width: isHanafi ? 1.5 : 1.0,
                           ),
                         ),
@@ -316,7 +316,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           color: !isHanafi ? AppTheme.primarySurface : const Color(0xFFFBFDFC),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: !isHanafi ? AppTheme.primary : const Color(0xFFE2E8E4),
+                            color: !isHanafi ? AppTheme.primary : const Color(0xFFE2E8F0),
                             width: !isHanafi ? 1.5 : 1.0,
                           ),
                         ),
@@ -1138,7 +1138,7 @@ class _UpdateCheckTileState extends State<_UpdateCheckTile> {
                 icon: const Icon(Icons.download, size: 20),
                 label: const Text('Download & Install Update'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2E7D32),
+                  backgroundColor: const Color(0xFF1E3A60),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(

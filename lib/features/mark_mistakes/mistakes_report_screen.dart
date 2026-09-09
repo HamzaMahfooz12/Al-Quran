@@ -151,7 +151,7 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
                 children: [
                   Text(
                     '${accuracyScore.toStringAsFixed(1)}%',
-                    style: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.bold, color: const Color(0xFFEAF6EC)),
+                    style: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.bold, color: const Color(0xFFFFD54F)),
                   ),
                   const SizedBox(height: 2),
                   Text('Hifz Accuracy Rate', style: GoogleFonts.inter(fontSize: 11, color: Colors.white70)),
@@ -191,13 +191,13 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
                     children: [
                       CircleAvatar(
                         radius: 16,
-                        backgroundColor: count > 0 ? const Color(0xFFFFEBEE) : const Color(0xFFE8F5E9),
+                        backgroundColor: count > 0 ? const Color(0xFFFFEBEE) : const Color(0xFFEEF4FC),
                         child: Text(
                           '$juzNum',
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: count > 0 ? const Color(0xFFC62828) : const Color(0xFF2E7D32),
+                            color: count > 0 ? const Color(0xFFC62828) : const Color(0xFF1E3A60),
                           ),
                         ),
                       ),

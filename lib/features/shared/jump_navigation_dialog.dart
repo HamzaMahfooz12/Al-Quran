@@ -240,7 +240,7 @@ class _JumpNavigationDialogState extends ConsumerState<JumpNavigationDialog>
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: const Color(0xFFE2E8E4)),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
             ),
             child: TextField(
               onChanged: (v) => setState(() => _searchQuery = v),
@@ -486,9 +486,9 @@ class _JumpNavigationDialogState extends ConsumerState<JumpNavigationDialog>
             width: size * 0.84,
             height: size * 0.84,
             decoration: BoxDecoration(
-              color: const Color(0xFFF9FAF9),
+              color: const Color(0xFFFAF9F6),
               borderRadius: BorderRadius.circular(size * 0.18),
-              border: Border.all(color: const Color(0xFFD1DDD4), width: 1.2),
+              border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
             ),
           ),
           Transform.rotate(
@@ -497,9 +497,9 @@ class _JumpNavigationDialogState extends ConsumerState<JumpNavigationDialog>
               width: size * 0.84,
               height: size * 0.84,
               decoration: BoxDecoration(
-                color: const Color(0xFFF9FAF9).withValues(alpha: 0.85),
+                color: const Color(0xFFFAF9F6).withValues(alpha: 0.85),
                 borderRadius: BorderRadius.circular(size * 0.18),
-                border: Border.all(color: const Color(0xFFD1DDD4), width: 1.2),
+                border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
               ),
             ),
           ),

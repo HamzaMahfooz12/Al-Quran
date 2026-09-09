@@ -405,7 +405,7 @@ class _AzkarScreenState extends State<AzkarScreen> {
       {'color': const Color(0xFF1E3A8A), 'icon': Icons.mosque_rounded, 'sub': 'نماز کے بعد'},
       {'color': const Color(0xFF581C87), 'icon': Icons.bedtime_rounded, 'sub': 'سوتے وقت'},
       {'color': const Color(0xFFBE185D), 'icon': Icons.flight_takeoff_rounded, 'sub': 'سفر'},
-      {'color': const Color(0xFF047857), 'icon': Icons.restaurant_rounded, 'sub': 'طعام و شراب'},
+      {'color': const Color(0xFF0D9488), 'icon': Icons.restaurant_rounded, 'sub': 'طعام و شراب'},
       {'color': const Color(0xFFB45309), 'icon': Icons.shield_rounded, 'sub': 'حفاظت'},
       {'color': const Color(0xFF0284C7), 'icon': Icons.favorite_rounded, 'sub': 'استغفار'},
       {'color': const Color(0xFFD97706), 'icon': Icons.menu_book_rounded, 'sub': 'قرآنی دعائیں'},
@@ -505,7 +505,7 @@ class _AzkarScreenState extends State<AzkarScreen> {
                     style: GoogleFonts.outfit(
                       fontSize: 12.5,
                       fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                      color: isSelected ? Colors.white : const Color(0xFF1B2A1E),
+                      color: isSelected ? Colors.white : const Color(0xFF0F172A),
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -526,10 +526,10 @@ class _AzkarScreenState extends State<AzkarScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: isAllDone ? const Color(0xFFEAF6EC) : Colors.white,
+        color: isAllDone ? const Color(0xFFEEF4FC) : Colors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: isAllDone ? const Color(0xFF81C784) : const Color(0xFFE8E1D2),
+          color: isAllDone ? const Color(0xFF93C5FD) : const Color(0xFFE2E8F0),
         ),
       ),
       child: Row(
@@ -641,10 +641,10 @@ class _AzkarScreenState extends State<AzkarScreen> {
       duration: const Duration(milliseconds: 250),
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: isDone ? const Color(0xFFF2F8F4) : Colors.white,
+        color: isDone ? const Color(0xFFEEF4FC) : Colors.white,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: isDone ? const Color(0xFF81C784) : const Color(0xFFE8E1D2),
+          color: isDone ? const Color(0xFF93C5FD) : const Color(0xFFE8E1D2),
           width: isDone ? 1.5 : 1.0,
         ),
         boxShadow: [
@@ -694,7 +694,7 @@ class _AzkarScreenState extends State<AzkarScreen> {
                           style: GoogleFonts.outfit(
                             fontSize: 14.5,
                             fontWeight: FontWeight.bold,
-                            color: const Color(0xFF1B2A1E),
+                            color: const Color(0xFF0F172A),
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -765,7 +765,7 @@ class _AzkarScreenState extends State<AzkarScreen> {
                 fontFamily: 'Scheherazade New',
                 fontSize: 22,
                 height: 1.85,
-                color: Color(0xFF1B2A1E),
+                color: Color(0xFF0F172A),
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.right,

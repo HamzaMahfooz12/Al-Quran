@@ -194,7 +194,7 @@ class AppDrawer extends StatelessWidget {
           Container(
             padding: EdgeInsets.fromLTRB(16, 12, 16, 12 + MediaQuery.paddingOf(context).bottom),
             decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: Color(0xFFE2E8E4))),
+              border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
             ),
             child: Row(
               children: [

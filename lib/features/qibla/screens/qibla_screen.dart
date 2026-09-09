@@ -247,7 +247,7 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
           child: Text(
             text,
             style: GoogleFonts.inter(
-                fontSize: 12.5, color: const Color(0xFF4B5E50), height: 1.35),
+                fontSize: 12.5, color: const Color(0xFF334155), height: 1.35),
           ),
         ),
       ],
@@ -695,7 +695,7 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
                           style: GoogleFonts.outfit(
                             fontSize: 28,
                             fontWeight: FontWeight.w800,
-                            color: const Color(0xFF1B2A1E),
+                            color: const Color(0xFF0F172A),
                           ),
                         ),
                       ],
@@ -814,7 +814,7 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
                             fontWeight: FontWeight.bold,
                             color: isAligned
                                 ? Colors.white
-                                : const Color(0xFF1B2A1E),
+                                : const Color(0xFF0F172A),
                           ),
                         ),
                         Text(
@@ -824,7 +824,7 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
                           style: GoogleFonts.inter(
                             fontSize: 11.5,
                             color: isAligned
-                                ? const Color(0xFFA5D6A7)
+                                ? const Color(0xFFCBD5E1)
                                 : const Color(0xFF6B7280),
                             height: 1.3,
                           ),
@@ -853,7 +853,7 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
         width: 32,
         height: 32,
         decoration: BoxDecoration(
-          color: const Color(0xFF1B2A1E),
+          color: const Color(0xFF0F172A),
           shape: BoxShape.circle,
           border: Border.all(
             color: isAligned
@@ -934,7 +934,7 @@ class _RealisticCompassDialPainter extends CustomPainter {
               ? 1.5
               : 0.9;
       tickPaint.color = isCardinal
-          ? (i == 0 ? const Color(0xFF1E3A60) : const Color(0xFF4B5E50))
+          ? (i == 0 ? const Color(0xFF1E3A60) : const Color(0xFF334155))
           : isMajor
               ? const Color(0xFFD4AF37)
               : const Color(0xFFD1D5DB);

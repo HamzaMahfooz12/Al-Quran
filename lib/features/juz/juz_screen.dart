@@ -523,7 +523,7 @@ class _JuzScreenState extends ConsumerState<JuzScreen> {
                     decoration: BoxDecoration(
                       color: AppTheme.cardBg,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFFE2E8E4)),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.03),
@@ -1023,17 +1023,17 @@ class _SurahHeader extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFF1E5B2E), // Rich Islamic Forest Green
-            Color(0xFF144723), // Deep Emerald Shadow
+            Color(0xFF1E3A60), // Midnight Sapphire
+            Color(0xFF0F2038), // Deep Royal Navy Shadow
           ],
         ),
         border: Border.all(
-          color: const Color(0xFFF59E0B).withValues(alpha: 0.35),
+          color: const Color(0xFFD4AF37).withValues(alpha: 0.35),
           width: 1.2,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF144723).withValues(alpha: 0.35),
+            color: const Color(0xFF0F2038).withValues(alpha: 0.35),
             blurRadius: 18,
             offset: const Offset(0, 6),
           ),

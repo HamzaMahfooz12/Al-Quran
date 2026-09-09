@@ -152,7 +152,7 @@ class _DuasSettingsScreenState extends State<DuasSettingsScreen> {
           style: GoogleFonts.outfit(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF1B2A1E),
+            color: const Color(0xFF0F172A),
           ),
         ),
         const SizedBox(height: 2),
@@ -500,7 +500,7 @@ class _AddDuaModalState extends State<_AddDuaModal> {
                   style: GoogleFonts.outfit(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF1B2A1E),
+                    color: const Color(0xFF0F172A),
                   ),
                 ),
                 IconButton(
@@ -515,7 +515,7 @@ class _AddDuaModalState extends State<_AddDuaModal> {
               child: ListView(
                 children: [
                   // Category Dropdown
-                  Text('Category', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF4B5E50))),
+                  Text('Category', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF334155))),
                   const SizedBox(height: 6),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -545,7 +545,7 @@ class _AddDuaModalState extends State<_AddDuaModal> {
                   const SizedBox(height: 12),
 
                   // Dua Title
-                  Text('Dua Title / Name *', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF4B5E50))),
+                  Text('Dua Title / Name *', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF334155))),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: _titleCtrl,
@@ -556,7 +556,7 @@ class _AddDuaModalState extends State<_AddDuaModal> {
                   const SizedBox(height: 12),
 
                   // Arabic Text
-                  Text('Arabic Text (عربی متن) *', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF4B5E50))),
+                  Text('Arabic Text (عربی متن) *', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF334155))),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: _arabicCtrl,
@@ -570,7 +570,7 @@ class _AddDuaModalState extends State<_AddDuaModal> {
                   const SizedBox(height: 12),
 
                   // Urdu Translation
-                  Text('Urdu Translation (اردو ترجمہ)', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF4B5E50))),
+                  Text('Urdu Translation (اردو ترجمہ)', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF334155))),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: _urduCtrl,
@@ -583,7 +583,7 @@ class _AddDuaModalState extends State<_AddDuaModal> {
                   const SizedBox(height: 12),
 
                   // English Translation
-                  Text('English Translation', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF4B5E50))),
+                  Text('English Translation', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF334155))),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: _englishCtrl,
@@ -594,7 +594,7 @@ class _AddDuaModalState extends State<_AddDuaModal> {
                   const SizedBox(height: 12),
 
                   // Transliteration
-                  Text('Transliteration (Pronunciation)', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF4B5E50))),
+                  Text('Transliteration (Pronunciation)', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF334155))),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: _transliterationCtrl,
@@ -610,7 +610,7 @@ class _AddDuaModalState extends State<_AddDuaModal> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Reference / Hadith', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF4B5E50))),
+                            Text('Reference / Hadith', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF334155))),
                             const SizedBox(height: 6),
                             TextFormField(
                               controller: _referenceCtrl,
@@ -623,7 +623,7 @@ class _AddDuaModalState extends State<_AddDuaModal> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Count', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF4B5E50))),
+                          Text('Count', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF334155))),
                           const SizedBox(height: 6),
                           Container(
                             height: 48,

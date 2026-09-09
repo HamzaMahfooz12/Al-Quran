@@ -485,7 +485,7 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
                 elevation: 0.8,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
-                  side: const BorderSide(color: Color(0xFFE2EBE5)),
+                  side: const BorderSide(color: Color(0xFFE2E8F0)),
                 ),
                 child: InkWell(
                   onTap: () => _openVerse(s.surah, s.ayah),

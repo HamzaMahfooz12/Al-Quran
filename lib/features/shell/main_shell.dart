@@ -338,7 +338,7 @@ class _MoreScreen extends ConsumerWidget {
           ),
           _MoreTile(
             icon: Icons.compare_arrows_rounded,
-            color: const Color(0xFF00897B),
+            color: const Color(0xFF2563EB),
             title: 'Mutashabihat (Similar Ayat)',
             subtitle: 'Comparative verse explorer for 2,700+ similar Quranic verses',
             onTap: () => context.goNamed('mutashabihat'),

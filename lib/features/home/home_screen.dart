@@ -368,7 +368,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(Icons.location_on_rounded, color: Color(0xFFA5D6A7), size: 12),
+                                    const Icon(Icons.location_on_rounded, color: Color(0xFFD4AF37), size: 12),
                                     const SizedBox(width: 3),
                                     Flexible(
                                       child: Text(
@@ -853,7 +853,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   title: 'Mutashabihat',
                   subtitle: 'Similar Verses Grouped by Ayah',
                   icon: Icons.compare_arrows_rounded,
-                  accentColor: const Color(0xFF00897B),
+                  accentColor: const Color(0xFF2563EB),
                   onTap: () => context.goNamed('mutashabihat'),
                 ),
               ),
@@ -1104,7 +1104,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.25)),
               ),
               child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                Text(verse.english, style: GoogleFonts.inter(fontSize: 13.5, color: const Color(0xFFD4EDE4), height: 1.65, fontStyle: FontStyle.italic), textAlign: TextAlign.left),
+                Text(verse.english, style: GoogleFonts.inter(fontSize: 13.5, color: const Color(0xFFFAF9F6), height: 1.65, fontStyle: FontStyle.italic), textAlign: TextAlign.left),
               ]),
             ),
             const SizedBox(height: 14),
@@ -1117,7 +1117,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   child: Row(mainAxisSize: MainAxisSize.min, children: [
                     const Icon(Icons.menu_book_rounded, size: 12.5, color: Color(0xFFD4AF37)),
                     const SizedBox(width: 5),
-                    Text('Surah ${verse.surahName} [${verse.surahNumber}:${verse.ayahNumber}]', style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w600, color: const Color(0xFFD4EDE4))),
+                    Text('Surah ${verse.surahName} [${verse.surahNumber}:${verse.ayahNumber}]', style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w600, color: const Color(0xFFFAF9F6))),
                   ]),
                 ),
                 GestureDetector(

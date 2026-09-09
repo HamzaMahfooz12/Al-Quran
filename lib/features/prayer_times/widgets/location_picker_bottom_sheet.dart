@@ -153,11 +153,11 @@ class _LocationPickerBottomSheetState extends ConsumerState<LocationPickerBottom
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: Color(0xFFE2E8E4)),
+                      borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: Color(0xFFE2E8E4)),
+                      borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
                     ),
                   ),
                 ),

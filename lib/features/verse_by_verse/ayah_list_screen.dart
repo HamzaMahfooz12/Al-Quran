@@ -716,7 +716,7 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                     decoration: BoxDecoration(
                       color: AppTheme.cardBg,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFFE2E8E4)),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.03),
@@ -1039,7 +1039,7 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                   height: 48,
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [Color(0xFF26A69A), Color(0xFF00796B)],
+                      colors: [Color(0xFF2563EB), Color(0xFF1E3A60)],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),
@@ -1114,17 +1114,17 @@ class _SurahHeaderBanner extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFF1E5B2E), // Rich Islamic Forest Green
-            Color(0xFF144723), // Deep Emerald Shadow
+            Color(0xFF1E3A60), // Midnight Sapphire
+            Color(0xFF0F2038), // Deep Royal Navy Shadow
           ],
         ),
         border: Border.all(
-          color: const Color(0xFFF59E0B).withValues(alpha: 0.35),
+          color: const Color(0xFFD4AF37).withValues(alpha: 0.35),
           width: 1.2,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF144723).withValues(alpha: 0.35),
+            color: const Color(0xFF0F2038).withValues(alpha: 0.35),
             blurRadius: 18,
             offset: const Offset(0, 6),
           ),
@@ -1251,7 +1251,7 @@ class _SurahHeaderBanner extends StatelessWidget {
                           Icon(
                             Icons.translate_rounded,
                             size: 15,
-                            color: showTranslation ? const Color(0xFF1B2A1E) : Colors.white,
+                            color: showTranslation ? const Color(0xFF0F2038) : Colors.white,
                           ),
                           const SizedBox(width: 6),
                           Flexible(
@@ -1260,7 +1260,7 @@ class _SurahHeaderBanner extends StatelessWidget {
                               style: GoogleFonts.inter(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
-                                color: showTranslation ? const Color(0xFF1B2A1E) : Colors.white,
+                                color: showTranslation ? const Color(0xFF0F2038) : Colors.white,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -1393,12 +1393,12 @@ class _SurahHeaderBanner extends StatelessWidget {
                               fontFamily: 'Noto Nastaliq Urdu',
                               fontSize: 15,
                               height: 2.2,
-                              color: Color(0xFFE8F5E9),
+                              color: Color(0xFFFAF9F6),
                             )
                           : GoogleFonts.inter(
                               fontSize: 13,
                               height: 1.5,
-                              color: const Color(0xFFE8F5E9),
+                              color: const Color(0xFFFAF9F6),
                             ),
                     ),
                   ],

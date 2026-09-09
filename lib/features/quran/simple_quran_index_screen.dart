@@ -462,29 +462,29 @@ class _SimpleQuranIndexScreenState extends State<SimpleQuranIndexScreen> with Si
                             style: GoogleFonts.inter(
                               fontSize: 11,
                               fontWeight: FontWeight.w500,
-                              color: const Color(0xFF4B5E50),
+                              color: const Color(0xFF334155),
                             ),
                           ),
                           const Text(' • ', style: TextStyle(color: Color(0xFFD0C8B8), fontSize: 11)),
-                          const Icon(Icons.menu_book_outlined, size: 12, color: Color(0xFF4B5E50)),
+                          const Icon(Icons.menu_book_outlined, size: 12, color: Color(0xFF334155)),
                           const SizedBox(width: 2),
                           Text(
                             '${surah.ayahCount} Verses',
                             style: GoogleFonts.inter(
                               fontSize: 11,
                               fontWeight: FontWeight.w500,
-                              color: const Color(0xFF4B5E50),
+                              color: const Color(0xFF334155),
                             ),
                           ),
                           const Text(' • ', style: TextStyle(color: Color(0xFFD0C8B8), fontSize: 11)),
-                          const Icon(Icons.description_outlined, size: 12, color: Color(0xFF4B5E50)),
+                          const Icon(Icons.description_outlined, size: 12, color: Color(0xFF334155)),
                           const SizedBox(width: 2),
                           Text(
                             'Page ${surah.startPage}',
                             style: GoogleFonts.inter(
                               fontSize: 11,
                               fontWeight: FontWeight.w500,
-                              color: const Color(0xFF4B5E50),
+                              color: const Color(0xFF334155),
                             ),
                           ),
                         ],
@@ -509,7 +509,7 @@ class _SimpleQuranIndexScreenState extends State<SimpleQuranIndexScreen> with Si
                 const Icon(
                   Icons.chevron_right_rounded,
                   size: 20,
-                  color: Color(0xFF8D9E92),
+                  color: Color(0xFF64748B),
                 ),
               ],
             ),
@@ -560,7 +560,7 @@ class _SimpleQuranIndexScreenState extends State<SimpleQuranIndexScreen> with Si
                     style: GoogleFonts.outfit(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF1B2A1E),
+                      color: const Color(0xFF0F172A),
                     ),
                   ),
                 ),

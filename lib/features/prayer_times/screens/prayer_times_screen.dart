@@ -342,7 +342,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(Icons.location_on_rounded, color: Color(0xFFA5D6A7), size: 12),
+                                const Icon(Icons.location_on_rounded, color: Color(0xFFD4AF37), size: 12),
                                 const SizedBox(width: 3),
                                 Flexible(
                                   child: Text(

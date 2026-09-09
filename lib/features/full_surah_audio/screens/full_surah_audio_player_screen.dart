@@ -283,12 +283,12 @@ class _FullSurahAudioPlayerScreenState
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: const Color(0xFF56BA64).withValues(alpha: 0.5)),
+                        border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.5)),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.check_circle_rounded, size: 15, color: Color(0xFF56BA64)),
+                          const Icon(Icons.check_circle_rounded, size: 15, color: Color(0xFFD4AF37)),
                           const SizedBox(width: 6),
                           Text(
                             'Reciter: $reciterName',
@@ -537,7 +537,7 @@ class _FullSurahAudioPlayerScreenState
                                         )
                                       : Icon(
                                           isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                                          color: const Color(0xFF1B2A1E),
+                                          color: const Color(0xFF0F172A),
                                           size: 40,
                                         ),
                                 ),
@@ -698,7 +698,7 @@ class _SurahPickerModalState extends State<_SurahPickerModal> {
                   style: GoogleFonts.outfit(
                     fontSize: 17,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF1B2A1E),
+                    color: const Color(0xFF0F172A),
                   ),
                 ),
                 IconButton(
@@ -720,7 +720,7 @@ class _SurahPickerModalState extends State<_SurahPickerModal> {
                 controller: _ctrl,
                 decoration: InputDecoration(
                   hintText: 'Search Surah...',
-                  hintStyle: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF8D9E92)),
+                  hintStyle: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF64748B)),
                   prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF1E3A60), size: 20),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -751,12 +751,12 @@ class _SurahPickerModalState extends State<_SurahPickerModal> {
                       style: GoogleFonts.outfit(
                         fontSize: 14.5,
                         fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                        color: const Color(0xFF1B2A1E),
+                        color: const Color(0xFF0F172A),
                       ),
                     ),
                     subtitle: Text(
                       '${s.ayahCount} Verses • ${s.revelationType}',
-                      style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF4B5E50)),
+                      style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF334155)),
                     ),
                     trailing: Text(
                       s.nameArabic,
@@ -866,7 +866,7 @@ class _PlayerReciterPickerModalState extends ConsumerState<_PlayerReciterPickerM
                   style: GoogleFonts.outfit(
                     fontSize: 17,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF1B2A1E),
+                    color: const Color(0xFF0F172A),
                   ),
                 ),
                 IconButton(
@@ -888,7 +888,7 @@ class _PlayerReciterPickerModalState extends ConsumerState<_PlayerReciterPickerM
                 controller: _filterCtrl,
                 decoration: InputDecoration(
                   hintText: 'Search reciters...',
-                  hintStyle: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF8D9E92)),
+                  hintStyle: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF64748B)),
                   prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF1E3A60), size: 20),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -981,7 +981,7 @@ class _SleepTimerModal extends StatelessWidget {
                 style: GoogleFonts.outfit(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF1B2A1E),
+                  color: const Color(0xFF0F172A),
                 ),
               ),
               IconButton(

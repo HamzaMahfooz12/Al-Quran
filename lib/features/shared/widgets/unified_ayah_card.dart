@@ -350,8 +350,8 @@ class UnifiedAyahCard extends StatelessWidget {
             fontSize: arabicFontSize,
             fontWeight: FontWeight.bold,
             color: isWordActive
-                ? const Color(0xFF1B2A1E)
-                : const Color(0xFF1B2A1E),
+                ? const Color(0xFF0F172A)
+                : const Color(0xFF0F172A),
             backgroundColor: isWordActive
                 ? const Color(0xFFFDE68A) // Soft Golden Amber highlight
                 : null,
@@ -502,7 +502,7 @@ class UnifiedAyahCard extends StatelessWidget {
                   size: 20,
                   color: isBookmarked
                       ? const Color(0xFFF59E0B)
-                      : const Color(0xFF8D9E92),
+                      : const Color(0xFF64748B),
                 ),
                 onPressed: onBookmarkTap,
                 tooltip: isBookmarked ? 'Remove Bookmark' : 'Bookmark Ayah',
@@ -583,19 +583,19 @@ class UnifiedAyahCard extends StatelessWidget {
                       ? GoogleFonts.notoNastaliqUrdu(
                           fontSize: urduFontSize,
                           height: 2.35,
-                          color: const Color(0xFF1B2A1E),
+                          color: const Color(0xFF0F172A),
                           fontWeight: FontWeight.w500,
                         )
                       : (isHindi
                           ? GoogleFonts.notoSansDevanagari(
                               fontSize: urduFontSize * 0.88,
                               height: 1.8,
-                              color: const Color(0xFF1B2A1E),
+                              color: const Color(0xFF0F172A),
                             )
                           : GoogleFonts.outfit(
                               fontSize: urduFontSize * 0.85,
                               height: 1.65,
-                              color: const Color(0xFF1B2A1E),
+                              color: const Color(0xFF0F172A),
                               fontWeight: FontWeight.w500,
                             )),
                 );
@@ -644,14 +644,14 @@ class UnifiedAyahCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Icon(Icons.copy_rounded,
-                          size: 14, color: Color(0xFF4B5E50)),
+                          size: 14, color: Color(0xFF334155)),
                       const SizedBox(width: 3),
                       Text(
                         'Copy',
                         style: GoogleFonts.inter(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
-                            color: const Color(0xFF4B5E50)),
+                            color: const Color(0xFF334155)),
                       ),
                     ],
                   ),
@@ -670,14 +670,14 @@ class UnifiedAyahCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Icon(Icons.share_outlined,
-                          size: 14, color: Color(0xFF4B5E50)),
+                          size: 14, color: Color(0xFF334155)),
                       const SizedBox(width: 3),
                       Text(
                         'Share',
                         style: GoogleFonts.inter(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
-                            color: const Color(0xFF4B5E50)),
+                            color: const Color(0xFF334155)),
                       ),
                     ],
                   ),

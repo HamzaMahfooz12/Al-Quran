@@ -197,7 +197,7 @@ class _AyahTafseerModalContentState
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF2C6B9E), Color(0xFF1D5380)],
+                colors: [Color(0xFF1E3A60), Color(0xFF0F2038)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -273,7 +273,7 @@ class _AyahTafseerModalContentState
                   color: const Color(0xFF252D34),
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
-                    color: const Color(0xFF4CAF50).withValues(alpha: 0.85),
+                    color: const Color(0xFFD4AF37).withValues(alpha: 0.7),
                     width: 1.4,
                   ),
                 ),
@@ -285,13 +285,13 @@ class _AyahTafseerModalContentState
                       height: 38,
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF1B4D3E), Color(0xFF0F382A)],
+                          colors: [Color(0xFF1E3A60), Color(0xFF0F2038)],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: const Color(0xFF66BB6A),
+                          color: const Color(0xFFD4AF37),
                           width: 1.2,
                         ),
                       ),
@@ -341,7 +341,7 @@ class _AyahTafseerModalContentState
                       _showDropdown
                           ? Icons.keyboard_arrow_up_rounded
                           : Icons.keyboard_arrow_down_rounded,
-                      color: const Color(0xFF81C784),
+                      color: const Color(0xFFD4AF37),
                       size: 26,
                     ),
                   ],
@@ -389,7 +389,7 @@ class _AyahTafseerModalContentState
                             height: 28,
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? const Color(0xFF2E7D32)
+                                  ? const Color(0xFF2563EB)
                                   : const Color(0xFF37474F),
                               shape: BoxShape.circle,
                             ),
@@ -417,7 +417,7 @@ class _AyahTafseerModalContentState
                                         ? FontWeight.bold
                                         : FontWeight.w500,
                                     color: isSelected
-                                        ? const Color(0xFF81C784)
+                                        ? const Color(0xFFD4AF37)
                                         : Colors.white,
                                   ),
                                 ),
@@ -447,7 +447,7 @@ class _AyahTafseerModalContentState
                           ),
                           if (isSelected)
                             const Icon(Icons.check_rounded,
-                                color: Color(0xFF81C784), size: 22),
+                                color: Color(0xFFD4AF37), size: 22),
                         ],
                       ),
                     ),
@@ -464,7 +464,7 @@ class _AyahTafseerModalContentState
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         CircularProgressIndicator(
-                          color: Color(0xFF4CAF50),
+                          color: Color(0xFF2563EB),
                           strokeWidth: 3,
                         ),
                       ],
@@ -512,7 +512,7 @@ class _AyahTafseerModalContentState
                                 style: GoogleFonts.inter(
                                   fontSize: 11.5,
                                   fontWeight: FontWeight.w600,
-                                  color: const Color(0xFF81C784),
+                                  color: const Color(0xFFD4AF37),
                                 ),
                               ),
                             ),
@@ -534,70 +534,49 @@ class _AyahTafseerModalContentState
                                 ? TextDirection.rtl
                                 : TextDirection.ltr,
                             style: isUrduOrArabic
-                                ? GoogleFonts.notoNastaliqUrdu(
-                                    fontSize: _fontSize,
-                                    height: 2.35,
-                                    color: const Color(0xFFF1F5F9),
-                                    fontWeight: FontWeight.w500,
+                                ? TextStyle(
+                                    fontFamily: _currentEdition.language == 'ur'
+                                        ? 'Jameel Noori Nastaleeq'
+                                        : 'Amiri',
+                                    fontSize: _fontSize + 4,
+                                    height: 2.2,
+                                    color: const Color(0xFFECEFF1),
                                   )
-                                : (isHindi
-                                    ? GoogleFonts.notoSansDevanagari(
-                                        fontSize: _fontSize - 1,
-                                        height: 1.8,
-                                        color: const Color(0xFFF1F5F9),
-                                      )
-                                    : GoogleFonts.outfit(
-                                        fontSize: _fontSize - 2,
-                                        height: 1.7,
-                                        color: const Color(0xFFF1F5F9),
-                                      )),
+                                : GoogleFonts.inter(
+                                    fontSize: _fontSize,
+                                    height: 1.7,
+                                    color: const Color(0xFFECEFF1),
+                                  ),
                           )
                         else
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 18, vertical: 26),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF161E24),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: const Color(0xFF37474F),
-                                width: 1.2,
-                              ),
-                            ),
+                          Center(
                             child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFF263238),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(
-                                    Icons.menu_book_outlined,
-                                    size: 28,
-                                    color: Color(0xFFB0BEC5),
+                                const SizedBox(height: 32),
+                                Icon(
+                                  Icons.menu_book_rounded,
+                                  size: 48,
+                                  color: Colors.white.withValues(alpha: 0.2),
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  'تفسير غير متوفر في هذه النسخة',
+                                  textDirection: TextDirection.rtl,
+                                  style: GoogleFonts.amiri(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFFFFD54F),
                                   ),
                                 ),
-                                const SizedBox(height: 14),
+                                const SizedBox(height: 6),
                                 Text(
-                                  'The author has not provided a tafsir for this ayah.',
+                                  'Tafseer commentary is not available for this Ayah in the selected edition.',
                                   textAlign: TextAlign.center,
                                   style: GoogleFonts.inter(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
-                                    color: const Color(0xFFECEFF1),
-                                    height: 1.4,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'اس آیت کی تفسیر اس کتاب میں موجود نہیں ہے۔',
-                                  textAlign: TextAlign.center,
-                                  textDirection: TextDirection.rtl,
-                                  style: GoogleFonts.notoNastaliqUrdu(
-                                    fontSize: 14.5,
+                                    fontSize: 13,
                                     color: const Color(0xFF90A4AE),
-                                    height: 2.2,
+                                    height: 1.4,
                                   ),
                                 ),
                                 const SizedBox(height: 16),
@@ -619,7 +598,7 @@ class _AyahTafseerModalContentState
                                       const Icon(
                                         Icons.info_outline_rounded,
                                         size: 16,
-                                        color: Color(0xFF81C784),
+                                        color: Color(0xFF2563EB),
                                       ),
                                       const SizedBox(width: 8),
                                       Flexible(
@@ -627,7 +606,7 @@ class _AyahTafseerModalContentState
                                           'You can select another Tafseer from the dropdown above.',
                                           style: GoogleFonts.inter(
                                             fontSize: 12,
-                                            color: const Color(0xFFC8E6C9),
+                                            color: const Color(0xFFC5D5E8),
                                           ),
                                           textAlign: TextAlign.center,
                                         ),
@@ -683,8 +662,8 @@ class _AyahTafseerModalContentState
                   // Copy button
                   OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF81C784),
-                      side: const BorderSide(color: Color(0xFF388E3C)),
+                      foregroundColor: const Color(0xFFD4AF37),
+                      side: const BorderSide(color: Color(0xFFD4AF37)),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
                       padding: const EdgeInsets.symmetric(

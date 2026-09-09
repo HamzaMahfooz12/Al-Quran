@@ -254,7 +254,7 @@ class _AyahShareDialogState extends State<AyahShareDialog> {
                       selectedColor: AppTheme.primary,
                       backgroundColor: AppTheme.cardBg,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      side: BorderSide(color: isSelected ? AppTheme.primary : const Color(0xFFE2E8E4)),
+                      side: BorderSide(color: isSelected ? AppTheme.primary : const Color(0xFFE2E8F0)),
                     ),
                   );
                 }).toList(),

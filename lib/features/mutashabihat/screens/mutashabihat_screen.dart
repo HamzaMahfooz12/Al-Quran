@@ -228,7 +228,7 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
               decoration: BoxDecoration(
                 color: AppTheme.cardBg,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: const Color(0xFFE2E8E4)),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
               ),
               child: TextField(
                 controller: _searchCtrl,
@@ -296,7 +296,7 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                   color: isSelected ? AppTheme.primary : AppTheme.cardBg,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: isSelected ? AppTheme.primary : const Color(0xFFE2E8E4),
+                    color: isSelected ? AppTheme.primary : const Color(0xFFE2E8F0),
                     width: 1,
                   ),
                   boxShadow: isSelected
@@ -354,7 +354,7 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
       decoration: BoxDecoration(
         color: AppTheme.cardBg,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE2E8E4)),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -521,7 +521,7 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Row(
               children: [
-                Expanded(child: Container(height: 1.2, color: const Color(0xFFE2E8E4))),
+                Expanded(child: Container(height: 1.2, color: const Color(0xFFE2E8F0))),
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 8),
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3.5),
@@ -546,7 +546,7 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                     ],
                   ),
                 ),
-                Expanded(child: Container(height: 1.2, color: const Color(0xFFE2E8E4))),
+                Expanded(child: Container(height: 1.2, color: const Color(0xFFE2E8F0))),
               ],
             ),
           ),
