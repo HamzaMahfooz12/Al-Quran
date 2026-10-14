@@ -374,8 +374,11 @@ class _Mushaf16ScreenState extends ConsumerState<Mushaf16Screen> {
             tooltip: 'Jump to Location',
             onPressed: () => JumpNavigationDialog.show(
               context,
-              mushafType: 'mushaf_16',
-              onJumpToPage: (p) => _pageCtrl?.jumpToPage(p - 1),
+              mushafType: '16_line',
+              onJumpToPage: (p) {
+                _pageCtrl?.jumpToPage(p - 1);
+                setState(() => _currentPage = p);
+              },
             ),
           ),
           // Mark Mistakes Report / Toggle

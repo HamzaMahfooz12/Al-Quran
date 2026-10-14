@@ -362,21 +362,28 @@ class QuranRepository {
   }
 
   // ── Mushaf Word-Layout Queries ─────────────────────────────────────────────
+  String _normalizeMushaf(String mushaf) {
+    if (mushaf == 'mushaf_16' || mushaf == '16_line') return '16_line';
+    return '15_line';
+  }
+
   Future<List<Map<String, dynamic>>> getMushafPageWords(int page, String mushaf) async {
+    final norm = _normalizeMushaf(mushaf);
     final rows = await _db.query(
       'word_layout',
       where: 'mushaf = ? AND page = ?',
-      whereArgs: [mushaf, page],
+      whereArgs: [norm, page],
       orderBy: 'line ASC, word_pos ASC',
     );
     return rows;
   }
 
   Future<int> getSurahStartPage(int surah, String mushaf) async {
+    final norm = _normalizeMushaf(mushaf);
     final rows = await _db.query(
       'word_layout',
       where: 'mushaf = ? AND surah = ?',
-      whereArgs: [mushaf, surah],
+      whereArgs: [norm, surah],
       orderBy: 'page ASC',
       limit: 1,
     );
@@ -390,10 +397,11 @@ class QuranRepository {
   }
 
   Future<int?> getMushafPageForAyah(int surah, int ayah, String mushaf) async {
+    final norm = _normalizeMushaf(mushaf);
     final rows = await _db.query(
       'word_layout',
       where: 'mushaf = ? AND surah = ? AND ayah = ?',
-      whereArgs: [mushaf, surah, ayah],
+      whereArgs: [norm, surah, ayah],
       orderBy: 'line ASC, word_pos ASC',
       limit: 1,
     );
@@ -406,13 +414,14 @@ class QuranRepository {
   }
 
   Future<int> getJuzStartPage(int juz, String mushaf) async {
+    final norm = _normalizeMushaf(mushaf);
     final ayahs = await getAyahsByJuz(juz);
     if (ayahs.isNotEmpty) {
       final firstAyah = ayahs.first;
       final rows = await _db.query(
         'word_layout',
         where: 'mushaf = ? AND surah = ? AND ayah >= ?',
-        whereArgs: [mushaf, firstAyah.surah, firstAyah.ayahNumber],
+        whereArgs: [norm, firstAyah.surah, firstAyah.ayahNumber],
         orderBy: 'page ASC',
         limit: 1,
       );
@@ -424,6 +433,23 @@ class QuranRepository {
       return firstAyah.page;
     }
     return 1;
+  }
+
+  Future<int?> getRukuStartPage(int globalRuku, String mushaf) async {
+    final norm = _normalizeMushaf(mushaf);
+    final rows = await _db.query(
+      'ayahs',
+      where: 'ruku = ?',
+      whereArgs: [globalRuku],
+      orderBy: 'id ASC',
+      limit: 1,
+    );
+    if (rows.isNotEmpty) {
+      final s = rows.first['surah'] as int;
+      final a = rows.first['ayah_number'] as int;
+      return await getMushafPageForAyah(s, a, norm);
+    }
+    return null;
   }
 
   // ── Marked Mistakes & Rich Analytics ───────────────────────────────────────

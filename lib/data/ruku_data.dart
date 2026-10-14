@@ -569,4 +569,25 @@ class RukuData {
   static RukuInfo? getRukuEndInfo(int surah, int ayah) {
     return endPoints['$surah:$ayah'];
   }
+
+  static int getRukuStartAyah(int surah, int rukuInSurah) {
+    if (rukuInSurah <= 1) return 1;
+    for (final entry in endPoints.entries) {
+      if (entry.key.startsWith('$surah:') && entry.value.rukuInSurah == rukuInSurah - 1) {
+        final parts = entry.key.split(':');
+        return (int.tryParse(parts[1]) ?? 0) + 1;
+      }
+    }
+    return 1;
+  }
+
+  static int getRukuEndAyah(int surah, int rukuInSurah) {
+    for (final entry in endPoints.entries) {
+      if (entry.key.startsWith('$surah:') && entry.value.rukuInSurah == rukuInSurah) {
+        final parts = entry.key.split(':');
+        return int.tryParse(parts[1]) ?? 1;
+      }
+    }
+    return 1;
+  }
 }

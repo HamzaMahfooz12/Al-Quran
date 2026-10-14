@@ -440,17 +440,25 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
     // ── If line is exclusively headers ──
     if (ayahWords.isEmpty && (surahNameWord != null || basmallahWord != null)) {
       if (widget.mushafType == '16_line') {
-        // In 16-Line Mushaf: Bismillah, Surah details, & Verses/Rukus are integrated in the SAME single line!
-        final sNum = surahNameWord != null ? surahNameWord.surah : (basmallahWord?.surah ?? _surahNumber);
-        final sName = surahNameWord?.glyphCode ?? _surahNameArabic;
-        final bText = basmallahWord?.glyphCode ?? 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ';
-        return Center(
-          child: SurahHeader16Widget(
-            surahNumber: sNum,
-            fallbackSurahName: sName,
-            bismillahText: bText,
-          ),
-        );
+        if (surahNameWord != null && basmallahWord != null) {
+          // 1-line budget: Bismillah, Surah details, & Verses/Rukus are integrated in the SAME single line!
+          final sNum = surahNameWord.surah;
+          final sName = surahNameWord.glyphCode.isNotEmpty ? surahNameWord.glyphCode : _surahNameArabic;
+          final bText = basmallahWord.glyphCode.isNotEmpty ? basmallahWord.glyphCode : 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ';
+          return Center(
+            child: SurahHeader16Widget(
+              surahNumber: sNum,
+              fallbackSurahName: sName,
+              bismillahText: bText,
+            ),
+          );
+        } else if (surahNameWord != null) {
+          // 2-line layout: Line 1 is the Surah Cartouche ONLY
+          return Center(child: _build15LineSurahHeader(surahNameWord));
+        } else {
+          // 2-line layout: Line 2 is the Bismillah line ONLY (never repeat SurahHeader16Widget)
+          return Center(child: _build15LineBasmallah(basmallahWord!));
+        }
       } else {
         // In 15-Line Mushaf: 2-line layout (Line 1 cartouche, Line 2 Bismillah)
         if (surahNameWord != null && basmallahWord != null) {
@@ -476,18 +484,26 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
     // ── If line contains both headers and ayah words (e.g. Surah starts mid-page) ──
     if (surahNameWord != null || basmallahWord != null) {
       if (widget.mushafType == '16_line') {
-        final sNum = surahNameWord != null ? surahNameWord.surah : (basmallahWord?.surah ?? _surahNumber);
-        final sName = surahNameWord?.glyphCode ?? _surahNameArabic;
-        final bText = basmallahWord?.glyphCode ?? 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ';
+        Widget headerWidget;
+        if (surahNameWord != null && basmallahWord != null) {
+          final sNum = surahNameWord.surah;
+          final sName = surahNameWord.glyphCode.isNotEmpty ? surahNameWord.glyphCode : _surahNameArabic;
+          final bText = basmallahWord.glyphCode.isNotEmpty ? basmallahWord.glyphCode : 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ';
+          headerWidget = SurahHeader16Widget(
+            surahNumber: sNum,
+            fallbackSurahName: sName,
+            bismillahText: bText,
+          );
+        } else if (surahNameWord != null) {
+          headerWidget = _build15LineSurahHeader(surahNameWord);
+        } else {
+          headerWidget = _build15LineBasmallah(basmallahWord!);
+        }
         return Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SurahHeader16Widget(
-              surahNumber: sNum,
-              fallbackSurahName: sName,
-              bismillahText: bText,
-            ),
+            headerWidget,
             if (ayahWords.isNotEmpty) ...[
               const SizedBox(height: 2),
               SizedBox(
