@@ -137,6 +137,17 @@ class SettingsService {
       _prefs.getString(_kPrayerJuristic) ?? 'hanafi';
   Future<void> setPrayerJuristicMethod(String method) =>
       _prefs.setString(_kPrayerJuristic, method);
+
+  // ── Reading Screen Timeout (Keep-Awake Duration) ──────────────────────────
+  // 0 = Never (screen never turns off), 1 = 1m, 2 = 2m, 5 = 5m, 10 = 10m, 15 = 15m, 30 = 30m
+  static const _kScreenTimeoutMinutes = 'screen_timeout_minutes';
+  static const int defaultScreenTimeoutMinutes = 0; // Default: Never
+
+  int get screenTimeoutMinutes =>
+      _prefs.getInt(_kScreenTimeoutMinutes) ?? defaultScreenTimeoutMinutes;
+
+  Future<void> setScreenTimeoutMinutes(int minutes) =>
+      _prefs.setInt(_kScreenTimeoutMinutes, minutes);
 }
 
 // Reactive provider for selected Fiqh (hanafi vs standard)
@@ -152,5 +163,21 @@ class SelectedFiqhNotifier extends StateNotifier<String> {
   Future<void> setFiqh(String fiqh) async {
     state = fiqh;
     await _settings.setPrayerJuristicMethod(fiqh);
+  }
+}
+
+// Reactive provider for Screen Timeout in Mushaf reading (0 = Never)
+final screenTimeoutMinutesProvider = StateNotifierProvider<ScreenTimeoutMinutesNotifier, int>((ref) {
+  final settings = ref.watch(settingsServiceProvider);
+  return ScreenTimeoutMinutesNotifier(settings);
+});
+
+class ScreenTimeoutMinutesNotifier extends StateNotifier<int> {
+  final SettingsService _settings;
+  ScreenTimeoutMinutesNotifier(this._settings) : super(_settings.screenTimeoutMinutes);
+
+  Future<void> setTimeoutMinutes(int minutes) async {
+    state = minutes;
+    await _settings.setScreenTimeoutMinutes(minutes);
   }
 }

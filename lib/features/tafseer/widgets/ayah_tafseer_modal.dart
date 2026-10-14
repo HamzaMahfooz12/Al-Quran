@@ -175,7 +175,6 @@ class _AyahTafseerModalContentState
         : null;
     final surahTitle = 'Surat No.${widget.ayah.surah} Ayat No.${widget.ayah.ayahNumber}';
     final isUrduOrArabic = _currentEdition.language == 'ur' || _currentEdition.language == 'ar';
-    final isHindi = _currentEdition.language == 'hi';
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.88,

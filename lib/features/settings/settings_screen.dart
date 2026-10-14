@@ -148,6 +148,24 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
           ),
 
+          // Reading Screen Keep-Awake Timeout
+          Consumer(
+            builder: (context, ref, child) {
+              final timeoutMin = ref.watch(screenTimeoutMinutesProvider);
+              final String label = timeoutMin == 0
+                  ? 'Never (Screen Never Turns Off)'
+                  : '$timeoutMin ${timeoutMin == 1 ? "Minute" : "Minutes"}';
+
+              return _selectorTile(
+                icon: Icons.light_mode_rounded,
+                title: 'Reading Screen Sleep Timeout',
+                selectedName: label,
+                selectedBadge: timeoutMin == 0 ? 'NEVER' : '${timeoutMin}M',
+                onTap: () => _openScreenTimeoutPicker(context, ref, timeoutMin),
+              );
+            },
+          ),
+
           // ── Content & Recitation (Dropdown Pickers) ────────────────────
           _sectionHeader('Content & Recitation'),
 
@@ -497,6 +515,160 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             },
           );
         }).toList(),
+      ),
+    );
+  }
+
+  void _openScreenTimeoutPicker(BuildContext context, WidgetRef ref, int currentMinutes) {
+    final options = [
+      {'minutes': 1, 'label': '1 Minute', 'desc': 'Screen sleeps after 1 min of inactivity'},
+      {'minutes': 2, 'label': '2 Minutes', 'desc': 'Screen sleeps after 2 min of inactivity'},
+      {'minutes': 5, 'label': '5 Minutes', 'desc': 'Screen sleeps after 5 min of inactivity'},
+      {'minutes': 10, 'label': '10 Minutes', 'desc': 'Screen sleeps after 10 min of inactivity'},
+      {'minutes': 15, 'label': '15 Minutes', 'desc': 'Screen sleeps after 15 min of inactivity'},
+      {'minutes': 30, 'label': '30 Minutes', 'desc': 'Screen sleeps after 30 min of inactivity'},
+      {'minutes': 0, 'label': 'Never (Screen Never Turns Off)', 'desc': 'Screen stays on indefinitely while reading (Recommended)'},
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0F2038),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.light_mode_rounded, color: Color(0xFFD4AF37), size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Reading Screen Sleep Timeout',
+                        style: GoogleFonts.outfit(fontSize: 17, fontWeight: FontWeight.bold, color: const Color(0xFF0F2038)),
+                      ),
+                      Text(
+                        'Sleep timeout when Keep-Awake is turned on in 15/16-Line Mushaf',
+                        style: GoogleFonts.inter(fontSize: 11.5, color: AppTheme.textMuted),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            const Divider(height: 1),
+            const SizedBox(height: 8),
+            ...options.map((opt) {
+              final min = opt['minutes'] as int;
+              final isSelected = min == currentMinutes;
+              final isNever = min == 0;
+
+              return InkWell(
+                onTap: () {
+                  ref.read(screenTimeoutMinutesProvider.notifier).setTimeoutMinutes(min);
+                  Navigator.pop(ctx);
+                },
+                borderRadius: BorderRadius.circular(14),
+                child: Container(
+                  margin: const EdgeInsets.symmetric(vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: isSelected ? const Color(0xFFF3F7FA) : Colors.transparent,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: isSelected ? const Color(0xFF0F2038) : Colors.transparent,
+                      width: 1.2,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+                        color: isSelected ? const Color(0xFF0F2038) : AppTheme.textMuted,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    opt['label'] as String,
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 14.5,
+                                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                                      color: const Color(0xFF0F2038),
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                if (isNever) ...[
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFFFF8E1),
+                                      borderRadius: BorderRadius.circular(6),
+                                      border: Border.all(color: const Color(0xFFFFD54F), width: 0.8),
+                                    ),
+                                    child: Text(
+                                      'RECOMMENDED',
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.bold,
+                                        color: const Color(0xFFB8860B),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              opt['desc'] as String,
+                              style: GoogleFonts.inter(fontSize: 11.5, color: AppTheme.textMuted),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+          ],
+        ),
       ),
     );
   }

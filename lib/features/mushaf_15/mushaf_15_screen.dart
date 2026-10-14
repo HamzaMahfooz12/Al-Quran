@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../data/models/surah_info.dart';
 import '../../data/repositories/quran_repository.dart';
 import '../../services/audio_service.dart';
@@ -30,6 +31,10 @@ class _Mushaf15ScreenState extends ConsumerState<Mushaf15Screen> {
   bool _loadingLastRead = true;
   bool _showBottomBar = true;
 
+  // Keep screen awake
+  bool _isKeepScreenAwake = false;
+  Timer? _inactivityTimer;
+
   // Auto-scroll
   Timer? _scrollTimer;
   bool _autoScrollActive = false;
@@ -56,6 +61,7 @@ class _Mushaf15ScreenState extends ConsumerState<Mushaf15Screen> {
   }
 
   void _onPointerDown(PointerDownEvent event) {
+    _resetInactivityTimer();
     _pointerPositions[event.pointer] = event.position;
     if (_pointerPositions.length == 2) {
       final points = _pointerPositions.values.toList();
@@ -202,11 +208,83 @@ class _Mushaf15ScreenState extends ConsumerState<Mushaf15Screen> {
   @override
   void dispose() {
     _scrollTimer?.cancel();
+    _inactivityTimer?.cancel();
+    WakelockPlus.disable();
     _pageCtrl?.removeListener(_onScrollPage);
     _pageCtrl?.dispose();
     _transformNotifier.dispose();
     _zoomScaleNotifier.dispose();
     super.dispose();
+  }
+
+  void _toggleKeepScreenAwake() {
+    final settings = ref.read(settingsServiceProvider);
+    final timeoutMin = settings.screenTimeoutMinutes;
+
+    setState(() {
+      _isKeepScreenAwake = !_isKeepScreenAwake;
+    });
+
+    _inactivityTimer?.cancel();
+
+    if (_isKeepScreenAwake) {
+      WakelockPlus.enable();
+      _resetInactivityTimer();
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.light_mode_rounded, color: Color(0xFFD4AF37), size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  timeoutMin == 0
+                      ? 'Screen Keep-Awake ON — Screen will never turn off while reading.'
+                      : 'Screen Keep-Awake ON — Sleep timeout: $timeoutMin min.',
+                  style: GoogleFonts.outfit(fontWeight: FontWeight.w600, color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+          duration: const Duration(seconds: 3),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: const Color(0xFF0F2038),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: const BorderSide(color: Color(0xFFD4AF37), width: 1.0),
+          ),
+        ),
+      );
+    } else {
+      WakelockPlus.disable();
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Screen Keep-Awake OFF — Default system screen timeout restored.',
+            style: GoogleFonts.outfit(fontWeight: FontWeight.w600, color: Colors.white),
+          ),
+          duration: const Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: const Color(0xFF0F2038),
+        ),
+      );
+    }
+  }
+
+  void _resetInactivityTimer() {
+    _inactivityTimer?.cancel();
+    if (!_isKeepScreenAwake) return;
+    final timeoutMin = ref.read(settingsServiceProvider).screenTimeoutMinutes;
+    if (timeoutMin > 0) {
+      _inactivityTimer = Timer(Duration(minutes: timeoutMin), () {
+        if (mounted && _isKeepScreenAwake) {
+          WakelockPlus.disable();
+          setState(() => _isKeepScreenAwake = false);
+        }
+      });
+    }
   }
 
   void _toggleAutoScroll() {
@@ -368,6 +446,15 @@ class _Mushaf15ScreenState extends ConsumerState<Mushaf15Screen> {
           style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         actions: [
+          // Keep Screen Awake Toggle
+          IconButton(
+            icon: Icon(
+              _isKeepScreenAwake ? Icons.light_mode : Icons.light_mode_outlined,
+              color: _isKeepScreenAwake ? const Color(0xFFFFD54F) : Colors.white70,
+            ),
+            tooltip: _isKeepScreenAwake ? 'Screen Keep-Awake: ON' : 'Screen Keep-Awake: OFF',
+            onPressed: _toggleKeepScreenAwake,
+          ),
           // Jump Navigation Dialog Button
           IconButton(
             icon: const Icon(Icons.explore_outlined, color: Colors.white),

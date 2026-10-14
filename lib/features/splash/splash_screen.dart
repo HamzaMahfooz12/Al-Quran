@@ -36,9 +36,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   // Shimmer particles rotation
   late final AnimationController _shimmerCtrl;
 
-  bool _seedingDone = false;
-  bool _minTimeDone = false;
-
   @override
   void initState() {
     super.initState();
@@ -73,7 +70,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     // ── 4. Enforce minimum 2-second splash + run seeding ─────────────────
     Future.wait([
-      Future.delayed(const Duration(seconds: 2), () => _minTimeDone = true),
+      Future.delayed(const Duration(seconds: 2)),
       _runSeeding(),
     ]).then((_) => _navigateAway());
   }
@@ -89,7 +86,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Future<void> _runSeeding() async {
     final db = DatabaseHelper.instance;
     await db.database;
-    _seedingDone = true;
   }
 
   void _navigateAway() {
@@ -104,8 +100,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.sizeOf(context);
-
     return Scaffold(
       backgroundColor: _kDeepNavy,
       body: Stack(
@@ -133,7 +127,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           Positioned.fill(
             child: AnimatedBuilder(
               animation: _shimmerCtrl,
-              builder: (_, __) => CustomPaint(
+              builder: (context, child) => CustomPaint(
                 painter: _IslamicPatternPainter(
                   rotation: _shimmerCtrl.value * 2 * math.pi,
                   color: _kSilver.withValues(alpha: 0.04),
@@ -300,7 +294,7 @@ class _LoadingDotsState extends State<_LoadingDots>
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _ctrl,
-      builder: (_, __) {
+      builder: (context, child) {
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: List.generate(3, (i) {

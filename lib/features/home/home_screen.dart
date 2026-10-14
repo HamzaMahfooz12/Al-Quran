@@ -851,13 +851,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  /// 2-Column Quran Modes & Reading Grid matching Reference Image 1 & 2
+  /// Quran Modes & Reading — Imperial Islamic Design System
   Widget _buildVerticalIslamicUtilities() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // ── Section 1: Holy Quran Mushafs ──
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -873,11 +874,87 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Quran Modes & Reading',
+                    'Holy Quran Mushafs',
                     style: GoogleFonts.outfit(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: AppTheme.textPrimary,
+                      color: const Color(0xFF0F2038),
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFD4AF37).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.35), width: 0.8),
+                ),
+                child: Text(
+                  'PRINT FORMAT',
+                  style: GoogleFonts.outfit(
+                    fontSize: 9.5,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.8,
+                    color: const Color(0xFF996515),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // ── Row 1: Illuminated 16-Line & 15-Line Mushaf Cards ──
+          Row(
+            children: [
+              Expanded(
+                child: _mushafPrimaryCard(
+                  title: '16-Line Mushaf',
+                  arabicBadge: '١٦ سطر',
+                  subtitle: 'Indo-Pak Taj Standard',
+                  badge: 'INDO-PAK',
+                  icon: Icons.menu_book_rounded,
+                  gradientColors: const [Color(0xFF0A192F), Color(0xFF132B4F)],
+                  onTap: () => context.goNamed('mushaf-16', queryParameters: {'page': '1'}),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _mushafPrimaryCard(
+                  title: '15-Line Mushaf',
+                  arabicBadge: '١٥ سطر',
+                  subtitle: 'Saudi Madinah Standard',
+                  badge: 'MADINAH',
+                  icon: Icons.auto_stories_rounded,
+                  gradientColors: const [Color(0xFF09202D), Color(0xFF123447)],
+                  onTap: () => context.goNamed('mushaf-15', queryParameters: {'page': '1'}),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 22),
+
+          // ── Section 2: Quran Study & Utilities ──
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 4,
+                    height: 18,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFD4AF37),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Quran Study & Utilities',
+                    style: GoogleFonts.outfit(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF0F2038),
                     ),
                   ),
                 ],
@@ -903,57 +980,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 14),
-
-          // ── Row 1: 16-Line Indo-Pak Mushaf & 15-Line Madinah Mushaf ──
-          Row(
-            children: [
-              Expanded(
-                child: _modeCard(
-                  title: '16-Line Mushaf',
-                  subtitle: 'Indo-Pak Standard Taj Page Format',
-                  badge: 'INDO-PAK',
-                  icon: Icons.import_contacts_rounded,
-                  accentColor: const Color(0xFF5B21B6),
-                  onTap: () => context.goNamed('mushaf-16', queryParameters: {'page': '1'}),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _modeCard(
-                  title: '15-Line Mushaf',
-                  subtitle: 'Saudi Madinah Standard Page Format',
-                  badge: 'MADINAH',
-                  icon: Icons.auto_stories_rounded,
-                  accentColor: const Color(0xFF0369A1),
-                  onTap: () => context.goNamed('mushaf-15', queryParameters: {'page': '1'}),
-                ),
-              ),
-            ],
-          ),
           const SizedBox(height: 12),
 
-          // ── Row 2: Surah Index & Juz Explorer ──
+          // ── Study Tools Grid (Harmonized Royal Islamic Palette) ──
           Row(
             children: [
               Expanded(
-                child: _modeCard(
+                child: _studyUtilityCard(
                   title: 'Surah Index',
                   subtitle: '114 Surahs with Audio & Translations',
                   badge: '114 SURAHS',
-                  icon: Icons.menu_book_rounded,
-                  accentColor: const Color(0xFF047857),
+                  icon: Icons.format_list_bulleted_rounded,
                   onTap: () => context.goNamed('simple-quran', queryParameters: {'tab': '0'}),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: _modeCard(
+                child: _studyUtilityCard(
                   title: 'Juz Explorer',
                   subtitle: 'Browse & Read Quran by 30 Juz',
                   badge: '30 PARAS',
-                  icon: Icons.library_books_rounded,
-                  accentColor: const Color(0xFFB45309),
+                  icon: Icons.layers_rounded,
                   onTap: () => context.goNamed('simple-quran', queryParameters: {'tab': '1'}),
                 ),
               ),
@@ -961,27 +1008,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
           const SizedBox(height: 12),
 
-          // ── Row 3: Mistakes Report & Mutashabihat ──
           Row(
             children: [
               Expanded(
-                child: _modeCard(
+                child: _studyUtilityCard(
                   title: 'Mistakes Report',
-                  subtitle: 'Track Hifz & Tajweed Memorization Errors',
+                  subtitle: 'Track Hifz & Tajweed Memorization',
                   badge: 'HIFZ TRACKER',
                   icon: Icons.fact_check_rounded,
-                  accentColor: const Color(0xFFBE123C),
                   onTap: () => context.goNamed('mistakes-report'),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: _modeCard(
+                child: _studyUtilityCard(
                   title: 'Mutashabihat',
                   subtitle: 'Similar Verses Grouped by Ayah',
                   badge: 'SIMILAR VERSES',
                   icon: Icons.compare_arrows_rounded,
-                  accentColor: const Color(0xFF1D4ED8),
                   onTap: () => context.goNamed('mutashabihat'),
                 ),
               ),
@@ -989,27 +1033,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
           const SizedBox(height: 12),
 
-          // ── Row 4: Search Quran & Bookmarks ──
           Row(
             children: [
               Expanded(
-                child: _modeCard(
+                child: _studyUtilityCard(
                   title: 'Search Quran',
                   subtitle: 'Instant Search Across 6,236 Verses',
                   badge: 'FAST SEARCH',
                   icon: Icons.search_rounded,
-                  accentColor: const Color(0xFF0284C7),
                   onTap: () => context.goNamed('search'),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: _modeCard(
+                child: _studyUtilityCard(
                   title: 'Bookmarks & Sajdas',
                   subtitle: 'Saved Bookmarks & 14 Sajda Verses',
                   badge: '14 SAJDAS',
                   icon: Icons.bookmarks_rounded,
-                  accentColor: const Color(0xFF7E22CE),
                   onTap: () => context.goNamed('bookmarks'),
                 ),
               ),
@@ -1020,27 +1061,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _modeCard({
+  Widget _mushafPrimaryCard({
     required String title,
+    required String arabicBadge,
     required String subtitle,
     required String badge,
     required IconData icon,
-    required Color accentColor,
+    required List<Color> gradientColors,
     required VoidCallback onTap,
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: LinearGradient(
+          colors: gradientColors,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: accentColor.withValues(alpha: 0.18),
-          width: 1.2,
+          color: const Color(0xFFD4AF37).withValues(alpha: 0.5),
+          width: 1.3,
         ),
         boxShadow: [
           BoxShadow(
-            color: accentColor.withValues(alpha: 0.08),
-            blurRadius: 14,
-            offset: const Offset(0, 4),
+            color: const Color(0xFF0F2038).withValues(alpha: 0.22),
+            blurRadius: 16,
+            offset: const Offset(0, 5),
+          ),
+          BoxShadow(
+            color: const Color(0xFFD4AF37).withValues(alpha: 0.1),
+            blurRadius: 6,
+            offset: const Offset(0, 1),
           ),
         ],
       ),
@@ -1054,7 +1105,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           },
           borderRadius: BorderRadius.circular(20),
           child: Padding(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(15),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -1062,38 +1113,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      width: 42,
-                      height: 42,
+                      width: 44,
+                      height: 44,
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            accentColor.withValues(alpha: 0.16),
-                            accentColor.withValues(alpha: 0.06),
-                          ],
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFD4AF37), Color(0xFFB8860B)],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: accentColor.withValues(alpha: 0.3), width: 1.2),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFD4AF37).withValues(alpha: 0.35),
+                            blurRadius: 8,
+                          ),
+                        ],
                       ),
                       child: Center(
-                        child: Icon(icon, color: accentColor, size: 22),
+                        child: Icon(icon, color: Colors.white, size: 22),
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: accentColor.withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        badge,
-                        style: GoogleFonts.outfit(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 0.5,
-                          color: accentColor,
-                        ),
+                    Text(
+                      arabicBadge,
+                      style: GoogleFonts.amiri(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFFFFD54F),
                       ),
                     ),
                   ],
@@ -1102,9 +1147,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 Text(
                   title,
                   style: GoogleFonts.outfit(
-                    fontSize: 14.5,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF0F2038),
+                    color: Colors.white,
                     height: 1.2,
                   ),
                   maxLines: 1,
@@ -1115,8 +1160,141 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   subtitle,
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 11,
-                    color: const Color(0xFF64748B),
+                    color: Colors.white70,
                     height: 1.35,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Text(
+                      'Open Mushaf',
+                      style: GoogleFonts.outfit(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFFFFD54F),
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Icon(
+                      Icons.arrow_forward_rounded,
+                      size: 12,
+                      color: Color(0xFFFFD54F),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _studyUtilityCard({
+    required String title,
+    required String subtitle,
+    required String badge,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: const Color(0xFFE8E2D5),
+          width: 1.2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF0F2038).withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(18),
+        child: InkWell(
+          onTap: () {
+            HapticFeedback.lightImpact();
+            onTap();
+          },
+          borderRadius: BorderRadius.circular(18),
+          child: Padding(
+            padding: const EdgeInsets.all(13),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: 38,
+                      height: 38,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0F2038),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: const Color(0xFFD4AF37).withValues(alpha: 0.35),
+                          width: 1.0,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF0F2038).withValues(alpha: 0.12),
+                            blurRadius: 6,
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Icon(icon, color: const Color(0xFFFFD54F), size: 19),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFBF8F1),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: const Color(0xFFD4AF37).withValues(alpha: 0.3),
+                          width: 0.8,
+                        ),
+                      ),
+                      child: Text(
+                        badge,
+                        style: GoogleFonts.outfit(
+                          fontSize: 8.5,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.4,
+                          color: const Color(0xFF8C6D1F),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  title,
+                  style: GoogleFonts.outfit(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF0F2038),
+                    height: 1.2,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 10.5,
+                    color: const Color(0xFF55657E),
+                    height: 1.3,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,

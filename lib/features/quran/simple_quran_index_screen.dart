@@ -52,9 +52,9 @@ class IslamicStarBadge extends StatelessWidget {
     super.key,
     required this.number,
     this.size = 40,
-    this.borderColor = const Color(0xFFBFDBFE),
-    this.fillColor = const Color(0xFFEEF4FC),
-    this.textColor = const Color(0xFF1E3A60),
+    this.borderColor = const Color(0xFFD4AF37),
+    this.fillColor = const Color(0xFFFBF8F1),
+    this.textColor = const Color(0xFF0F2038),
   });
 
   @override
@@ -352,23 +352,23 @@ class _SimpleQuranIndexScreenState extends State<SimpleQuranIndexScreen> with Si
         curve: Curves.easeInOut,
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF1E3A60) : Colors.white,
+          color: isSelected ? const Color(0xFF0F2038) : Colors.white,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: isSelected ? const Color(0xFF1E3A60) : const Color(0xFFE2E8F0),
-            width: 1.0,
+            color: isSelected ? const Color(0xFFD4AF37).withValues(alpha: 0.6) : const Color(0xFFE8E2D5),
+            width: 1.1,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: const Color(0xFF1E3A60).withValues(alpha: 0.25),
+                    color: const Color(0xFF0F2038).withValues(alpha: 0.2),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
                 ]
               : [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.015),
+                    color: Colors.black.withValues(alpha: 0.02),
                     blurRadius: 4,
                     offset: const Offset(0, 1),
                   ),
@@ -380,16 +380,16 @@ class _SimpleQuranIndexScreenState extends State<SimpleQuranIndexScreen> with Si
             Icon(
               icon,
               size: 15,
-              color: isSelected ? Colors.white : const Color(0xFF1E3A60),
+              color: isSelected ? const Color(0xFFFFD54F) : const Color(0xFF0F2038),
             ),
             const SizedBox(width: 5),
             Flexible(
               child: Text(
                 label,
-                style: GoogleFonts.inter(
-                  fontSize: 12,
+                style: GoogleFonts.outfit(
+                  fontSize: 12.5,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                  color: isSelected ? Colors.white : const Color(0xFF0F172A),
+                  color: isSelected ? Colors.white : const Color(0xFF0F2038),
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -407,11 +407,11 @@ class _SimpleQuranIndexScreenState extends State<SimpleQuranIndexScreen> with Si
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
+        border: Border.all(color: const Color(0xFFE8E2D5), width: 1.1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 8,
+            color: const Color(0xFF0F2038).withValues(alpha: 0.035),
+            blurRadius: 10,
             offset: const Offset(0, 2),
           ),
         ],
@@ -493,13 +493,13 @@ class _SimpleQuranIndexScreenState extends State<SimpleQuranIndexScreen> with Si
                   ),
                 ),
 
-                // ── 3. Warm Amber Arabic Calligraphy ──
+                // ── 3. Warm Brushed Gold Arabic Calligraphy ──
                 Text(
                   surah.nameArabic,
                   style: GoogleFonts.amiri(
-                    fontSize: 20,
+                    fontSize: 21,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFFF59E0B),
+                    color: const Color(0xFFB8860B),
                     height: 1.1,
                   ),
                 ),
@@ -528,11 +528,11 @@ class _SimpleQuranIndexScreenState extends State<SimpleQuranIndexScreen> with Si
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE8E1D2), width: 1.0),
+        border: Border.all(color: const Color(0xFFE8E2D5), width: 1.1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 8,
+            color: const Color(0xFF0F2038).withValues(alpha: 0.035),
+            blurRadius: 10,
             offset: const Offset(0, 2),
           ),
         ],
