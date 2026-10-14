@@ -10,6 +10,7 @@ import 'ayah_end_symbol.dart';
 import 'indopak_ruku_marginal_badge.dart';
 import 'indopak_sajda_marginal_badge.dart';
 import 'surah_header_cartouche.dart';
+import 'waqf_helper.dart';
 
 class MushafPageWidget extends ConsumerStatefulWidget {
   final int pageNumber;
@@ -596,39 +597,17 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
   static (String baseWord, String waqfMark) _splitWordAndWaqf(String rawText) {
     if (rawText.isEmpty) return ('', '');
 
-    // Common Arabic Waqf / Stop mark characters:
-    // ؕ (\u0615 - ط), ؗ (\u0617 - ز), ۖ (\u06D6 - صلى), ۗ (\u06D7 - قلى), ۘ (\u06D8 - م), ۙ (\u06D9 - لا), ۚ (\u06DA - ج), ۛ (\u06DB - ؞), ۜ (\u06DC - س), ۠ (\u06E0), ۦ (\u06E6), ۫ (\u06EB - ق), ۪ (\u06EA - ص), ۬ (\u06EC - قف), ۭ (\u06ED - م)
-    const waqfChars = {
-      '\u0614', // ص (Takhallus)
-      '\u0615', // ط (Tah / Tawa - Waqf Mutlaq)
-      '\u0617', // ز (Zain - Waqf Mujawwaz)
-      '\u06D6', // صلى (Wasl)
-      '\u06D7', // قلى (Waqf Awla)
-      '\u06D8', // م (Waqf Lazim)
-      '\u06D9', // لا (La Waqf)
-      '\u06DA', // ج (Waqf Jaiz)
-      '\u06DB', // ؞ (Mu'anaqah - Three dots)
-      '\u06DC', // س (Saktah)
-      '\u06E0', // ∘ (Rounded zero)
-      '\u06E2', // م (Small high meem)
-      '\u06E6', // و
-      '\u06EA', // ص (Waqf Murakhkhas - Saad)
-      '\u06EB', // ق (Al-Waqf Awla / Qila - Qaf)
-      '\u06EC', // قف (Waqf Qif)
-      '\u06ED', // م (Small low meem)
-    };
-
     final parts = rawText.trimRight().split(' ');
     if (parts.length > 1) {
       final lastPart = parts.sublist(1).join(' ');
-      if (lastPart.split('').any((c) => waqfChars.contains(c))) {
+      if (lastPart.split('').any((c) => WaqfHelper.waqfChars.contains(c))) {
         return (parts[0], lastPart.replaceAll(' ', ''));
       }
     }
 
     final chars = rawText.split('');
     final waqfList = <String>[];
-    while (chars.isNotEmpty && (waqfChars.contains(chars.last) || chars.last == ' ')) {
+    while (chars.isNotEmpty && (WaqfHelper.waqfChars.contains(chars.last) || chars.last == ' ')) {
       final c = chars.removeLast();
       if (c != ' ') {
         waqfList.insert(0, c);
@@ -640,37 +619,6 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
     }
 
     return (rawText, '');
-  }
-
-  /// Maps special Quranic waqf Unicode marks → their visible Arabic letter equivalents.
-  /// These Unicode chars (U+06D6–U+06EC) often render as boxes/dots on Android
-  /// because they are combining superscript marks, not standalone glyphs.
-  /// By converting them to regular Arabic letters, any Arabic font can render them.
-  static String _waqfToVisual(String raw) {
-    final buffer = StringBuffer();
-    for (final char in raw.split('')) {
-      switch (char) {
-        case '\u0615': buffer.write('ط');   // Waqf Mutlaq (Tah / Tawa)
-        case '\u0617': buffer.write('ز');   // Waqf Mujawwaz (Zain)
-        case '\u0614': buffer.write('ص');   // Waqf Murakhkhas (Saad / Takhallus)
-        case '\u06EA': buffer.write('ص');   // Waqf Murakhkhas (Saad)
-        case '\u06EB': buffer.write('ق');   // Al-Waqf Awla / Qila (Qaf)
-        case '\u06EC': buffer.write('قف');  // Waqf Qif
-        case '\u06D6': buffer.write('صلى'); // Wasl — prefer to continue
-        case '\u06D7': buffer.write('قلى'); // Qalā — prefer to stop
-        case '\u06D8': buffer.write('م');   // Waqf Lazim — must stop
-        case '\u06D9': buffer.write('لا');  // Lā Waqf — do not stop
-        case '\u06DA': buffer.write('ج');   // Waqf Jaiz — permissible stop
-        case '\u06DB': buffer.write('؞');   // Three-dot mark (Mu'anaqah)
-        case '\u06DC': buffer.write('س');   // Saktah — small seen
-        case '\u06E0': buffer.write('∘');   // Safr Mustadir — rounded zero
-        case '\u06E2': buffer.write('مـ');  // Small High Meem
-        case '\u06ED': buffer.write('مـ');  // Small Low Meem
-        case '\u06E6': buffer.write('و');   // Small Waw mark
-        default:        buffer.write(char); // Already-readable chars — keep as-is
-      }
-    }
-    return buffer.toString();
   }
 
   // ── Word Token & Inline Ayah Badge ─────────────────────────────────────────
@@ -685,11 +633,8 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
         !word.glyphCode.contains(RegExp(r'[\u0621-\u064A\u0671-\u06D3]'));
 
     if (isVerseEnd && word.ayah > 0) {
-      String waqfMark = '';
-      final match = RegExp(r'[\u0614\u0615\u0617\u06D6\u06D7\u06D8\u06D9\u06DA\u06DB\u06DC\u06E0\u06E2\u06E6\u06EA\u06EB\u06EC\u06ED]').firstMatch(word.glyphCode);
-      if (match != null) {
-        waqfMark = match.group(0) ?? '';
-      }
+      final matches = RegExp(r'[\u0614\u0615\u0617\u06D6\u06D7\u06D8\u06D9\u06DA\u06DB\u06DC\u06E0\u06E2\u06E6\u06EA\u06EB\u06EC\u06ED]').allMatches(word.glyphCode);
+      final waqfMark = matches.map((m) => m.group(0) ?? '').join('');
 
       final rukuInfo = RukuData.getRukuEndInfo(word.surah, word.ayah);
 
@@ -708,9 +653,10 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
     // Sanitize non-standard PUA ligature glyphs so they render cleanly in standard fonts without tofu [] boxes
     final sanitizedText = hasFontFile ? word.glyphCode : _sanitizeWordText(word.glyphCode);
     final (baseWord, waqfMark) = _splitWordAndWaqf(sanitizedText);
+    final waqfItems = WaqfHelper.parseMarks(waqfMark);
 
     Widget wordTextWidget;
-    if (waqfMark.isEmpty) {
+    if (waqfItems.isEmpty) {
       wordTextWidget = Text(
         baseWord,
         textDirection: TextDirection.rtl,
@@ -726,7 +672,7 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
       wordTextWidget = Row(
         mainAxisSize: MainAxisSize.min,
         textDirection: TextDirection.rtl,
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start, // Top-align so waqf floats as superscript
         children: [
           // Base word in pure RTL
           Text(
@@ -740,20 +686,32 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
               height: 1.25,
             ),
           ),
-      // Waqf stop sign — convert special Unicode waqf chars to visible Arabic letters
+          // Clean guaranteed spacing so stopping symbols NEVER touch or mix with the word
+          const SizedBox(width: 3.5),
+          // Layered stopping marks (stacked vertically above each other with clean spacing)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 3.0),
-            child: Text(
-              _waqfToVisual(waqfMark),
-              textDirection: TextDirection.rtl,
-              style: const TextStyle(
-                fontFamily: 'Scheherazade New',
-                fontFamilyFallback: ['Amiri', 'Noto Nastaliq Urdu'],
-                fontSize: 11.0,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF333333),
-                height: 1.25,
-              ),
+            padding: const EdgeInsets.only(top: 1.5),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                for (int i = 0; i < waqfItems.length; i++) ...[
+                  if (i > 0) const SizedBox(height: 1.5), // Space between stacked layers
+                  Text(
+                    waqfItems[i].text,
+                    textDirection: TextDirection.rtl,
+                    style: TextStyle(
+                      fontFamily: 'Scheherazade New',
+                      fontFamilyFallback: const ['Amiri', 'Noto Nastaliq Urdu'],
+                      fontSize: waqfItems.length > 1 ? 8.5 : 10.5,
+                      fontWeight: FontWeight.bold,
+                      color: waqfItems[i].color,
+                      height: 1.0,
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
         ],

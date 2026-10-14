@@ -1,6 +1,7 @@
 // lib/features/onboarding/onboarding_screen.dart
 // Luxury Onboarding flow with inspiring Quranic quotes, rich animations & personalization
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -79,77 +80,104 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0B1728),
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Top Bar with Skip & Step Progress
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppTheme.gold.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppTheme.gold.withValues(alpha: 0.4)),
+      backgroundColor: const Color(0xFF070E18),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: RadialGradient(
+            center: Alignment(0.0, -0.4),
+            radius: 1.25,
+            colors: [
+              Color(0xFF11253A), // Luminous sapphire-emerald midnight core
+              Color(0xFF08131F), // Deep Islamic navy
+              Color(0xFF040810), // Obsidian abyss
+            ],
+            stops: [0.0, 0.60, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Top Bar with Skip & Step Progress
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: AppTheme.gold.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: AppTheme.gold.withValues(alpha: 0.45)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.stars_rounded, color: AppTheme.gold, size: 14),
+                              const SizedBox(width: 5),
+                              Text(
+                                'Step ${_currentPage + 1} of 5',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppTheme.gold,
+                                  letterSpacing: 0.3,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (_currentPage < 4)
+                      TextButton(
+                        onPressed: _skipToEnd,
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          backgroundColor: Colors.white.withValues(alpha: 0.06),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                         child: Text(
-                          'Step ${_currentPage + 1} of 5',
+                          'Skip',
                           style: GoogleFonts.inter(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: AppTheme.gold,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white70,
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                  if (_currentPage < 4)
-                    TextButton(
-                      onPressed: _skipToEnd,
-                      child: Text(
-                        'Skip',
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white70,
-                        ),
-                      ),
-                    ),
-                ],
+                  ],
+                ),
               ),
-            ),
 
-            // Page Content
-            Expanded(
-              child: PageView(
-                controller: _pageCtrl,
-                physics: const BouncingScrollPhysics(),
-                onPageChanged: (i) {
-                  setState(() => _currentPage = i);
-                  if (i == 2 && _translations.isEmpty) {
-                    _loadEditions();
-                  } else if (i == 3 && _reciters.isEmpty) {
-                    _loadReciters();
-                  }
-                },
-                children: [
-                  _buildWelcomeQuoteStep(),
-                  _buildLanguageStep(),
-                  _buildEditionStep(),
-                  _buildReciterStep(),
-                  _buildDoneStep(),
-                ],
+              // Page Content
+              Expanded(
+                child: PageView(
+                  controller: _pageCtrl,
+                  physics: const BouncingScrollPhysics(),
+                  onPageChanged: (i) {
+                    setState(() => _currentPage = i);
+                    if (i == 2 && _translations.isEmpty) {
+                      _loadEditions();
+                    } else if (i == 3 && _reciters.isEmpty) {
+                      _loadReciters();
+                    }
+                  },
+                  children: [
+                    _buildWelcomeQuoteStep(),
+                    _buildLanguageStep(),
+                    _buildEditionStep(),
+                    _buildReciterStep(),
+                    _buildDoneStep(),
+                  ],
+                ),
               ),
-            ),
 
-            _buildBottomBar(),
-          ],
+              _buildBottomBar(),
+            ],
+          ),
         ),
       ),
     );
@@ -162,72 +190,108 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
       child: Column(
         children: [
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
 
-          // Glowing App Emblem
+          // Glowing Concentric App Emblem
           ScaleTransition(
             scale: _pulseAnim,
             child: Container(
-              width: 120,
-              height: 120,
+              width: 124,
+              height: 124,
+              padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [
+                    AppTheme.gold,
+                    const Color(0xFFFFE082),
+                    AppTheme.gold.withValues(alpha: 0.5),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: AppTheme.gold.withValues(alpha: 0.35),
-                    blurRadius: 32,
+                    blurRadius: 36,
                     spreadRadius: 4,
                   ),
+                  BoxShadow(
+                    color: const Color(0xFF00E5FF).withValues(alpha: 0.12),
+                    blurRadius: 40,
+                    spreadRadius: 1,
+                  ),
                 ],
-                border: Border.all(color: AppTheme.gold, width: 2.5),
               ),
-              child: Image.asset(
-                'assets/images/app_logo_emblem.png',
-                fit: BoxFit.contain,
+              child: Container(
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color(0xFF0B1728),
+                ),
+                padding: const EdgeInsets.all(10),
+                child: Image.asset(
+                  'assets/images/app_logo_emblem.png',
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
           ),
 
-          const SizedBox(height: 18),
+          const SizedBox(height: 16),
 
+          // Urdu App Name
           Text(
-            'حَافِظُ الْقُرْآنِ',
+            'حفظ القرآن',
             style: GoogleFonts.amiri(
-              fontSize: 32,
+              fontSize: 34,
               fontWeight: FontWeight.bold,
               color: AppTheme.gold,
-              height: 1.2,
+              height: 1.25,
+              shadows: [
+                Shadow(
+                  color: AppTheme.gold.withValues(alpha: 0.45),
+                  blurRadius: 18,
+                ),
+              ],
             ),
           ),
 
           Text(
             'Hifz ul Quran',
             style: GoogleFonts.outfit(
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-              letterSpacing: 0.5,
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
+              color: Colors.white.withValues(alpha: 0.95),
+              letterSpacing: 1.0,
             ),
           ),
 
           const SizedBox(height: 16),
 
-          // Sacred Quote Card
+          // Sacred Quote Glass Card
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 20),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF0F2038), Color(0xFF1E3A60)],
+              gradient: LinearGradient(
+                colors: [
+                  const Color(0xFF0F2236).withValues(alpha: 0.92),
+                  const Color(0xFF142C44).withValues(alpha: 0.85),
+                ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppTheme.gold.withValues(alpha: 0.5), width: 1.2),
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(color: AppTheme.gold.withValues(alpha: 0.45), width: 1.2),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.35),
-                  blurRadius: 16,
-                  offset: const Offset(0, 6),
+                  color: Colors.black.withValues(alpha: 0.45),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+                BoxShadow(
+                  color: AppTheme.gold.withValues(alpha: 0.08),
+                  blurRadius: 18,
+                  spreadRadius: 1,
                 ),
               ],
             ),
@@ -236,12 +300,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.format_quote_rounded, color: AppTheme.gold.withValues(alpha: 0.8), size: 22),
+                    Icon(Icons.format_quote_rounded, color: AppTheme.gold.withValues(alpha: 0.85), size: 22),
                     const SizedBox(width: 6),
                     Text(
                       'Surah Al-Qamar • 54:17',
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
+                      style: GoogleFonts.outfit(
+                        fontSize: 12.5,
                         fontWeight: FontWeight.w600,
                         color: AppTheme.gold,
                         letterSpacing: 0.5,
@@ -257,7 +321,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                     fontFamily: 'Scheherazade New',
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFFFFF9E6),
+                    color: Color(0xFFFFFBEB),
                     height: 1.6,
                   ),
                 ),
@@ -268,19 +332,19 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                   style: GoogleFonts.inter(
                     fontSize: 13,
                     fontStyle: FontStyle.italic,
-                    color: Colors.white.withValues(alpha: 0.9),
-                    height: 1.4,
+                    color: Colors.white.withValues(alpha: 0.92),
+                    height: 1.45,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
                 Text(
                   'اور ہم نے قرآن کو یاد کرنے اور سمجھنے کے لیے آسان بنا دیا ہے، تو کیا ہے کوئی یاد رکھنے والا؟',
                   textAlign: TextAlign.center,
                   textDirection: TextDirection.rtl,
                   style: GoogleFonts.notoNastaliqUrdu(
-                    fontSize: 13,
-                    color: AppTheme.gold.withValues(alpha: 0.9),
-                    height: 1.8,
+                    fontSize: 13.5,
+                    color: AppTheme.gold.withValues(alpha: 0.95),
+                    height: 1.9,
                   ),
                 ),
               ],
@@ -293,15 +357,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
           Row(
             children: [
               _featurePill(Icons.auto_stories_rounded, '15 & 16 Line Mushaf'),
-              const SizedBox(width: 8),
+              const SizedBox(width: 10),
               _featurePill(Icons.record_voice_over_rounded, 'Audio Recitations'),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Row(
             children: [
               _featurePill(Icons.explore_rounded, 'Qibla & Prayer Times'),
-              const SizedBox(width: 8),
+              const SizedBox(width: 10),
               _featurePill(Icons.spa_rounded, 'Azkar & Tasbeeh'),
             ],
           ),
@@ -313,20 +377,31 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
   Widget _featurePill(IconData icon, String text) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.07),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+          color: Colors.white.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppTheme.gold.withValues(alpha: 0.22)),
         ),
         child: Row(
           children: [
-            Icon(icon, color: AppTheme.gold, size: 16),
-            const SizedBox(width: 6),
+            Container(
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppTheme.gold.withValues(alpha: 0.15),
+              ),
+              child: Icon(icon, color: AppTheme.gold, size: 15),
+            ),
+            const SizedBox(width: 8),
             Expanded(
               child: Text(
                 text,
-                style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.white),
+                style: GoogleFonts.inter(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white.withValues(alpha: 0.95),
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -545,8 +620,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
     return Container(
       padding: EdgeInsets.fromLTRB(24, 14, 24, 16 + MediaQuery.paddingOf(context).bottom),
       decoration: BoxDecoration(
-        color: const Color(0xFF07101C),
-        border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
+        color: const Color(0xFF060D18),
+        border: Border(top: BorderSide(color: AppTheme.gold.withValues(alpha: 0.15))),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -565,18 +640,53 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
           const SizedBox(height: 14),
           SizedBox(
             width: double.infinity,
-            height: 52,
-            child: ElevatedButton(
-              onPressed: _onNext,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.gold,
-                foregroundColor: const Color(0xFF0F2038),
-                elevation: 4,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            height: 54,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFE5B25D), Color(0xFFC89234)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.gold.withValues(alpha: 0.35),
+                    blurRadius: 14,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-              child: Text(
-                _currentPage == 4 ? 'Bismillah — Start Reading' : 'Continue',
-                style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.bold),
+              child: ElevatedButton(
+                onPressed: () {
+                  HapticFeedback.lightImpact();
+                  _onNext();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  foregroundColor: const Color(0xFF0F1E32),
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _currentPage == 4 ? 'Bismillah — Start Reading' : 'Continue',
+                      style: GoogleFonts.outfit(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Icon(
+                      _currentPage == 4 ? Icons.menu_book_rounded : Icons.arrow_forward_rounded,
+                      size: 19,
+                      color: const Color(0xFF0F1E32),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

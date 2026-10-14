@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../../data/arabic_numerals.dart';
 
+import 'waqf_helper.dart';
+
 /// Inline Ayah End Badge matching authentic IndoPak printed mushaf
 /// Renders an open circle ⭕ with embedded Eastern Arabic numerals,
-/// and displays 'ع' (Ayn) or stopping symbol (ط, لا, ج, مـ, قلی, صلی, etc.)
-/// directly on top of the circle.
+/// and displays 'ع' (Ayn) or stopping symbols (ط, لا, ج, مـ, قلى, صلے, etc.)
+/// layered vertically with clean spacing directly above the circle.
 class AyahEndSymbol extends StatelessWidget {
   final int ayahNumber;
   final String waqfMark;
@@ -21,41 +23,20 @@ class AyahEndSymbol extends StatelessWidget {
     this.circleSize = 19.0,
   });
 
-  static const Map<String, String> _waqfDisplayMap = {
-    '\u0615': 'ط',
-    '\u06d9': 'لا',
-    '\u06da': 'ج',
-    '\u06d8': 'مـ',
-    '\u06d7': 'قلی',
-    '\u06d6': 'صلی',
-    '\u0617': 'ز',
-    '\u0614': 'ص',
-    '\u06ea': 'ص',
-    '\u06eb': 'ق',
-    '\u06ec': 'قف',
-    '\u06dc': 'س',
-    '\u06db': '؞',
-    '\u06e0': '∘',
-    '\u06e2': 'مـ',
-    '\u06ed': 'مـ',
-  };
-
-  static String resolveWaqfDisplay(String mark) {
-    if (mark.isEmpty) return '';
-    for (final e in _waqfDisplayMap.entries) {
-      if (mark.contains(e.key)) return e.value;
-    }
-    return _waqfDisplayMap[mark] ?? mark;
-  }
-
   @override
   Widget build(BuildContext context) {
     final arabicNum = ArabicNumerals.format(ayahNumber);
 
-    // Top mark: 'ع' if Ruku concludes, else Waqf stopping sign
-    final topMarkText = isRukuEnd ? 'ع' : resolveWaqfDisplay(waqfMark);
+    // Collect marks to layer above circle: 'ع' for Ruku conclusion + any Waqf marks
+    final marks = <WaqfMarkItem>[];
+    if (isRukuEnd) {
+      marks.add(const WaqfMarkItem(text: 'ع', color: Color(0xFF8B0000)));
+    }
+    marks.addAll(WaqfHelper.parseMarks(waqfMark));
 
-    final double topOffset = circleSize > 20 ? -13.0 : -10.5;
+    final double topOffset = marks.length > 1
+        ? (circleSize > 20 ? -17.0 : -15.0)
+        : (circleSize > 20 ? -13.0 : -10.5);
     final double numFontSize = arabicNum.length > 2
         ? (circleSize * 0.40).clamp(7.0, 11.0)
         : (circleSize * 0.48).clamp(8.0, 12.5);
@@ -66,21 +47,30 @@ class AyahEndSymbol extends StatelessWidget {
         alignment: Alignment.center,
         clipBehavior: Clip.none,
         children: [
-          // ── Top Mark: 'ع' or Waqf Mark (ط, لا, ج, etc.) directly above the circle ──
-          if (topMarkText.isNotEmpty)
+          // ── Top Marks: 'ع' and/or Waqf Marks layered vertically above the circle ──
+          if (marks.isNotEmpty)
             Positioned(
               top: topOffset,
-              child: Text(
-                topMarkText,
-                style: TextStyle(
-                  fontFamily: 'Amiri',
-                  fontSize: isRukuEnd ? 11.5 : (topMarkText.length > 2 ? 8.5 : 10.0),
-                  fontWeight: FontWeight.bold,
-                  color: isRukuEnd
-                      ? const Color(0xFF8B0000)
-                      : (topMarkText == 'لا' ? const Color(0xFFC62828) : const Color(0xFF0F2038)),
-                  height: 1.0,
-                ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  for (int i = 0; i < marks.length; i++) ...[
+                    if (i > 0) const SizedBox(height: 1.0),
+                    Text(
+                      marks[i].text,
+                      style: TextStyle(
+                        fontFamily: 'Amiri',
+                        fontSize: marks[i].text == 'ع'
+                            ? 11.5
+                            : (marks.length > 1 ? 8.0 : 10.0),
+                        fontWeight: FontWeight.bold,
+                        color: marks[i].color,
+                        height: 1.0,
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
 

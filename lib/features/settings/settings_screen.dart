@@ -413,7 +413,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'حَافِظُ الْقُرْآنِ',
+                  'حفظ القرآن',
                   style: GoogleFonts.amiri(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,

@@ -189,7 +189,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
                     // ── Arabic name ───────────────────────────────────────
                     Text(
-                      'حَافِظُ الْقُرْآنِ',
+                      'حفظ القرآن',
                       style: GoogleFonts.amiri(
                         fontSize: 38,
                         fontWeight: FontWeight.bold,
