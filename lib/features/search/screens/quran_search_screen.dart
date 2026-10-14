@@ -147,9 +147,13 @@ class _QuranSearchScreenState extends ConsumerState<QuranSearchScreen> {
                         final res = _results[idx];
                         return InkWell(
                           onTap: () {
-                            context.goNamed(
+                            context.pushNamed(
                               'verse-by-verse',
                               pathParameters: {'surahNumber': res.ayah.surah.toString()},
+                              queryParameters: {
+                                'ayah': res.ayah.ayahNumber.toString(),
+                                'scrollToAyah': res.ayah.ayahNumber.toString(),
+                              },
                             );
                           },
                           borderRadius: BorderRadius.circular(16),

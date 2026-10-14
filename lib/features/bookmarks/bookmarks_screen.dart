@@ -257,7 +257,7 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
   }
 
   void _openVerse(int surah, int ayah) {
-    context.goNamed(
+    context.pushNamed(
       'verse-by-verse',
       pathParameters: {'surahNumber': '$surah'},
       queryParameters: {
@@ -541,13 +541,45 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
                           ),
                         ),
                         const SizedBox(height: 10),
-                        // Open in Quran link
+                        // Read in Surah link
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            Text('Open in Quran', style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.bold, color: AppTheme.primary)),
-                            const SizedBox(width: 4),
-                            const Icon(Icons.arrow_forward_rounded, size: 14, color: AppTheme.primary),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFF0F2038), Color(0xFF1E3A60)],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFF0F2038).withValues(alpha: 0.18),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 1),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.menu_book_rounded, size: 12, color: Color(0xFFD4AF37)),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    'Read in Surah',
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 11.5,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  const Icon(Icons.arrow_forward_rounded, size: 13, color: Color(0xFFD4AF37)),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -80,8 +81,8 @@ class _JumpNavigationDialogState extends ConsumerState<JumpNavigationDialog>
   @override
   void initState() {
     super.initState();
-    // 5 Tabs: Page, Surah, Para/Juz, Ayat/Ruku, Manzil
-    _tabCtrl = TabController(length: 5, vsync: this);
+    // Default to Para / Juz tab (index 2) so keyboard never opens automatically
+    _tabCtrl = TabController(length: 5, vsync: this, initialIndex: 2);
   }
 
   @override
@@ -93,6 +94,7 @@ class _JumpNavigationDialogState extends ConsumerState<JumpNavigationDialog>
   }
 
   void _executeJumpToPage(int pageNum) {
+    HapticFeedback.lightImpact();
     Navigator.pop(context);
     if (widget.onJumpToPage != null) {
       widget.onJumpToPage!(pageNum);
@@ -109,22 +111,22 @@ class _JumpNavigationDialogState extends ConsumerState<JumpNavigationDialog>
     final isMushafMode = widget.onJumpToPage != null;
 
     return Container(
-      height: MediaQuery.of(context).size.height * 0.82,
+      height: MediaQuery.of(context).size.height * 0.84,
       decoration: const BoxDecoration(
-        color: Color(0xFFF4F7F5),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        color: Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       child: Column(
         children: [
           // Drag handle & title
           Padding(
-            padding: const EdgeInsets.only(top: 12, bottom: 8),
+            padding: const EdgeInsets.only(top: 14, bottom: 10),
             child: Container(
-              width: 40,
-              height: 4,
+              width: 44,
+              height: 4.5,
               decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
+                color: const Color(0xFFD4AF37).withValues(alpha: 0.6),
+                borderRadius: BorderRadius.circular(3),
               ),
             ),
           ),
@@ -132,34 +134,44 @@ class _JumpNavigationDialogState extends ConsumerState<JumpNavigationDialog>
           Text(
             isMushafMode
                 ? (_is16Line
-                    ? 'Jump To Location (16-Line Mushaf)'
-                    : 'Jump To Location (15-Line Mushaf)')
+                    ? 'Jump To Location • 16-Line Indo-Pak'
+                    : 'Jump To Location • 15-Line Saudi')
                 : 'Jump To Location',
-            style: GoogleFonts.inter(
-              fontSize: 17,
+            style: GoogleFonts.outfit(
+              fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: const Color(0xFF1E3A60),
+              color: const Color(0xFF0F2038),
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
 
           // Tabs
-          TabBar(
-            controller: _tabCtrl,
-            isScrollable: true,
-            tabAlignment: TabAlignment.start,
-            indicatorColor: const Color(0xFF1E3A60),
-            labelColor: const Color(0xFF1E3A60),
-            unselectedLabelColor: Colors.grey[600],
-            labelStyle: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.bold),
-            unselectedLabelStyle: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500),
-            tabs: const [
-              Tab(text: 'Page'),
-              Tab(text: 'Surah (1-114)'),
-              Tab(text: 'Para / Juz (1-30)'),
-              Tab(text: 'Ayat / Ruku'),
-              Tab(text: 'Manzil (1-7)'),
-            ],
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+            ),
+            child: TabBar(
+              controller: _tabCtrl,
+              isScrollable: true,
+              tabAlignment: TabAlignment.start,
+              indicatorColor: const Color(0xFFD4AF37),
+              indicatorWeight: 3,
+              indicatorSize: TabBarIndicatorSize.label,
+              labelColor: const Color(0xFF0F2038),
+              unselectedLabelColor: const Color(0xFF64748B),
+              labelStyle: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.bold),
+              unselectedLabelStyle: GoogleFonts.outfit(fontSize: 12.5, fontWeight: FontWeight.w500),
+              tabs: const [
+                Tab(text: 'Page'),
+                Tab(text: 'Surah (1-114)'),
+                Tab(text: 'Para / Juz (1-30)'),
+                Tab(text: 'Ayat / Ruku'),
+                Tab(text: 'Manzil (1-7)'),
+              ],
+            ),
           ),
 
           Expanded(

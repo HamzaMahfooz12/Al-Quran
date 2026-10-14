@@ -309,6 +309,7 @@ class UnifiedAyahCard extends StatelessWidget {
   final VoidCallback onShareTap;
   final VoidCallback onMutashabihatTap;
   final VoidCallback onCopyTap;
+  final bool isHighlighted;
 
   const UnifiedAyahCard({
     super.key,
@@ -323,6 +324,7 @@ class UnifiedAyahCard extends StatelessWidget {
     required this.isBuffering,
     required this.isBookmarked,
     this.activeWordId,
+    this.isHighlighted = false,
     required this.onOpenTafseer,
     required this.onSelectTranslation,
     required this.onPlayTap,
@@ -384,22 +386,27 @@ class UnifiedAyahCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 400),
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFFFFF), // Pure elevated ivory card
+        color: isHighlighted ? const Color(0xFFFFFDF5) : const Color(0xFFFFFFFF),
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: isPlaying ? const Color(0xFF1E3A60) : const Color(0xFFE2E8F0),
-          width: isPlaying ? 2.0 : 1.2,
+          color: isHighlighted
+              ? const Color(0xFFD4AF37)
+              : (isPlaying ? const Color(0xFF1E3A60) : const Color(0xFFE2E8F0)),
+          width: isHighlighted ? 2.5 : (isPlaying ? 2.0 : 1.2),
         ),
         boxShadow: [
           BoxShadow(
-            color: isPlaying
-                ? const Color(0xFF1E3A60).withValues(alpha: 0.15)
-                : Colors.black.withValues(alpha: 0.03),
-            blurRadius: 12,
+            color: isHighlighted
+                ? const Color(0xFFD4AF37).withValues(alpha: 0.35)
+                : (isPlaying
+                    ? const Color(0xFF1E3A60).withValues(alpha: 0.15)
+                    : Colors.black.withValues(alpha: 0.03)),
+            blurRadius: isHighlighted ? 16 : 12,
             offset: const Offset(0, 4),
           ),
         ],

@@ -418,18 +418,8 @@ class QuranRepository {
     final ayahs = await getAyahsByJuz(juz);
     if (ayahs.isNotEmpty) {
       final firstAyah = ayahs.first;
-      final rows = await _db.query(
-        'word_layout',
-        where: 'mushaf = ? AND surah = ? AND ayah >= ?',
-        whereArgs: [norm, firstAyah.surah, firstAyah.ayahNumber],
-        orderBy: 'page ASC',
-        limit: 1,
-      );
-      if (rows.isNotEmpty) {
-        final val = rows.first['page'];
-        if (val is int) return val;
-        if (val != null) return int.tryParse(val.toString()) ?? firstAyah.page;
-      }
+      final exactPage = await getMushafPageForAyah(firstAyah.surah, firstAyah.ayahNumber, norm);
+      if (exactPage != null && exactPage > 0) return exactPage;
       return firstAyah.page;
     }
     return 1;

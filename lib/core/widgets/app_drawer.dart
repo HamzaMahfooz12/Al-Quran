@@ -60,9 +60,9 @@ class AppDrawer extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'حِفْظُ الْقُرْآنِ • Read, Listen, Reflect',
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
+                  'حفظ القرآن • Read, Listen, Reflect',
+                  style: GoogleFonts.outfit(
+                    fontSize: 12.5,
                     color: const Color(0xFFFEF3C7),
                     fontWeight: FontWeight.w600,
                   ),

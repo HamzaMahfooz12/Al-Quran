@@ -244,38 +244,111 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      leading: Builder(
-        builder: (ctx) => IconButton(
-          icon: const Icon(Icons.menu_rounded, color: AppTheme.primary, size: 26),
-          tooltip: 'Open Menu',
-          onPressed: () => Scaffold.of(ctx).openDrawer(),
+      toolbarHeight: 66,
+      leading: Center(
+        child: Builder(
+          builder: (ctx) => Container(
+            width: 42,
+            height: 42,
+            margin: const EdgeInsets.only(left: 14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.35), width: 1.2),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF0F2038).withValues(alpha: 0.06),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.menu_rounded, color: Color(0xFF0F2038), size: 22),
+              tooltip: 'Open Menu',
+              onPressed: () {
+                HapticFeedback.lightImpact();
+                Scaffold.of(ctx).openDrawer();
+              },
+            ),
+          ),
         ),
       ),
-      title: Text(
-        'Hifz ul Quran',
-        style: GoogleFonts.outfit(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: AppTheme.textPrimary,
-        ),
+      title: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'حفظ القرآن',
+            style: GoogleFonts.amiri(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF0F2038),
+              height: 1.1,
+            ),
+          ),
+          Text(
+            'HIFZ UL QURAN',
+            style: GoogleFonts.outfit(
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 2.2,
+              color: const Color(0xFFB8860B),
+            ),
+          ),
+        ],
       ),
+      centerTitle: true,
       actions: [
-        IconButton(
-          icon: const Icon(Icons.search_rounded, color: AppTheme.primary),
+        _appBarActionButton(
+          icon: Icons.search_rounded,
           tooltip: 'Search Quran',
-          onPressed: () => context.goNamed('search'),
+          onTap: () => context.goNamed('search'),
         ),
-        IconButton(
-          icon: const Icon(Icons.bookmarks_outlined, color: AppTheme.primary),
+        _appBarActionButton(
+          icon: Icons.bookmarks_outlined,
           tooltip: 'Bookmarks',
-          onPressed: () => context.goNamed('bookmarks'),
+          onTap: () => context.goNamed('bookmarks'),
         ),
-        IconButton(
-          icon: const Icon(Icons.settings_outlined, color: AppTheme.primary),
+        _appBarActionButton(
+          icon: Icons.settings_outlined,
           tooltip: 'Settings',
-          onPressed: () => context.goNamed('settings'),
+          onTap: () => context.goNamed('settings'),
         ),
+        const SizedBox(width: 8),
       ],
+    );
+  }
+
+  Widget _appBarActionButton({
+    required IconData icon,
+    required String tooltip,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      width: 38,
+      height: 38,
+      margin: const EdgeInsets.only(right: 6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.28), width: 1.0),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF0F2038).withValues(alpha: 0.04),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: IconButton(
+        icon: Icon(icon, color: const Color(0xFF0F2038), size: 20),
+        tooltip: tooltip,
+        padding: EdgeInsets.zero,
+        onPressed: () {
+          HapticFeedback.lightImpact();
+          onTap();
+        },
+      ),
     );
   }
 
@@ -588,21 +661,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final percent = (progress * 100).toInt();
 
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 6, 16, 10),
+      margin: const EdgeInsets.fromLTRB(16, 6, 16, 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF2F5FA),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFDCE4F0)),
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFF0F2038),
+            Color(0xFF162E4D),
+            Color(0xFF0A1828),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+          color: const Color(0xFFD4AF37).withValues(alpha: 0.45),
+          width: 1.3,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            color: const Color(0xFF0F2038).withValues(alpha: 0.28),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
+          ),
+          BoxShadow(
+            color: const Color(0xFFD4AF37).withValues(alpha: 0.12),
+            blurRadius: 8,
+            offset: const Offset(0, 1),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(22),
         child: Stack(
           children: [
             // ── Background Mosque Watermark on Right ──
@@ -610,9 +699,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               right: -10,
               top: 0,
               bottom: 0,
-              width: 140,
+              width: 150,
               child: Opacity(
-                opacity: 0.22,
+                opacity: 0.18,
                 child: Image.asset(
                   'assets/images/mosque_silhouette_bg.jpg',
                   fit: BoxFit.cover,
@@ -622,25 +711,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
             // ── Content ──
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
               child: Row(
                 children: [
                   Container(
-                    width: 44,
-                    height: 44,
+                    width: 48,
+                    height: 48,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E3A60),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFD4AF37), Color(0xFFB8860B)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF1E3A60).withValues(alpha: 0.25),
-                          blurRadius: 8,
+                          color: const Color(0xFFD4AF37).withValues(alpha: 0.35),
+                          blurRadius: 10,
                           offset: const Offset(0, 2),
                         ),
                       ],
                     ),
                     child: const Center(
-                      child: Icon(Icons.menu_book_rounded, color: Colors.white, size: 22),
+                      child: Icon(Icons.auto_stories_rounded, color: Colors.white, size: 24),
                     ),
                   ),
                   const SizedBox(width: 14),
@@ -648,24 +741,51 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2.5),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFD4AF37).withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: const Color(0xFFD4AF37).withValues(alpha: 0.5),
+                                  width: 0.8,
+                                ),
+                              ),
+                              child: Text(
+                                'CONTINUE READING',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 9.5,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 1.0,
+                                  color: const Color(0xFFFFD54F),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
                         Text(
-                          'Continue Reading',
-                          style: GoogleFonts.inter(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF1E3A60),
+                          'Surah ${sInfo.nameTransliteration} (${sInfo.nameArabic})',
+                          style: GoogleFonts.outfit(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Surah ${sInfo.nameTransliteration} • Ayah $ayahNum',
-                          style: GoogleFonts.outfit(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF0F2038),
+                          'Ayah $ayahNum • Page $pageNum',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            color: Colors.white70,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 8),
                         Row(
                           children: [
                             Expanded(
@@ -674,18 +794,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 child: LinearProgressIndicator(
                                   value: progress,
                                   minHeight: 5,
-                                  backgroundColor: const Color(0xFFE2E8F0),
-                                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF1E3A60)),
+                                  backgroundColor: Colors.white.withValues(alpha: 0.15),
+                                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFD4AF37)),
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 8),
+                            const SizedBox(width: 10),
                             Text(
-                              '$percent% Completed',
-                              style: GoogleFonts.inter(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w700,
-                                color: const Color(0xFF1E3A60),
+                              '$percent%',
+                              style: GoogleFonts.outfit(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFFFFD54F),
                               ),
                             ),
                           ],
@@ -693,9 +813,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 12),
                   ElevatedButton(
                     onPressed: () {
+                      HapticFeedback.lightImpact();
                       if (section == 'mushaf_15') {
                         context.goNamed('mushaf-15', queryParameters: {'page': '$pageNum'});
                       } else if (section == 'mushaf_16') {
@@ -705,18 +826,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1E3A60),
-                      foregroundColor: Colors.white,
-                      elevation: 2,
+                      backgroundColor: const Color(0xFFD4AF37),
+                      foregroundColor: const Color(0xFF0F2038),
+                      elevation: 4,
+                      shadowColor: const Color(0xFFD4AF37).withValues(alpha: 0.4),
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text('Resume', style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.bold)),
+                        Text('Resume', style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.bold)),
                         const SizedBox(width: 4),
-                        const Icon(Icons.arrow_forward_ios_rounded, size: 11),
+                        const Icon(Icons.arrow_forward_rounded, size: 14),
                       ],
                     ),
                   ),
@@ -739,132 +861,156 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Quran Modes & Reading',
-                style: GoogleFonts.outfit(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.textPrimary,
-                ),
+              Row(
+                children: [
+                  Container(
+                    width: 4,
+                    height: 18,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFD4AF37),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Quran Modes & Reading',
+                    style: GoogleFonts.outfit(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.textPrimary,
+                    ),
+                  ),
+                ],
               ),
               InkWell(
-                onTap: () => context.goNamed('simple-quran', queryParameters: {'tab': '0'}),
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  context.goNamed('simple-quran', queryParameters: {'tab': '0'});
+                },
                 child: Row(
                   children: [
                     Text(
                       'View All',
-                      style: GoogleFonts.inter(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF1E3A60),
+                      style: GoogleFonts.outfit(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF0F2038),
                       ),
                     ),
-                    const Icon(Icons.chevron_right_rounded, size: 16, color: Color(0xFF1E3A60)),
+                    const Icon(Icons.chevron_right_rounded, size: 18, color: Color(0xFF0F2038)),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
 
-          // ── Row 1: Surah Index & 15-Line Mushaf ──
-          Row(
-            children: [
-              Expanded(
-                child: _modeCard(
-                  title: 'Surah Index',
-                  subtitle: '114 Surahs with Audio & Translations',
-                  icon: Icons.menu_book_rounded,
-                  accentColor: const Color(0xFF1E3A60),
-                  onTap: () => context.goNamed('simple-quran', queryParameters: {'tab': '0'}),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _modeCard(
-                  title: '15-Line Mushaf',
-                  subtitle: 'Saudi Madinah Standard Page Format',
-                  icon: Icons.auto_stories_rounded,
-                  accentColor: const Color(0xFF1976D2),
-                  onTap: () => context.goNamed('mushaf-15', queryParameters: {'page': '1'}),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-
-          // ── Row 2: 16-Line Mushaf & Mistakes Report ──
+          // ── Row 1: 16-Line Indo-Pak Mushaf & 15-Line Madinah Mushaf ──
           Row(
             children: [
               Expanded(
                 child: _modeCard(
                   title: '16-Line Mushaf',
                   subtitle: 'Indo-Pak Standard Taj Page Format',
+                  badge: 'INDO-PAK',
                   icon: Icons.import_contacts_rounded,
-                  accentColor: const Color(0xFF6A1B9A),
+                  accentColor: const Color(0xFF5B21B6),
                   onTap: () => context.goNamed('mushaf-16', queryParameters: {'page': '1'}),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 12),
               Expanded(
                 child: _modeCard(
-                  title: 'Mistakes Report',
-                  subtitle: 'Track Hifz & Tajweed Memorization Errors',
-                  icon: Icons.fact_check_rounded,
-                  accentColor: const Color(0xFFE65100),
-                  onTap: () => context.goNamed('mistakes-report'),
+                  title: '15-Line Mushaf',
+                  subtitle: 'Saudi Madinah Standard Page Format',
+                  badge: 'MADINAH',
+                  icon: Icons.auto_stories_rounded,
+                  accentColor: const Color(0xFF0369A1),
+                  onTap: () => context.goNamed('mushaf-15', queryParameters: {'page': '1'}),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
 
-          // ── Row 3: Search Quran & Bookmarks ──
+          // ── Row 2: Surah Index & Juz Explorer ──
+          Row(
+            children: [
+              Expanded(
+                child: _modeCard(
+                  title: 'Surah Index',
+                  subtitle: '114 Surahs with Audio & Translations',
+                  badge: '114 SURAHS',
+                  icon: Icons.menu_book_rounded,
+                  accentColor: const Color(0xFF047857),
+                  onTap: () => context.goNamed('simple-quran', queryParameters: {'tab': '0'}),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _modeCard(
+                  title: 'Juz Explorer',
+                  subtitle: 'Browse & Read Quran by 30 Juz',
+                  badge: '30 PARAS',
+                  icon: Icons.library_books_rounded,
+                  accentColor: const Color(0xFFB45309),
+                  onTap: () => context.goNamed('simple-quran', queryParameters: {'tab': '1'}),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // ── Row 3: Mistakes Report & Mutashabihat ──
+          Row(
+            children: [
+              Expanded(
+                child: _modeCard(
+                  title: 'Mistakes Report',
+                  subtitle: 'Track Hifz & Tajweed Memorization Errors',
+                  badge: 'HIFZ TRACKER',
+                  icon: Icons.fact_check_rounded,
+                  accentColor: const Color(0xFFBE123C),
+                  onTap: () => context.goNamed('mistakes-report'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _modeCard(
+                  title: 'Mutashabihat',
+                  subtitle: 'Similar Verses Grouped by Ayah',
+                  badge: 'SIMILAR VERSES',
+                  icon: Icons.compare_arrows_rounded,
+                  accentColor: const Color(0xFF1D4ED8),
+                  onTap: () => context.goNamed('mutashabihat'),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // ── Row 4: Search Quran & Bookmarks ──
           Row(
             children: [
               Expanded(
                 child: _modeCard(
                   title: 'Search Quran',
-                  subtitle: 'Search Words & Ayahs Across 6,236 Verses',
+                  subtitle: 'Instant Search Across 6,236 Verses',
+                  badge: 'FAST SEARCH',
                   icon: Icons.search_rounded,
-                  accentColor: const Color(0xFF0288D1),
+                  accentColor: const Color(0xFF0284C7),
                   onTap: () => context.goNamed('search'),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 12),
               Expanded(
                 child: _modeCard(
                   title: 'Bookmarks & Sajdas',
                   subtitle: 'Saved Bookmarks & 14 Sajda Verses',
+                  badge: '14 SAJDAS',
                   icon: Icons.bookmarks_rounded,
-                  accentColor: const Color(0xFF7B1FA2),
+                  accentColor: const Color(0xFF7E22CE),
                   onTap: () => context.goNamed('bookmarks'),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-
-          // ── Row 4: Mutashabihat & Juz Explorer ──
-          Row(
-            children: [
-              Expanded(
-                child: _modeCard(
-                  title: 'Mutashabihat',
-                  subtitle: 'Similar Verses Grouped by Ayah',
-                  icon: Icons.compare_arrows_rounded,
-                  accentColor: const Color(0xFF2563EB),
-                  onTap: () => context.goNamed('mutashabihat'),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _modeCard(
-                  title: 'Juz Explorer',
-                  subtitle: 'Browse & Read Quran by 30 Juz',
-                  icon: Icons.library_books_rounded,
-                  accentColor: const Color(0xFFF57C00),
-                  onTap: () => context.goNamed('simple-quran', queryParameters: {'tab': '1'}),
                 ),
               ),
             ],
@@ -877,38 +1023,38 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _modeCard({
     required String title,
     required String subtitle,
+    required String badge,
     required IconData icon,
     required Color accentColor,
     required VoidCallback onTap,
   }) {
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.white,
-            accentColor.withValues(alpha: 0.05),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: accentColor.withValues(alpha: 0.18),
+          width: 1.2,
         ),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: accentColor.withValues(alpha: 0.22), width: 1.1),
         boxShadow: [
           BoxShadow(
-            color: accentColor.withValues(alpha: 0.06),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            color: accentColor.withValues(alpha: 0.08),
+            blurRadius: 14,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(20),
         child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(18),
+          onTap: () {
+            HapticFeedback.lightImpact();
+            onTap();
+          },
+          borderRadius: BorderRadius.circular(20),
           child: Padding(
-            padding: const EdgeInsets.all(13),
+            padding: const EdgeInsets.all(14),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -916,49 +1062,47 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      width: 40,
-                      height: 40,
+                      width: 42,
+                      height: 42,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            accentColor.withValues(alpha: 0.18),
-                            accentColor.withValues(alpha: 0.08),
+                            accentColor.withValues(alpha: 0.16),
+                            accentColor.withValues(alpha: 0.06),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: accentColor.withValues(alpha: 0.25), width: 1),
-                        boxShadow: [
-                          BoxShadow(
-                            color: accentColor.withValues(alpha: 0.15),
-                            blurRadius: 6,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: accentColor.withValues(alpha: 0.3), width: 1.2),
                       ),
                       child: Center(
                         child: Icon(icon, color: accentColor, size: 22),
                       ),
                     ),
                     Container(
-                      width: 24,
-                      height: 24,
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                       decoration: BoxDecoration(
-                        color: accentColor.withValues(alpha: 0.10),
-                        shape: BoxShape.circle,
+                        color: accentColor.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(6),
                       ),
-                      child: const Center(
-                        child: Icon(Icons.arrow_forward_rounded, size: 12, color: Color(0xFF9CA3AF)),
+                      child: Text(
+                        badge,
+                        style: GoogleFonts.outfit(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.5,
+                          color: accentColor,
+                        ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
                 Text(
                   title,
                   style: GoogleFonts.outfit(
-                    fontSize: 14,
+                    fontSize: 14.5,
                     fontWeight: FontWeight.bold,
                     color: const Color(0xFF0F2038),
                     height: 1.2,
@@ -969,10 +1113,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 const SizedBox(height: 3),
                 Text(
                   subtitle,
-                  style: GoogleFonts.inter(
-                    fontSize: 10.5,
-                    color: const Color(0xFF6B7280),
-                    height: 1.3,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 11,
+                    color: const Color(0xFF64748B),
+                    height: 1.35,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -1121,7 +1265,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ]),
                 ),
                 GestureDetector(
-                  onTap: () => context.goNamed('verse-by-verse', pathParameters: {'surahNumber': '${verse.surahNumber}'}, queryParameters: {'ayah': '${verse.ayahNumber}', 'scrollToAyah': '${verse.ayahNumber}'}),
+                  onTap: () => context.pushNamed(
+                    'verse-by-verse',
+                    pathParameters: {'surahNumber': '${verse.surahNumber}'},
+                    queryParameters: {
+                      'ayah': '${verse.ayahNumber}',
+                      'scrollToAyah': '${verse.ayahNumber}',
+                    },
+                  ),
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
@@ -1130,7 +1281,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       boxShadow: [BoxShadow(color: const Color(0xFFD4AF37).withValues(alpha: 0.3), blurRadius: 6, offset: const Offset(0, 2))],
                     ),
                     child: Row(mainAxisSize: MainAxisSize.min, children: [
-                      Text('Read Surah', style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF0F2038))),
+                      Text('Read in Surah', style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF0F2038))),
                       const SizedBox(width: 4),
                       const Icon(Icons.arrow_forward_rounded, size: 13, color: Color(0xFF0F2038)),
                     ]),

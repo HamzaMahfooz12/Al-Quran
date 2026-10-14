@@ -1,6 +1,7 @@
 // lib/features/shell/main_shell.dart
 // Root shell widget with docked NavigationBar & More screen matching Reference Image 3
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -29,6 +30,7 @@ class _MainShellState extends ConsumerState<MainShell> {
   ];
 
   void _onNavTap(int i) {
+    HapticFeedback.lightImpact();
     if (i == 2) {
       ref.read(dailyAyahIndexProvider.notifier).update((state) => (state + 1) % kDailyVerses.length);
     }
@@ -44,23 +46,71 @@ class _MainShellState extends ConsumerState<MainShell> {
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFFFFFFFF),
-          border: const Border(top: BorderSide(color: Color(0xFFE2E8F0), width: 1.0)),
+          color: Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          border: Border(
+            top: BorderSide(color: const Color(0xFFD4AF37).withValues(alpha: 0.35), width: 1.2),
+          ),
           boxShadow: [
-            BoxShadow(color: const Color(0xFF0F172A).withValues(alpha: 0.04), blurRadius: 10, offset: const Offset(0, -2)),
+            BoxShadow(
+              color: const Color(0xFF0F2038).withValues(alpha: 0.08),
+              blurRadius: 20,
+              offset: const Offset(0, -4),
+            ),
+            BoxShadow(
+              color: const Color(0xFFD4AF37).withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -1),
+            ),
           ],
         ),
         child: SafeArea(
           top: false,
           child: SizedBox(
-            height: 62,
+            height: 68,
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                _NavItem(icon: Icons.menu_book_outlined, activeIcon: Icons.menu_book_rounded, label: 'Quran', index: 0, selectedIndex: _selectedIndex, onTap: _onNavTap),
-                _NavItem(icon: Icons.access_time_outlined, activeIcon: Icons.access_time_filled_rounded, label: 'Prayer', index: 1, selectedIndex: _selectedIndex, onTap: _onNavTap),
-                _NavItem(icon: Icons.home_outlined, activeIcon: Icons.home_rounded, label: 'Home', index: 2, selectedIndex: _selectedIndex, onTap: _onNavTap),
-                _NavItem(icon: Icons.explore_outlined, activeIcon: Icons.explore_rounded, label: 'Qibla', index: 3, selectedIndex: _selectedIndex, onTap: _onNavTap),
-                _NavItem(icon: Icons.grid_view_outlined, activeIcon: Icons.grid_view_rounded, label: 'More', index: 4, selectedIndex: _selectedIndex, onTap: _onNavTap),
+                _NavItem(
+                  icon: Icons.menu_book_outlined,
+                  activeIcon: Icons.menu_book_rounded,
+                  label: 'Quran',
+                  urduLabel: 'القرآن',
+                  index: 0,
+                  selectedIndex: _selectedIndex,
+                  onTap: _onNavTap,
+                ),
+                _NavItem(
+                  icon: Icons.access_time_outlined,
+                  activeIcon: Icons.access_time_filled_rounded,
+                  label: 'Prayer',
+                  urduLabel: 'نماز',
+                  index: 1,
+                  selectedIndex: _selectedIndex,
+                  onTap: _onNavTap,
+                ),
+                _CenterHomeItem(
+                  selectedIndex: _selectedIndex,
+                  onTap: () => _onNavTap(2),
+                ),
+                _NavItem(
+                  icon: Icons.explore_outlined,
+                  activeIcon: Icons.explore_rounded,
+                  label: 'Qibla',
+                  urduLabel: 'قبلہ',
+                  index: 3,
+                  selectedIndex: _selectedIndex,
+                  onTap: _onNavTap,
+                ),
+                _NavItem(
+                  icon: Icons.grid_view_outlined,
+                  activeIcon: Icons.grid_view_rounded,
+                  label: 'More',
+                  urduLabel: 'مزید',
+                  index: 4,
+                  selectedIndex: _selectedIndex,
+                  onTap: _onNavTap,
+                ),
               ],
             ),
           ),
@@ -70,9 +120,84 @@ class _MainShellState extends ConsumerState<MainShell> {
   }
 }
 
+class _CenterHomeItem extends StatelessWidget {
+  final int selectedIndex;
+  final VoidCallback onTap;
+
+  const _CenterHomeItem({
+    required this.selectedIndex,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isActive = selectedIndex == 2;
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Transform.translate(
+              offset: const Offset(0, -10),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: isActive
+                        ? const [Color(0xFFD4AF37), Color(0xFFB8860B)]
+                        : const [Color(0xFF1E3A60), Color(0xFF0F2038)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isActive ? Colors.white : const Color(0xFFD4AF37).withValues(alpha: 0.6),
+                    width: 2.2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: (isActive ? const Color(0xFFD4AF37) : const Color(0xFF0F2038))
+                          .withValues(alpha: 0.38),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Icon(
+                    isActive ? Icons.home_rounded : Icons.home_outlined,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+              ),
+            ),
+            Transform.translate(
+              offset: const Offset(0, -6),
+              child: Text(
+                'Home',
+                style: GoogleFonts.outfit(
+                  fontSize: 10.5,
+                  fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+                  color: isActive ? const Color(0xFF0F2038) : const Color(0xFF64748B),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _NavItem extends StatelessWidget {
   final IconData icon, activeIcon;
   final String label;
+  final String urduLabel;
   final int index, selectedIndex;
   final ValueChanged<int> onTap;
 
@@ -80,6 +205,7 @@ class _NavItem extends StatelessWidget {
     required this.icon,
     required this.activeIcon,
     required this.label,
+    required this.urduLabel,
     required this.index,
     required this.selectedIndex,
     required this.onTap,
@@ -92,38 +218,49 @@ class _NavItem extends StatelessWidget {
       child: GestureDetector(
         onTap: () => onTap(index),
         behavior: HitTestBehavior.opaque,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: Icon(
-                isActive ? activeIcon : icon,
-                key: ValueKey(isActive),
-                color: isActive ? const Color(0xFF1E3A60) : const Color(0xFF64748B),
-                size: 24,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: EdgeInsets.symmetric(horizontal: isActive ? 12 : 6, vertical: 3),
+                decoration: BoxDecoration(
+                  color: isActive
+                      ? const Color(0xFF0F2038).withValues(alpha: 0.08)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(
+                  isActive ? activeIcon : icon,
+                  key: ValueKey(isActive),
+                  color: isActive ? const Color(0xFF0F2038) : const Color(0xFF64748B),
+                  size: 23,
+                ),
               ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: GoogleFonts.inter(
-                fontSize: 11,
-                fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                color: isActive ? const Color(0xFF1E3A60) : const Color(0xFF64748B),
+              const SizedBox(height: 2),
+              Text(
+                label,
+                style: GoogleFonts.outfit(
+                  fontSize: 10.5,
+                  fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+                  color: isActive ? const Color(0xFF0F2038) : const Color(0xFF64748B),
+                ),
               ),
-            ),
-            const SizedBox(height: 3),
-            // Active Tab Indicator line
-            Container(
-              width: 16,
-              height: 3,
-              decoration: BoxDecoration(
-                color: isActive ? const Color(0xFFD4AF37) : Colors.transparent,
-                borderRadius: BorderRadius.circular(2),
+              const SizedBox(height: 2),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: isActive ? 5 : 0,
+                height: isActive ? 5 : 0,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFD4AF37),
+                  shape: BoxShape.circle,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

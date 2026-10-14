@@ -185,7 +185,7 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
   }
 
   void _openVerse(int surah, int ayah) {
-    context.goNamed(
+    context.pushNamed(
       'verse-by-verse',
       pathParameters: {'surahNumber': '$surah'},
       queryParameters: {
@@ -465,26 +465,39 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                     ),
                     InkWell(
                       onTap: () => _openVerse(group.srcSurah, group.srcAyah),
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(8),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFEEF4FC),
-                          borderRadius: BorderRadius.circular(6),
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF0F2038), Color(0xFF1E3A60)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF0F2038).withValues(alpha: 0.18),
+                              blurRadius: 4,
+                              offset: const Offset(0, 1),
+                            ),
+                          ],
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
+                            const Icon(Icons.menu_book_rounded, size: 12, color: Color(0xFFD4AF37)),
+                            const SizedBox(width: 5),
                             Text(
-                              'Open',
-                              style: GoogleFonts.inter(
-                                fontSize: 10,
+                              'Read in Surah',
+                              style: GoogleFonts.outfit(
+                                fontSize: 11,
                                 fontWeight: FontWeight.bold,
-                                color: const Color(0xFF1E3A60),
+                                color: Colors.white,
                               ),
                             ),
                             const SizedBox(width: 2),
-                            const Icon(Icons.chevron_right, size: 13, color: Color(0xFF1E3A60)),
+                            const Icon(Icons.chevron_right, size: 13, color: Color(0xFFD4AF37)),
                           ],
                         ),
                       ),
@@ -604,26 +617,39 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                           ),
                           InkWell(
                             onTap: () => _openVerse(match.similarSurah, match.similarAyah),
-                            borderRadius: BorderRadius.circular(6),
+                            borderRadius: BorderRadius.circular(8),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFFFF3E0),
-                                borderRadius: BorderRadius.circular(6),
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFFD4AF37), Color(0xFFB8860B)],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFFD4AF37).withValues(alpha: 0.25),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 1),
+                                  ),
+                                ],
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
+                                  const Icon(Icons.menu_book_rounded, size: 12, color: Color(0xFF0F2038)),
+                                  const SizedBox(width: 4),
                                   Text(
-                                    'Open',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 10,
+                                    'Read in Surah',
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 11,
                                       fontWeight: FontWeight.bold,
-                                      color: const Color(0xFFE65100),
+                                      color: const Color(0xFF0F2038),
                                     ),
                                   ),
                                   const SizedBox(width: 2),
-                                  const Icon(Icons.chevron_right, size: 13, color: Color(0xFFE65100)),
+                                  const Icon(Icons.chevron_right, size: 13, color: Color(0xFF0F2038)),
                                 ],
                               ),
                             ),

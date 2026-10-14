@@ -59,6 +59,10 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
   late SurahInfo _surahInfo;
   Set<int> _bookmarkedAyahs = {};
 
+  final Map<int, GlobalKey> _ayahKeys = {};
+  int? _highlightedAyahNumber;
+  Timer? _highlightTimer;
+
   @override
   void initState() {
     super.initState();
@@ -68,14 +72,154 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
   }
 
   @override
+  void didUpdateWidget(AyahListScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.surahNumber != widget.surahNumber) {
+      _surahInfo = kSurahList[widget.surahNumber - 1];
+      _ayahKeys.clear();
+      _loadData();
+    } else if (oldWidget.scrollToAyah != widget.scrollToAyah && widget.scrollToAyah > 1) {
+      _highlightAyahAndScroll(widget.scrollToAyah);
+    }
+  }
+
+  @override
   void dispose() {
     _scrollTimer?.cancel();
     _lastReadTimer?.cancel();
+    _highlightTimer?.cancel();
     _scrollCtrl.dispose();
     super.dispose();
   }
 
+  void _highlightAyahAndScroll(int targetAyah) {
+    _highlightTimer?.cancel();
+    setState(() {
+      _highlightedAyahNumber = targetAyah;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.delayed(const Duration(milliseconds: 60));
+      if (mounted) {
+        await _scrollToAyah(targetAyah, animate: true, alignment: 0.5);
+        _highlightTimer = Timer(const Duration(milliseconds: 2500), () {
+          if (mounted) setState(() => _highlightedAyahNumber = null);
+        });
+      }
+    });
+  }
+
+  double _estimateOffsetForAyah(int targetAyah) {
+    if (_ayahs.isEmpty || targetAyah <= 1) return 0.0;
+
+    // Header banner height (Surah 9 has no Bismillah banner)
+    double total = (widget.surahNumber == 9) ? 140.0 : 270.0;
+
+    for (int i = 0; i < targetAyah - 1 && i < _ayahs.length; i++) {
+      final a = _ayahs[i];
+      if (widget.surahNumber == 1 && a.ayahNumber == 1) continue;
+
+      // Base card overhead: padding + verse header + action bar + bottom margin
+      double cardHeight = 145.0;
+
+      // Arabic text estimation: ~38 chars per line, ~50px line height
+      final arabicLines = (a.arabicText.length / 38).ceil().clamp(1, 40);
+      cardHeight += arabicLines * 50.0;
+
+      // Translation text estimation (if visible)
+      if (_showTranslation) {
+        final trans = _translations[a.id] ?? '';
+        if (trans.isNotEmpty) {
+          final transLines = (trans.length / 48).ceil().clamp(1, 40);
+          cardHeight += (transLines * 24.0) + 16.0;
+        }
+      }
+
+      total += cardHeight;
+    }
+    return total;
+  }
+
+  Future<void> _scrollToAyah(int targetAyah, {bool animate = true, double alignment = 0.5}) async {
+    if (!mounted || _ayahs.isEmpty) return;
+    if (targetAyah < 1) targetAyah = 1;
+    if (targetAyah > _ayahs.length) targetAyah = _ayahs.length;
+
+    try {
+      // 1. If key is already mounted, center it directly with animation
+      var targetContext = _ayahKeys[targetAyah]?.currentContext;
+      if (targetContext != null && targetContext.mounted) {
+        await Scrollable.ensureVisible(
+          targetContext,
+          alignment: alignment,
+          duration: animate ? const Duration(milliseconds: 550) : Duration.zero,
+          curve: Curves.easeInOutCubic,
+        );
+        return;
+      }
+
+      // 2. If not mounted, compute estimated offset
+      final estimatedOffset = _estimateOffsetForAyah(targetAyah);
+
+      // 3. Iteratively jump towards estimated offset to trigger ListView.builder layout
+      for (int attempt = 0; attempt < 8; attempt++) {
+        if (!mounted || !_scrollCtrl.hasClients) break;
+
+        targetContext = _ayahKeys[targetAyah]?.currentContext;
+        if (targetContext != null && targetContext.mounted) {
+          await Scrollable.ensureVisible(
+            targetContext,
+            alignment: alignment,
+            duration: animate ? const Duration(milliseconds: 500) : Duration.zero,
+            curve: Curves.easeInOutCubic,
+          );
+          return;
+        }
+
+        final currentOffset = _scrollCtrl.offset;
+        final maxExtent = _scrollCtrl.position.maxScrollExtent;
+
+        // If target key not in tree, inspect which keys ARE mounted
+        final mountedAyahs = _ayahKeys.entries
+            .where((e) => e.value.currentContext != null && e.value.currentContext!.mounted)
+            .map((e) => e.key)
+            .toList();
+
+        double nextOffset;
+        if (mountedAyahs.isNotEmpty) {
+          final maxMounted = mountedAyahs.reduce((a, b) => a > b ? a : b);
+          final minMounted = mountedAyahs.reduce((a, b) => a < b ? a : b);
+          if (targetAyah > maxMounted) {
+            nextOffset = (currentOffset + (targetAyah - maxMounted) * 220.0).clamp(0.0, maxExtent);
+          } else if (targetAyah < minMounted) {
+            nextOffset = (currentOffset - (minMounted - targetAyah) * 220.0).clamp(0.0, maxExtent);
+          } else {
+            nextOffset = estimatedOffset.clamp(0.0, maxExtent);
+          }
+        } else {
+          nextOffset = estimatedOffset.clamp(0.0, maxExtent);
+        }
+
+        _scrollCtrl.jumpTo(nextOffset);
+        await Future.delayed(const Duration(milliseconds: 25));
+      }
+
+      // Final attempt
+      if (mounted && _scrollCtrl.hasClients) {
+        targetContext = _ayahKeys[targetAyah]?.currentContext;
+        if (targetContext != null && targetContext.mounted) {
+          await Scrollable.ensureVisible(
+            targetContext,
+            alignment: alignment,
+            duration: animate ? const Duration(milliseconds: 400) : Duration.zero,
+            curve: Curves.easeInOutCubic,
+          );
+        }
+      }
+    } catch (_) {}
+  }
+
   Future<void> _loadData() async {
+    _ayahKeys.clear();
     final repo = ref.read(quranRepositoryProvider);
     final settings = ref.read(settingsServiceProvider);
 
@@ -166,20 +310,24 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
         _loading = false;
       });
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
         final targetAyah = widget.scrollToAyah > 1
             ? widget.scrollToAyah
             : ((lastRead != null && lastRead['surah'] == widget.surahNumber)
                 ? (lastRead['ayah'] as int? ?? 1)
                 : 1);
 
-        if (targetAyah > 1 && _ayahs.length >= targetAyah && _scrollCtrl.hasClients) {
-          final estimatedOffset = (targetAyah - 1) * 200.0;
-          _scrollCtrl.animateTo(
-            estimatedOffset.clamp(0, _scrollCtrl.position.maxScrollExtent),
-            duration: const Duration(milliseconds: 600),
-            curve: Curves.easeOut,
-          );
+        if (targetAyah > 1 && _ayahs.length >= targetAyah) {
+          setState(() {
+            _highlightedAyahNumber = targetAyah;
+          });
+          await Future.delayed(const Duration(milliseconds: 60));
+          if (mounted) {
+            await _scrollToAyah(targetAyah, animate: false, alignment: 0.5);
+            _highlightTimer = Timer(const Duration(milliseconds: 2500), () {
+              if (mounted) setState(() => _highlightedAyahNumber = null);
+            });
+          }
         }
       });
     }
@@ -306,21 +454,14 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
     }
     final audio = ref.read(audioServiceProvider);
 
+    // Smoothly slide the newly recited ayah into the center of the screen
+    _scrollToAyah(ayah.ayahNumber, animate: true, alignment: 0.45);
+
     audio.onAdvance = (surah, nextAyahInSurah) {
       final nextIdx = _ayahs.indexWhere((a) => a.ayahNumber == nextAyahInSurah);
       if (nextIdx >= 0 && mounted) {
-        _playAyah(_ayahs[nextIdx]);
-        // Auto-scroll the list to the newly playing ayah
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (_scrollCtrl.hasClients) {
-            final targetOffset = nextIdx * 280.0;
-            _scrollCtrl.animateTo(
-              targetOffset.clamp(0, _scrollCtrl.position.maxScrollExtent),
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.easeInOut,
-            );
-          }
-        });
+        final nextAyahObj = _ayahs[nextIdx];
+        _playAyah(nextAyahObj);
       }
     };
 
@@ -330,7 +471,7 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
       ayahInSurah: ayah.ayahNumber,
       totalAyahsInSurah: _ayahs.length,
     );
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   // ── Edition Selector Bottom Sheet ─────────────────────────────────────────
@@ -899,18 +1040,22 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                       if (widget.surahNumber == 1 && _ayahs[ayahIdx].ayahNumber == 1) {
                         return const SizedBox.shrink();
                       }
-                      final isCurrentAyahPlaying = audio.currentPlayingAyahId == _ayahs[ayahIdx].id;
+                      final curAyah = _ayahs[ayahIdx];
+                      final isCurrentAyahPlaying = audio.currentPlayingAyahId == curAyah.id;
                       final isPlayingNow = isCurrentAyahPlaying && audio.isPlaying;
                       final isBufferingNow = isCurrentAyahPlaying && isBuffering;
                       final activeWordAsync = ref.watch(activeWordIdProvider);
                       final activeWordId = activeWordAsync.value ?? audio.currentActiveWordId;
 
-                      final isBookmarkedNow = _bookmarkedAyahs.contains(_ayahs[ayahIdx].ayahNumber);
+                      final isBookmarkedNow = _bookmarkedAyahs.contains(curAyah.ayahNumber);
+                      final isHighlightedNow = _highlightedAyahNumber == curAyah.ayahNumber;
+                      final ayahKey = _ayahKeys.putIfAbsent(curAyah.ayahNumber, () => GlobalKey());
 
                       return UnifiedAyahCard(
-                        ayah: _ayahs[ayahIdx],
-                        translationText: _translations[_ayahs[ayahIdx].id],
-                        tafseerText: _tafseers[_ayahs[ayahIdx].id],
+                        key: ayahKey,
+                        ayah: curAyah,
+                        translationText: _translations[curAyah.id],
+                        tafseerText: _tafseers[curAyah.id],
                         translationName: _activeTranslationEdition?.name ?? 'Translation',
                         tafseerName: _activeTafseerEdition?.name ?? 'Tafseer',
                         arabicFontSize: arabicFontSize,
@@ -918,6 +1063,7 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                         isPlaying: isPlayingNow,
                         isBuffering: isBufferingNow,
                         isBookmarked: isBookmarkedNow,
+                        isHighlighted: isHighlightedNow,
                         activeWordId: activeWordId,
                         onOpenTafseer: () {
                           showAyahTafseerModal(
