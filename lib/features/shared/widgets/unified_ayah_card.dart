@@ -97,23 +97,23 @@ class _ScallopedRosettePainter extends CustomPainter {
     }
     path.close();
 
-    // Fill with rich Midnight Sapphire gradient
+    // Fill with radiant warm gold gradient matching our signature theme
     final fillPaint = Paint()
       ..shader = const RadialGradient(
-        colors: [Color(0xFF1E3A60), Color(0xFF0F2038)],
+        colors: [Color(0xFFE8B931), Color(0xFFC59A27)],
       ).createShader(Rect.fromCircle(center: center, radius: outerR));
     canvas.drawPath(path, fillPaint);
 
-    // Fine Radiant Gold outline
+    // Fine rich gold outline
     final strokePaint = Paint()
-      ..color = const Color(0xFFD4AF37)
+      ..color = const Color(0xFF9E7719)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
     canvas.drawPath(path, strokePaint);
 
-    // Inner subtle Radiant Gold ring
+    // Inner subtle bright ivory-gold ring
     final innerRingPaint = Paint()
-      ..color = const Color(0xFFD4AF37).withValues(alpha: 0.55)
+      ..color = const Color(0xFFFFF7DB).withValues(alpha: 0.75)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 0.8;
     canvas.drawCircle(center, innerR * 0.88, innerRingPaint);
@@ -147,7 +147,7 @@ class OrnateAyahEndMarker extends StatelessWidget {
             style: GoogleFonts.scheherazadeNew(
               fontSize: circleSize * 0.44,
               fontWeight: FontWeight.bold,
-              color: const Color(0xFF1E3A60),
+              color: const Color(0xFF876510),
               height: 1.0,
             ),
           ),
@@ -194,7 +194,7 @@ class _OrnateEndMarkerPainter extends CustomPainter {
 
     // Subtle inner ring
     final innerStroke = Paint()
-      ..color = const Color(0xFF1E3A60).withValues(alpha: 0.45)
+      ..color = const Color(0xFFC59A27).withValues(alpha: 0.6)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 0.6;
     canvas.drawCircle(center, innerR * 0.72, innerStroke);
@@ -247,14 +247,14 @@ class IslamicDivider extends StatelessWidget {
                     width: 13.5,
                     height: 13.5,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E3A60),
+                      color: const Color(0xFFC59A27),
                       borderRadius: BorderRadius.circular(2),
                       border:
-                          Border.all(color: const Color(0xFFD4AF37), width: 1.2),
+                          Border.all(color: const Color(0xFF876510), width: 1.0),
                     ),
                     child: const Center(
                       child:
-                          Icon(Icons.star, size: 6.5, color: Color(0xFFFEF3C7)),
+                          Icon(Icons.star, size: 6.5, color: Color(0xFFFEF9EE)),
                     ),
                   ),
                 ),
@@ -396,7 +396,7 @@ class UnifiedAyahCard extends StatelessWidget {
         border: Border.all(
           color: isHighlighted
               ? const Color(0xFFD4AF37)
-              : (isPlaying ? const Color(0xFF1E3A60) : const Color(0xFFE2E8F0)),
+              : (isPlaying ? const Color(0xFFC59A27) : const Color(0xFFEDE7DC)),
           width: isHighlighted ? 2.5 : (isPlaying ? 2.0 : 1.2),
         ),
         boxShadow: [
@@ -404,7 +404,7 @@ class UnifiedAyahCard extends StatelessWidget {
             color: isHighlighted
                 ? const Color(0xFFD4AF37).withValues(alpha: 0.35)
                 : (isPlaying
-                    ? const Color(0xFF1E3A60).withValues(alpha: 0.15)
+                    ? const Color(0xFFC59A27).withValues(alpha: 0.25)
                     : Colors.black.withValues(alpha: 0.03)),
             blurRadius: isHighlighted ? 16 : 12,
             offset: const Offset(0, 4),
@@ -428,12 +428,12 @@ class UnifiedAyahCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 child: Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 9, vertical: 5.5),
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5.5),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEEF4FC),
+                    color: const Color(0xFFFEF9EE),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: const Color(0xFFBFDBFE),
+                      color: const Color(0xFFE8DFC8),
                       width: 1.2,
                     ),
                   ),
@@ -443,7 +443,7 @@ class UnifiedAyahCard extends StatelessWidget {
                       const Icon(
                         Icons.menu_book_outlined,
                         size: 13,
-                        color: Color(0xFF1E3A60),
+                        color: Color(0xFF876510),
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -451,7 +451,7 @@ class UnifiedAyahCard extends StatelessWidget {
                         style: GoogleFonts.inter(
                           fontSize: 11.0,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFF1E3A60),
+                          color: const Color(0xFF876510),
                         ),
                       ),
                     ],
@@ -467,13 +467,13 @@ class UnifiedAyahCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 child: Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 5.5),
+                      const EdgeInsets.symmetric(horizontal: 9, vertical: 5.5),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFEF3C7),
+                    color: const Color(0xFFFAF7F2),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: const Color(0xFFF59E0B),
-                      width: 1.3,
+                      color: const Color(0xFFD4AF37),
+                      width: 1.2,
                     ),
                   ),
                   child: Row(
@@ -482,7 +482,7 @@ class UnifiedAyahCard extends StatelessWidget {
                       const Icon(
                         Icons.language_rounded,
                         size: 12.5,
-                        color: Color(0xFFB45309),
+                        color: Color(0xFF876510),
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -490,7 +490,7 @@ class UnifiedAyahCard extends StatelessWidget {
                         style: GoogleFonts.inter(
                           fontSize: 10.5,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFFB45309),
+                          color: const Color(0xFF876510),
                         ),
                       ),
                     ],
@@ -508,8 +508,8 @@ class UnifiedAyahCard extends StatelessWidget {
                       : Icons.bookmark_outline_rounded,
                   size: 20,
                   color: isBookmarked
-                      ? const Color(0xFFF59E0B)
-                      : const Color(0xFF64748B),
+                      ? const Color(0xFFC59A27)
+                      : const Color(0xFF7C7365),
                 ),
                 onPressed: onBookmarkTap,
                 tooltip: isBookmarked ? 'Remove Bookmark' : 'Bookmark Ayah',
@@ -519,22 +519,26 @@ class UnifiedAyahCard extends StatelessWidget {
 
               const SizedBox(width: 3),
 
-              // 5. Circular Royal Midnight Sapphire Play Button
+              // 5. Circular Radiant Gold Play Button
               GestureDetector(
                 onTap: onPlayTap,
                 child: Container(
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1E3A60),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFE8B931), Color(0xFFC59A27)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: const Color(0xFFD4AF37).withValues(alpha: 0.6),
-                      width: 1.8,
+                      color: Colors.white,
+                      width: 1.5,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF1E3A60).withValues(alpha: 0.3),
+                        color: const Color(0xFFC59A27).withValues(alpha: 0.35),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),

@@ -778,9 +778,11 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
     if (!mounted) return;
 
     if (pairs.isEmpty) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('No Mutashabihat (similar verses) registered for Ayah ${ayah.ayahNumber}.'),
+          duration: const Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -945,14 +947,16 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
     final audio = ref.watch(audioServiceProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F5F3),
+      backgroundColor: const Color(0xFFFAF7F2),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF2F5F3),
+        backgroundColor: const Color(0xFFFAF7F2),
+        elevation: 0,
+        scrolledUnderElevation: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(_surahInfo.nameTransliteration, style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700)),
-            Text(_surahInfo.nameTranslation, style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary)),
+            Text(_surahInfo.nameTransliteration, style: GoogleFonts.outfit(fontSize: 17, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A))),
+            Text(_surahInfo.nameTranslation, style: GoogleFonts.plusJakartaSans(fontSize: 11, color: const Color(0xFF64748B))),
           ],
         ),
         actions: [
@@ -1185,15 +1189,15 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                   height: 48,
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [Color(0xFF2563EB), Color(0xFF1E3A60)],
+                      colors: [Color(0xFFE8B931), Color(0xFFC59A27)],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.22),
-                        blurRadius: 8,
+                        color: const Color(0xFFC59A27).withValues(alpha: 0.35),
+                        blurRadius: 10,
                         offset: const Offset(0, 3),
                       ),
                     ],
@@ -1203,13 +1207,13 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                       width: 40,
                       height: 40,
                       decoration: const BoxDecoration(
-                        color: Color(0xFF0D1B1E),
+                        color: Colors.white,
                         shape: BoxShape.circle,
                       ),
                       child: Center(
                         child: Icon(
                           _autoScrollActive ? Icons.pause_rounded : Icons.keyboard_arrow_down_rounded,
-                          color: Colors.white,
+                          color: const Color(0xFF876510),
                           size: 26,
                         ),
                       ),
@@ -1260,19 +1264,19 @@ class _SurahHeaderBanner extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFF1E3A60), // Midnight Sapphire
-            Color(0xFF0F2038), // Deep Royal Navy Shadow
+            Color(0xFFFFFDF8),
+            Color(0xFFF9F4EA),
           ],
         ),
         border: Border.all(
-          color: const Color(0xFFD4AF37).withValues(alpha: 0.35),
-          width: 1.2,
+          color: const Color(0xFFD4AF37),
+          width: 1.4,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F2038).withValues(alpha: 0.35),
+            color: const Color(0xFFC59A27).withValues(alpha: 0.15),
             blurRadius: 18,
-            offset: const Offset(0, 6),
+            offset: const Offset(0, 5),
           ),
         ],
       ),
@@ -1288,16 +1292,10 @@ class _SurahHeaderBanner extends StatelessWidget {
                   'سُورَةُ ${surahInfo.nameArabic}',
                   style: const TextStyle(
                     fontFamily: 'Scheherazade New',
-                    fontSize: 28,
+                    fontSize: 29,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Color(0xFF0F2038),
                     height: 1.25,
-                    shadows: [
-                      Shadow(
-                        color: Color(0xFFF59E0B),
-                        blurRadius: 8,
-                      ),
-                    ],
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -1308,7 +1306,7 @@ class _SurahHeaderBanner extends StatelessWidget {
                   style: GoogleFonts.outfit(
                     fontSize: 13.5,
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFFFEF3C7),
+                    color: const Color(0xFF876510),
                     letterSpacing: 0.3,
                   ),
                   textAlign: TextAlign.center,
@@ -1327,16 +1325,16 @@ class _SurahHeaderBanner extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: const Color(0xFFFEF9EE),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: const Color(0xFFF59E0B), width: 1.2),
+                        border: Border.all(color: const Color(0xFFC59A27), width: 1.2),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(isMeccan ? Icons.mosque_rounded : Icons.location_city_rounded, size: 12, color: const Color(0xFF8D4913)),
+                          Icon(isMeccan ? Icons.mosque_rounded : Icons.location_city_rounded, size: 12, color: const Color(0xFF876510)),
                           const SizedBox(width: 4),
                           Text(
                             isMeccan ? 'Meccan • مَكِّيَّة' : 'Medinan • مَدَنِيَّة',
-                            style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: const Color(0xFF8D4913)),
+                            style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: const Color(0xFF876510)),
                           ),
                         ],
                       ),
@@ -1346,11 +1344,11 @@ class _SurahHeaderBanner extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: const Color(0xFFFEF9EE),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: const Color(0xFFF59E0B), width: 1.2),
+                        border: Border.all(color: const Color(0xFFC59A27), width: 1.2),
                       ),
                       child: Text(
                         '${surahInfo.ayahCount} Ayahs',
-                        style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: const Color(0xFF8D4913)),
+                        style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: const Color(0xFF876510)),
                       ),
                     ),
                     Container(
@@ -1358,11 +1356,11 @@ class _SurahHeaderBanner extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: const Color(0xFFFEF9EE),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: const Color(0xFFF59E0B), width: 1.2),
+                        border: Border.all(color: const Color(0xFFC59A27), width: 1.2),
                       ),
                       child: Text(
                         '${surahInfo.rukuCount} Rukus',
-                        style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: const Color(0xFF8D4913)),
+                        style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: const Color(0xFF876510)),
                       ),
                     ),
                   ],
@@ -1384,11 +1382,11 @@ class _SurahHeaderBanner extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
                       decoration: BoxDecoration(
-                        color: showTranslation ? const Color(0xFFFEF3C7) : Colors.white.withValues(alpha: 0.12),
+                        color: showTranslation ? const Color(0xFFFEF9EE) : Colors.white,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: showTranslation ? const Color(0xFFF59E0B) : Colors.white.withValues(alpha: 0.25),
-                          width: 1.1,
+                          color: showTranslation ? const Color(0xFFC59A27) : const Color(0xFFE8DFC8),
+                          width: 1.3,
                         ),
                       ),
                       child: Row(
@@ -1397,7 +1395,7 @@ class _SurahHeaderBanner extends StatelessWidget {
                           Icon(
                             Icons.translate_rounded,
                             size: 15,
-                            color: showTranslation ? const Color(0xFF0F2038) : Colors.white,
+                            color: showTranslation ? const Color(0xFF876510) : const Color(0xFF7C7365),
                           ),
                           const SizedBox(width: 6),
                           Flexible(
@@ -1406,7 +1404,7 @@ class _SurahHeaderBanner extends StatelessWidget {
                               style: GoogleFonts.inter(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
-                                color: showTranslation ? const Color(0xFF0F2038) : Colors.white,
+                                color: showTranslation ? const Color(0xFF876510) : const Color(0xFF7C7365),
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -1426,11 +1424,11 @@ class _SurahHeaderBanner extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.15),
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.3),
-                          width: 1.1,
+                          color: const Color(0xFFE8DFC8),
+                          width: 1.2,
                         ),
                       ),
                       child: Row(
@@ -1439,7 +1437,7 @@ class _SurahHeaderBanner extends StatelessWidget {
                           const Icon(
                             Icons.menu_book_rounded,
                             size: 15,
-                            color: Color(0xFFFEF3C7),
+                            color: Color(0xFF876510),
                           ),
                           const SizedBox(width: 6),
                           Flexible(
@@ -1448,7 +1446,7 @@ class _SurahHeaderBanner extends StatelessWidget {
                               style: GoogleFonts.inter(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
-                                color: Colors.white,
+                                color: const Color(0xFF876510),
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -1477,8 +1475,8 @@ class _SurahHeaderBanner extends StatelessWidget {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            Colors.white.withValues(alpha: 0.0),
-                            const Color(0xFFF59E0B).withValues(alpha: 0.6),
+                            Colors.transparent,
+                            const Color(0xFFC59A27).withValues(alpha: 0.6),
                           ],
                         ),
                       ),
@@ -1488,8 +1486,8 @@ class _SurahHeaderBanner extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Icon(
                       Icons.star_rounded,
-                      size: 12,
-                      color: const Color(0xFFF59E0B).withValues(alpha: 0.8),
+                      size: 14,
+                      color: const Color(0xFFC59A27),
                     ),
                   ),
                   Expanded(
@@ -1498,8 +1496,8 @@ class _SurahHeaderBanner extends StatelessWidget {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            const Color(0xFFF59E0B).withValues(alpha: 0.6),
-                            Colors.white.withValues(alpha: 0.0),
+                            const Color(0xFFC59A27).withValues(alpha: 0.6),
+                            Colors.transparent,
                           ],
                         ),
                       ),
@@ -1518,8 +1516,8 @@ class _SurahHeaderBanner extends StatelessWidget {
                     textDirection: TextDirection.rtl,
                     style: TextStyle(
                       fontFamily: 'Scheherazade New',
-                      fontSize: 24,
-                      color: Colors.white,
+                      fontSize: 25,
+                      color: Color(0xFF0F2038),
                       height: 1.8,
                       fontWeight: FontWeight.bold,
                     ),
@@ -1539,12 +1537,12 @@ class _SurahHeaderBanner extends StatelessWidget {
                               fontFamily: 'Noto Nastaliq Urdu',
                               fontSize: 15,
                               height: 2.2,
-                              color: Color(0xFFFAF9F6),
+                              color: Color(0xFF554B3E),
                             )
                           : GoogleFonts.inter(
                               fontSize: 13,
                               height: 1.5,
-                              color: const Color(0xFFFAF9F6),
+                              color: const Color(0xFF554B3E),
                             ),
                     ),
                   ],

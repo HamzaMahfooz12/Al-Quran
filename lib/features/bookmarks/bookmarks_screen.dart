@@ -281,26 +281,32 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
     }).toList();
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: const Color(0xFFFAF7F2),
       appBar: AppBar(
-        backgroundColor: AppTheme.primary,
+        backgroundColor: const Color(0xFFFAF7F2),
         elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF354033), size: 19),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: Text(
           'Bookmarks & Sajda Verses',
           style: GoogleFonts.outfit(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: const Color(0xFF354033),
           ),
         ),
+        centerTitle: true,
         bottom: TabBar(
           controller: _tabCtrl,
-          indicatorColor: AppTheme.gold,
+          indicatorColor: const Color(0xFFC59B27),
           indicatorWeight: 3.0,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
-          labelStyle: GoogleFonts.inter(fontSize: 13.5, fontWeight: FontWeight.bold),
-          unselectedLabelStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500),
+          labelColor: const Color(0xFF354033),
+          unselectedLabelColor: const Color(0xFF59634A),
+          labelStyle: GoogleFonts.outfit(fontSize: 13.5, fontWeight: FontWeight.bold),
+          unselectedLabelStyle: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w500),
           tabs: [
             Tab(
               icon: const Icon(Icons.bookmark_rounded, size: 20),
@@ -324,19 +330,25 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
                 padding: const EdgeInsets.fromLTRB(14, 14, 14, 8),
                 child: TextField(
                   onChanged: (val) => setState(() => _searchQuery = val),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 13, color: const Color(0xFF354033)),
                   decoration: InputDecoration(
                     hintText: 'Search saved bookmarks...',
-                    prefixIcon: const Icon(Icons.search, color: Color(0xFF1E3A60)),
+                    hintStyle: GoogleFonts.plusJakartaSans(fontSize: 12.5, color: const Color(0xFF7A8075)),
+                    prefixIcon: const Icon(Icons.search, color: Color(0xFFC59B27), size: 20),
                     filled: true,
                     fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: const BorderSide(color: Color(0xFFEDE7DC)),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: const BorderSide(color: Color(0xFFEDE7DC)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: const BorderSide(color: Color(0xFFC59B27), width: 1.4),
                     ),
                   ),
                 ),
@@ -344,7 +356,7 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
 
               Expanded(
                 child: _loading
-                    ? const Center(child: CircularProgressIndicator(color: Color(0xFF1E3A60)))
+                    ? const Center(child: CircularProgressIndicator(color: Color(0xFFC59B27)))
                     : filteredBookmarks.isEmpty
                         ? Center(
                             child: Padding(
@@ -402,8 +414,8 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
                                 child: Card(
                                   elevation: 0.8,
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                    side: const BorderSide(color: Color(0xFFE8ECE9)),
+                                    borderRadius: BorderRadius.circular(16),
+                                    side: const BorderSide(color: Color(0xFFEDE7DC)),
                                   ),
                                   child: InkWell(
                                     onTap: () => _openVerse(b.surah, b.ayah),
@@ -418,11 +430,18 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
                                             height: 44,
                                             decoration: BoxDecoration(
                                               gradient: const LinearGradient(
-                                                colors: [Color(0xFF0F2038), Color(0xFF1E3A60)],
+                                                colors: [Color(0xFFC59B27), Color(0xFFD4AF37)],
                                                 begin: Alignment.topLeft,
                                                 end: Alignment.bottomRight,
                                               ),
                                               borderRadius: BorderRadius.circular(12),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Color(0xFFC59B27),
+                                                  blurRadius: 6,
+                                                  offset: Offset(0, 2),
+                                                ),
+                                              ],
                                             ),
                                             child: Center(
                                               child: Text(
@@ -453,7 +472,7 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
                                                 const SizedBox(height: 2),
                                                 Text(
                                                   'Surah ${b.surah} • Ayah ${b.ayah}',
-                                                  style: GoogleFonts.inter(fontSize: 11.5, color: AppTheme.textMuted),
+                                                  style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: AppTheme.textMuted),
                                                 ),
                                               ],
                                             ),
@@ -485,7 +504,7 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
                 elevation: 0.8,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
-                  side: const BorderSide(color: Color(0xFFE2E8F0)),
+                  side: const BorderSide(color: Color(0xFFEDE7DC)),
                 ),
                 child: InkWell(
                   onTap: () => _openVerse(s.surah, s.ayah),
@@ -503,14 +522,21 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
                               height: 36,
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
-                                  colors: [Color(0xFF0F2038), Color(0xFF1E3A60)],
+                                  colors: [Color(0xFFC59B27), Color(0xFFD4AF37)],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),
                                 borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Color(0x33C59B27),
+                                    blurRadius: 6,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
                               ),
                               child: Center(
-                                child: Text('${s.index}', style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: const Color(0xFFFFD54F))),
+                                child: Text('${s.index}', style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
                               ),
                             ),
                             const SizedBox(width: 10),
@@ -519,7 +545,7 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text('${s.surahName} [${s.surah}:${s.ayah}]', style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.textPrimary)),
-                                  Text('Sajdah ${s.index} • ${s.type}', style: GoogleFonts.inter(fontSize: 11.5, color: AppTheme.textMuted)),
+                                  Text('Sajdah ${s.index} • ${s.type}', style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: AppTheme.textMuted)),
                                 ],
                               ),
                             ),
@@ -549,23 +575,23 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
-                                  colors: [Color(0xFF0F2038), Color(0xFF1E3A60)],
+                                  colors: [Color(0xFFC59B27), Color(0xFFD4AF37)],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),
                                 borderRadius: BorderRadius.circular(8),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFF0F2038).withValues(alpha: 0.18),
+                                    color: Color(0x33C59B27),
                                     blurRadius: 4,
-                                    offset: const Offset(0, 1),
+                                    offset: Offset(0, 1),
                                   ),
                                 ],
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.menu_book_rounded, size: 12, color: Color(0xFFD4AF37)),
+                                  const Icon(Icons.menu_book_rounded, size: 12, color: Colors.white),
                                   const SizedBox(width: 5),
                                   Text(
                                     'Read in Surah',
@@ -576,7 +602,7 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
                                     ),
                                   ),
                                   const SizedBox(width: 4),
-                                  const Icon(Icons.arrow_forward_rounded, size: 13, color: Color(0xFFD4AF37)),
+                                  const Icon(Icons.arrow_forward_rounded, size: 13, color: Colors.white),
                                 ],
                               ),
                             ),

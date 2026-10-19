@@ -60,7 +60,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         .firstOrNull;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      backgroundColor: const Color(0xFFFAF7F2),
+      appBar: AppBar(
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        backgroundColor: const Color(0xFFFAF7F2),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF0F172A), size: 19),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          'Settings',
+          style: GoogleFonts.outfit(fontSize: 19, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+        ),
+        centerTitle: true,
+      ),
       body: ListView(
         padding: EdgeInsets.fromLTRB(16, 16, 16, 32 + MediaQuery.paddingOf(context).bottom),
         children: [
@@ -395,16 +409,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [Color(0xFF0F2038), Color(0xFF1E3A60)],
+                colors: [Color(0xFFFDFBF7), Color(0xFFF5ECE0)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppTheme.gold.withValues(alpha: 0.4), width: 1.2),
+              border: Border.all(color: AppTheme.gold.withValues(alpha: 0.5), width: 1.5),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.15),
-                  blurRadius: 12,
+                  color: AppTheme.gold.withValues(alpha: 0.12),
+                  blurRadius: 16,
                   offset: const Offset(0, 4),
                 ),
               ],
@@ -443,7 +457,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   style: GoogleFonts.outfit(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: AppTheme.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -451,7 +465,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   'Complete Quran & Memorization Companion',
                   style: GoogleFonts.inter(
                     fontSize: 12,
-                    color: Colors.white70,
+                    color: AppTheme.textMuted,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -461,7 +475,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   style: GoogleFonts.inter(
                     fontSize: 11.5,
                     fontStyle: FontStyle.italic,
-                    color: Colors.white60,
+                    color: AppTheme.textMuted,
                     height: 1.4,
                   ),
                 ),
@@ -560,10 +574,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0F2038),
+                    color: AppTheme.primarySurface,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.light_mode_rounded, color: Color(0xFFD4AF37), size: 20),
+                  child: const Icon(Icons.light_mode_rounded, color: AppTheme.primary, size: 20),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -572,7 +586,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     children: [
                       Text(
                         'Reading Screen Sleep Timeout',
-                        style: GoogleFonts.outfit(fontSize: 17, fontWeight: FontWeight.bold, color: const Color(0xFF0F2038)),
+                        style: GoogleFonts.outfit(fontSize: 17, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
                       ),
                       Text(
                         'Sleep timeout when Keep-Awake is turned on in 15/16-Line Mushaf',
@@ -601,10 +615,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   margin: const EdgeInsets.symmetric(vertical: 4),
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   decoration: BoxDecoration(
-                    color: isSelected ? const Color(0xFFF3F7FA) : Colors.transparent,
+                    color: isSelected ? AppTheme.goldSurface : Colors.transparent,
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
-                      color: isSelected ? const Color(0xFF0F2038) : Colors.transparent,
+                      color: isSelected ? AppTheme.gold : Colors.transparent,
                       width: 1.2,
                     ),
                   ),
@@ -612,7 +626,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     children: [
                       Icon(
                         isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-                        color: isSelected ? const Color(0xFF0F2038) : AppTheme.textMuted,
+                        color: isSelected ? AppTheme.gold : AppTheme.textMuted,
                         size: 20,
                       ),
                       const SizedBox(width: 12),
@@ -628,7 +642,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                     style: GoogleFonts.outfit(
                                       fontSize: 14.5,
                                       fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                                      color: const Color(0xFF0F2038),
+                                      color: AppTheme.textPrimary,
                                     ),
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -689,8 +703,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
             color: AppTheme.cardBg,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: const Color(0xFFE8ECE9)),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFEDE7DC)),
           ),
           child: Row(
             children: [
@@ -795,9 +809,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 20, 0, 8),
       child: Text(title,
-          style: GoogleFonts.inter(
-              fontSize: 12, fontWeight: FontWeight.w700,
-              color: AppTheme.primary, letterSpacing: 1.0)),
+          style: GoogleFonts.outfit(
+              fontSize: 12.5, fontWeight: FontWeight.bold,
+              color: const Color(0xFFC59B27), letterSpacing: 1.2)),
     );
   }
 
@@ -812,8 +826,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: AppTheme.cardBg,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE8ECE9)),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFEDE7DC)),
       ),
       child: Row(
         children: [
@@ -1310,7 +1324,7 @@ class _UpdateCheckTileState extends State<_UpdateCheckTile> {
                 icon: const Icon(Icons.download, size: 20),
                 label: const Text('Download & Install Update'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1E3A60),
+                  backgroundColor: AppTheme.primary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(

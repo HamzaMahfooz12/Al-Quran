@@ -201,21 +201,70 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
     final groups = _groupedPairs;
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: const Color(0xFFFAF7F2),
       appBar: AppBar(
+        backgroundColor: const Color(0xFFFAF7F2),
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        toolbarHeight: 66,
+        centerTitle: true,
+        leading: Center(
+          child: InkWell(
+            onTap: () => Navigator.of(context).pop(),
+            borderRadius: BorderRadius.circular(50),
+            child: Container(
+              width: 40,
+              height: 40,
+              margin: const EdgeInsets.only(left: 14),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFFE8E1D2)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.03),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF0F2038), size: 17),
+            ),
+          ),
+        ),
         title: Text(
           'Mutashabihat (Similar Ayat)',
           style: GoogleFonts.outfit(
-            fontSize: 18,
+            fontSize: 17,
             fontWeight: FontWeight.bold,
-            color: AppTheme.textPrimary,
+            color: const Color(0xFF0F2038),
+            letterSpacing: -0.2,
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.info_outline, color: AppTheme.primary),
-            tooltip: 'About Mutashabihat',
-            onPressed: _showInfoDialog,
+          Center(
+            child: InkWell(
+              onTap: _showInfoDialog,
+              borderRadius: BorderRadius.circular(50),
+              child: Container(
+                width: 40,
+                height: 40,
+                margin: const EdgeInsets.only(right: 14),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: const Color(0xFFE8E1D2)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.03),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: const Icon(Icons.info_outline_rounded, color: Color(0xFF0F2038), size: 19),
+              ),
+            ),
           ),
         ],
       ),
@@ -223,22 +272,30 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
         children: [
           // ── 1. Search Bar ───────────────────────────────────────────────
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 6),
+            padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
             child: Container(
               decoration: BoxDecoration(
-                color: AppTheme.cardBg,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFFE8E1D2)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.02),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: TextField(
                 controller: _searchCtrl,
+                style: GoogleFonts.plusJakartaSans(fontSize: 13, color: const Color(0xFF0F2038)),
                 decoration: InputDecoration(
                   hintText: 'Search by surah name, ayah (e.g. 2:3), or text...',
-                  hintStyle: GoogleFonts.inter(fontSize: 13, color: AppTheme.textMuted),
-                  prefixIcon: const Icon(Icons.search, color: AppTheme.primary, size: 20),
+                  hintStyle: GoogleFonts.plusJakartaSans(fontSize: 12.5, color: const Color(0xFF7C7365)),
+                  prefixIcon: const Icon(Icons.search, color: Color(0xFFC59A27), size: 20),
                   suffixIcon: _searchQuery.isNotEmpty
                       ? IconButton(
-                          icon: const Icon(Icons.clear, size: 18),
+                          icon: const Icon(Icons.clear, size: 18, color: Color(0xFF7C7365)),
                           onPressed: () => _searchCtrl.clear(),
                         )
                       : null,
@@ -257,7 +314,7 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
           // ── 3. Consolidated Mutashabihat Groups List ────────────────────
           Expanded(
             child: _loading
-                ? const Center(child: CircularProgressIndicator(color: AppTheme.primary))
+                ? const Center(child: CircularProgressIndicator(color: Color(0xFFC59A27)))
                 : groups.isEmpty
                     ? _buildEmptyState()
                     : ListView.builder(
@@ -288,26 +345,26 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
             child: InkWell(
               onTap: () => _onSelectJuz(juzNum),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(20),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: isSelected ? AppTheme.primary : AppTheme.cardBg,
-                  borderRadius: BorderRadius.circular(12),
+                  color: isSelected ? const Color(0xFFC59A27) : Colors.white,
+                  borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: isSelected ? AppTheme.primary : const Color(0xFFE2E8F0),
+                    color: isSelected ? const Color(0xFFC59A27) : const Color(0xFFE8E1D2),
                     width: 1,
                   ),
-                  boxShadow: isSelected
-                      ? [
-                          BoxShadow(
-                            color: AppTheme.primary.withValues(alpha: 0.3),
-                            blurRadius: 6,
-                            offset: const Offset(0, 2),
-                          ),
-                        ]
-                      : null,
+                  boxShadow: [
+                    BoxShadow(
+                      color: isSelected
+                          ? const Color(0xFFC59A27).withValues(alpha: 0.3)
+                          : Colors.black.withValues(alpha: 0.02),
+                      blurRadius: isSelected ? 8 : 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -316,24 +373,29 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                       'Juz $juzNum',
                       style: GoogleFonts.outfit(
                         fontSize: 13,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                        color: isSelected ? Colors.white : AppTheme.textPrimary,
+                        fontWeight: FontWeight.bold,
+                        color: isSelected ? Colors.white : const Color(0xFF0F2038),
                       ),
                     ),
                     if (count > 0) ...[
                       const SizedBox(width: 6),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
                         decoration: BoxDecoration(
-                          color: isSelected ? Colors.white.withValues(alpha: 0.25) : AppTheme.primarySurface,
-                          borderRadius: BorderRadius.circular(8),
+                          color: isSelected
+                              ? Colors.white.withValues(alpha: 0.25)
+                              : const Color(0xFFF5EFE6),
+                          borderRadius: BorderRadius.circular(10),
+                          border: isSelected
+                              ? null
+                              : Border.all(color: const Color(0xFFE8DFC8)),
                         ),
                         child: Text(
                           '$count',
-                          style: GoogleFonts.inter(
-                            fontSize: 10.5,
+                          style: GoogleFonts.outfit(
+                            fontSize: 10,
                             fontWeight: FontWeight.bold,
-                            color: isSelected ? Colors.white : AppTheme.primary,
+                            color: isSelected ? Colors.white : const Color(0xFF876510),
                           ),
                         ),
                       ),
@@ -352,14 +414,14 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: AppTheme.cardBg,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFE8E1D2)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
-            offset: const Offset(0, 4),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -370,8 +432,11 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: const BoxDecoration(
-              color: Color(0xFFF7FAF8),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(19)),
+              color: Color(0xFFFAF7F2),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(17)),
+              border: Border(
+                bottom: BorderSide(color: Color(0xFFE8E1D2), width: 1.0),
+              ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -379,41 +444,42 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: AppTheme.primarySurface,
+                        color: const Color(0xFFF5EFE6),
                         borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: const Color(0xFFE8DFC8)),
                       ),
                       child: Text(
                         '#${index + 1} • Juz ${group.juz}',
-                        style: GoogleFonts.inter(
+                        style: GoogleFonts.outfit(
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
-                          color: AppTheme.primary,
+                          color: const Color(0xFF876510),
                         ),
                       ),
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFFF8E1),
+                        color: const Color(0xFFF6EBD0),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xFFFFD54F), width: 0.8),
+                        border: Border.all(color: const Color(0xFFC59A27).withValues(alpha: 0.5)),
                       ),
                       child: Text(
                         '${group.matches.length} Similar ${group.matches.length == 1 ? "Ayah" : "Ayat"}',
-                        style: GoogleFonts.inter(
+                        style: GoogleFonts.outfit(
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFFF57F17),
+                          color: const Color(0xFF78540E),
                         ),
                       ),
                     ),
                   ],
                 ),
                 IconButton(
-                  icon: const Icon(Icons.copy_rounded, size: 18, color: AppTheme.textMuted),
+                  icon: const Icon(Icons.copy_rounded, size: 18, color: Color(0xFF7C7365)),
                   tooltip: 'Copy Group',
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
@@ -423,7 +489,7 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
             ),
           ),
 
-          // ── 2. Base Ayah (Emerald Green Theme) ───────────────────────────
+          // ── 2. Base Ayah ─────────────────────────────────────────────────
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
             child: Column(
@@ -437,7 +503,7 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                           Text(
                             'Surah ${group.srcSurahName}',
                             style: GoogleFonts.outfit(
-                              fontSize: 11.5,
+                              fontSize: 13.5,
                               fontWeight: FontWeight.bold,
                               color: const Color(0xFF0F2038),
                             ),
@@ -445,18 +511,18 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                           ),
                           const SizedBox(width: 6),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFEEF4FC),
+                              color: const Color(0xFFF5EFE6),
                               borderRadius: BorderRadius.circular(6),
-                              border: Border.all(color: const Color(0xFFBFDBFE), width: 0.8),
+                              border: Border.all(color: const Color(0xFFE8DFC8)),
                             ),
                             child: Text(
                               'Ayah ${group.srcAyah}',
-                              style: GoogleFonts.inter(
-                                fontSize: 9.5,
+                              style: GoogleFonts.outfit(
+                                fontSize: 10.5,
                                 fontWeight: FontWeight.bold,
-                                color: const Color(0xFF1E3A60),
+                                color: const Color(0xFF876510),
                               ),
                             ),
                           ),
@@ -465,19 +531,15 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                     ),
                     InkWell(
                       onTap: () => _openVerse(group.srcSurah, group.srcAyah),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(20),
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF0F2038), Color(0xFF1E3A60)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(8),
+                          color: const Color(0xFFC59A27),
+                          borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF0F2038).withValues(alpha: 0.18),
+                              color: const Color(0xFFC59A27).withValues(alpha: 0.25),
                               blurRadius: 4,
                               offset: const Offset(0, 1),
                             ),
@@ -486,8 +548,8 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.menu_book_rounded, size: 12, color: Color(0xFFD4AF37)),
-                            const SizedBox(width: 5),
+                            const Icon(Icons.menu_book_rounded, size: 12, color: Colors.white),
+                            const SizedBox(width: 4),
                             Text(
                               'Read in Surah',
                               style: GoogleFonts.outfit(
@@ -497,7 +559,7 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                               ),
                             ),
                             const SizedBox(width: 2),
-                            const Icon(Icons.chevron_right, size: 13, color: Color(0xFFD4AF37)),
+                            const Icon(Icons.chevron_right, size: 13, color: Colors.white),
                           ],
                         ),
                       ),
@@ -508,9 +570,9 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF0F4FA), // Distinct soft royal sapphire canvas
+                    color: const Color(0xFFFAF7F2),
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: const Color(0xFFC5D5E8), width: 1.2),
+                    border: Border.all(color: const Color(0xFFE8E1D2), width: 1.0),
                   ),
                   child: Text(
                     group.srcArabic ?? '...',
@@ -518,7 +580,7 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                       fontFamily: 'Scheherazade New',
                       fontSize: 19.5,
                       height: 1.85,
-                      color: Color(0xFF0F2038), // Rich deep sapphire text
+                      color: Color(0xFF0F2038),
                       fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.right,
@@ -534,37 +596,37 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Row(
               children: [
-                Expanded(child: Container(height: 1.2, color: const Color(0xFFE2E8F0))),
+                Expanded(child: Container(height: 1.0, color: const Color(0xFFE8E1D2))),
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 8),
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3.5),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFF8E1),
+                    color: const Color(0xFFF6EBD0),
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: const Color(0xFFFFD54F), width: 1.0),
+                    border: Border.all(color: const Color(0xFFC59A27).withValues(alpha: 0.5)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.compare_arrows_rounded, size: 14, color: Color(0xFFF57F17)),
+                      const Icon(Icons.compare_arrows_rounded, size: 14, color: Color(0xFF876510)),
                       const SizedBox(width: 4),
                       Text(
                         'Similar Verses (${group.matches.length}) • المتشابهات',
-                        style: GoogleFonts.inter(
+                        style: GoogleFonts.outfit(
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFFE65100),
+                          color: const Color(0xFF78540E),
                         ),
                       ),
                     ],
                   ),
                 ),
-                Expanded(child: Container(height: 1.2, color: const Color(0xFFE2E8F0))),
+                Expanded(child: Container(height: 1.0, color: const Color(0xFFE8E1D2))),
               ],
             ),
           ),
 
-          // ── 4. All Similar Verses Underneath (Warm Amber Theme) ───────────
+          // ── 4. All Similar Verses Underneath ──────────────────────────────
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 6, 16, 14),
             child: Column(
@@ -572,12 +634,12 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                 final match = group.matches[matchIdx];
 
                 return Container(
-                  margin: EdgeInsets.only(top: matchIdx > 0 ? 12 : 0),
+                  margin: EdgeInsets.only(top: matchIdx > 0 ? 10 : 0),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFFBF0), // Distinct warm golden parchment tint
+                    color: const Color(0xFFFFFDF8),
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: const Color(0xFFFFE082), width: 1.2),
+                    border: Border.all(color: const Color(0xFFD9C9A7), width: 1.1),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -590,25 +652,26 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                                 Text(
                                   'Surah ${match.similarSurahName}',
                                   style: GoogleFonts.outfit(
-                                    fontSize: 11.5,
+                                    fontSize: 13.5,
                                     fontWeight: FontWeight.bold,
-                                    color: const Color(0xFF422006),
+                                    color: const Color(0xFF0F2038),
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(width: 6),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFFFFF8E1),
+                                    color: const Color(0xFFF5EFE6),
                                     borderRadius: BorderRadius.circular(6),
+                                    border: Border.all(color: const Color(0xFFE8DFC8)),
                                   ),
                                   child: Text(
                                     'Ayah ${match.similarAyah}',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 9.5,
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 10.5,
                                       fontWeight: FontWeight.bold,
-                                      color: const Color(0xFFF57F17),
+                                      color: const Color(0xFF876510),
                                     ),
                                   ),
                                 ),
@@ -617,39 +680,28 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                           ),
                           InkWell(
                             onTap: () => _openVerse(match.similarSurah, match.similarAyah),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(20),
                             child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                               decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [Color(0xFFD4AF37), Color(0xFFB8860B)],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                                borderRadius: BorderRadius.circular(8),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0xFFD4AF37).withValues(alpha: 0.25),
-                                    blurRadius: 4,
-                                    offset: const Offset(0, 1),
-                                  ),
-                                ],
+                                color: const Color(0xFFC59A27),
+                                borderRadius: BorderRadius.circular(20),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.menu_book_rounded, size: 12, color: Color(0xFF0F2038)),
+                                  const Icon(Icons.menu_book_rounded, size: 12, color: Colors.white),
                                   const SizedBox(width: 4),
                                   Text(
                                     'Read in Surah',
                                     style: GoogleFonts.outfit(
                                       fontSize: 11,
                                       fontWeight: FontWeight.bold,
-                                      color: const Color(0xFF0F2038),
+                                      color: Colors.white,
                                     ),
                                   ),
                                   const SizedBox(width: 2),
-                                  const Icon(Icons.chevron_right, size: 13, color: Color(0xFF0F2038)),
+                                  const Icon(Icons.chevron_right, size: 13, color: Colors.white),
                                 ],
                               ),
                             ),
@@ -663,8 +715,8 @@ class _MutashabihatScreenState extends ConsumerState<MutashabihatScreen> {
                           fontFamily: 'Scheherazade New',
                           fontSize: 18.5,
                           height: 1.85,
-                          color: Color(0xFF3E2723), // Warm deep brown text
-                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF0F2038),
+                          fontWeight: FontWeight.bold,
                         ),
                         textAlign: TextAlign.right,
                         textDirection: TextDirection.rtl,

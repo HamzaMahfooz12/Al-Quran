@@ -1,6 +1,8 @@
 // lib/features/azkar/screens/duas_settings_screen.dart
+// Luxury Alabaster & Warm Gold Duas Settings Screen
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -45,12 +47,14 @@ class _DuasSettingsScreenState extends State<DuasSettingsScreen> {
   }
 
   Future<void> _setLanguage(String lang) async {
+    HapticFeedback.selectionClick();
     setState(() => _selectedLang = lang);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('azkar_display_language', lang);
   }
 
   Future<void> _deleteCustomDua(int index) async {
+    HapticFeedback.mediumImpact();
     setState(() {
       _customDuas.removeAt(index);
     });
@@ -58,16 +62,22 @@ class _DuasSettingsScreenState extends State<DuasSettingsScreen> {
     await prefs.setString('azkar_custom_duas_list', jsonEncode(_customDuas));
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Custom Dua removed'),
+        SnackBar(
+          content: Text(
+            'Custom Dua removed',
+            style: GoogleFonts.plusJakartaSans(fontSize: 12.5, color: Colors.white),
+          ),
+          backgroundColor: const Color(0xFF354033),
           behavior: SnackBarBehavior.floating,
-          duration: Duration(seconds: 2),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          duration: const Duration(seconds: 2),
         ),
       );
     }
   }
 
   void _openAddDuaModal() {
+    HapticFeedback.lightImpact();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -81,11 +91,21 @@ class _DuasSettingsScreenState extends State<DuasSettingsScreen> {
           await prefs.setString('azkar_custom_duas_list', jsonEncode(_customDuas));
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('New Dua successfully added!'),
-                backgroundColor: Color(0xFF1E3A60),
+              SnackBar(
+                content: Row(
+                  children: [
+                    const Icon(Icons.check_circle_rounded, color: Color(0xFFC5A059), size: 18),
+                    const SizedBox(width: 8),
+                    Text(
+                      'New Dua successfully added!',
+                      style: GoogleFonts.plusJakartaSans(fontSize: 12.5, fontWeight: FontWeight.w600, color: Colors.white),
+                    ),
+                  ],
+                ),
+                backgroundColor: const Color(0xFF354033),
                 behavior: SnackBarBehavior.floating,
-                duration: Duration(seconds: 2),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                duration: const Duration(seconds: 2),
               ),
             );
           }
@@ -99,38 +119,69 @@ class _DuasSettingsScreenState extends State<DuasSettingsScreen> {
     final bottomPad = MediaQuery.paddingOf(context).bottom;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF9F6),
+      backgroundColor: const Color(0xFFFAF7F2),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFAF9F6),
+        backgroundColor: const Color(0xFFFAF7F2),
         elevation: 0,
+        scrolledUnderElevation: 0,
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF1E3A60), size: 20),
-          onPressed: () => context.pop(true),
+        leading: Center(
+          child: InkWell(
+            onTap: () => context.pop(true),
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              width: 38,
+              height: 38,
+              margin: const EdgeInsets.only(left: 14),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFFECE4D8)),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x0A1B1C1E),
+                    blurRadius: 8,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: Color(0xFF354033),
+                size: 16,
+              ),
+            ),
+          ),
         ),
         title: Text(
           'Duas Settings',
           style: GoogleFonts.outfit(
             fontSize: 19,
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF0F172A),
+            color: const Color(0xFF354033),
           ),
         ),
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF1E3A60)))
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFFC5A059)))
           : ListView(
-              padding: EdgeInsets.fromLTRB(16, 8, 16, 32 + bottomPad),
+              padding: EdgeInsets.fromLTRB(16, 10, 16, 32 + bottomPad),
               children: [
                 // ── 1. Translation Language Selector ──
-                _buildSectionHeader('Translation Language', 'Select default language for Duas & Supplications'),
+                _buildSectionHeader(
+                  'Translation Language',
+                  'Select default language for Duas & Supplications',
+                ),
                 const SizedBox(height: 10),
                 _buildLanguageCard(),
 
                 const SizedBox(height: 24),
 
                 // ── 2. Add New Dua to Category Action Card ──
-                _buildSectionHeader('Custom Supplications', 'Add personal or specific Duas under any category'),
+                _buildSectionHeader(
+                  'Custom Supplications',
+                  'Add personal or specific Duas under any category',
+                ),
                 const SizedBox(height: 10),
                 _buildAddDuaActionCard(),
 
@@ -147,20 +198,33 @@ class _DuasSettingsScreenState extends State<DuasSettingsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: GoogleFonts.outfit(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: const Color(0xFF0F172A),
-          ),
+        Row(
+          children: [
+            Container(
+              width: 5,
+              height: 5,
+              decoration: const BoxDecoration(
+                color: Color(0xFFC59A27),
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              title,
+              style: GoogleFonts.outfit(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF354033),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 2),
         Text(
           subtitle,
-          style: GoogleFonts.inter(
+          style: GoogleFonts.plusJakartaSans(
             fontSize: 12,
-            color: const Color(0xFF6B7280),
+            color: const Color(0xFF64748B),
           ),
         ),
       ],
@@ -179,39 +243,48 @@ class _DuasSettingsScreenState extends State<DuasSettingsScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE8E1D2)),
-        boxShadow: [
+        border: Border.all(color: const Color(0xFFECE4D8)),
+        boxShadow: const [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: Color(0x0A1B1C1E),
+            blurRadius: 10,
+            offset: Offset(0, 2),
           ),
         ],
       ),
       child: Column(
-        children: languages.map((lang) {
+        children: languages.asMap().entries.map((entry) {
+          final idx = entry.key;
+          final lang = entry.value;
           final isSelected = _selectedLang == lang['code'];
-          final isLast = languages.indexOf(lang) == languages.length - 1;
+          final isLast = idx == languages.length - 1;
 
           return Column(
             children: [
               Material(
-                color: isSelected ? const Color(0xFFEEF4FC) : Colors.transparent,
-                borderRadius: BorderRadius.circular(18),
+                color: isSelected ? const Color(0xFFFAF5E8) : Colors.transparent,
+                borderRadius: BorderRadius.vertical(
+                  top: idx == 0 ? const Radius.circular(18) : Radius.zero,
+                  bottom: isLast ? const Radius.circular(18) : Radius.zero,
+                ),
                 child: InkWell(
                   onTap: () => _setLanguage(lang['code']!),
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.vertical(
+                    top: idx == 0 ? const Radius.circular(18) : Radius.zero,
+                    bottom: isLast ? const Radius.circular(18) : Radius.zero,
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     child: Row(
                       children: [
+                        // Radio button in warm gold
                         Container(
                           width: 22,
                           height: 22,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: isSelected ? const Color(0xFF1E3A60) : const Color(0xFFD1D5DB),
+                              color: isSelected ? const Color(0xFFC5A059) : const Color(0xFFD1D5DB),
                               width: isSelected ? 6.5 : 1.5,
                             ),
                           ),
@@ -226,25 +299,26 @@ class _DuasSettingsScreenState extends State<DuasSettingsScreen> {
                                   Text(
                                     lang['name']!,
                                     style: GoogleFonts.outfit(
-                                      fontSize: 15,
+                                      fontSize: 14.5,
                                       fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                                      color: isSelected ? const Color(0xFF1E3A60) : const Color(0xFF0F172A),
+                                      color: isSelected ? const Color(0xFF7C633E) : const Color(0xFF354033),
                                     ),
                                   ),
                                   if (lang['code'] == 'ur') ...[
                                     const SizedBox(width: 8),
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                                       decoration: BoxDecoration(
-                                        color: const Color(0xFFFEF3C7),
+                                        color: const Color(0xFFF8F4EC),
                                         borderRadius: BorderRadius.circular(6),
+                                        border: Border.all(color: const Color(0xFFE8DFD0)),
                                       ),
                                       child: Text(
                                         'DEFAULT',
-                                        style: GoogleFonts.inter(
+                                        style: GoogleFonts.outfit(
                                           fontSize: 9,
                                           fontWeight: FontWeight.w800,
-                                          color: const Color(0xFFB45309),
+                                          color: const Color(0xFF7C633E),
                                         ),
                                       ),
                                     ),
@@ -254,9 +328,9 @@ class _DuasSettingsScreenState extends State<DuasSettingsScreen> {
                               const SizedBox(height: 2),
                               Text(
                                 lang['sub']!,
-                                style: GoogleFonts.inter(
+                                style: GoogleFonts.plusJakartaSans(
                                   fontSize: 11.5,
-                                  color: const Color(0xFF6B7280),
+                                  color: const Color(0xFF64748B),
                                 ),
                               ),
                             ],
@@ -267,7 +341,7 @@ class _DuasSettingsScreenState extends State<DuasSettingsScreen> {
                   ),
                 ),
               ),
-              if (!isLast) const Divider(height: 1, indent: 52, endIndent: 16, color: Color(0xFFF3F4F6)),
+              if (!isLast) const Divider(height: 1, indent: 52, endIndent: 16, color: Color(0xFFECE4D8)),
             ],
           );
         }).toList(),
@@ -279,16 +353,20 @@ class _DuasSettingsScreenState extends State<DuasSettingsScreen> {
     return Container(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF0F2038), Color(0xFF1E3A60)],
+          colors: [Color(0xFFFDFBF7), Color(0xFFF5ECE0)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
+        border: Border.all(
+          color: const Color(0xFFC59A27).withValues(alpha: 0.35),
+          width: 1.2,
+        ),
+        boxShadow: const [
           BoxShadow(
-            color: const Color(0xFF0F2038).withValues(alpha: 0.25),
+            color: Color(0x0A1B1C1E),
             blurRadius: 10,
-            offset: const Offset(0, 3),
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -299,19 +377,30 @@ class _DuasSettingsScreenState extends State<DuasSettingsScreen> {
           onTap: _openAddDuaModal,
           borderRadius: BorderRadius.circular(20),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: Row(
               children: [
+                // Warm Ivory frame with Gold Plus icon
                 Container(
                   width: 46,
                   height: 46,
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.18),
+                    color: const Color(0xFFFAF5EB),
                     shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0xFFF59E0B), width: 1.5),
+                    border: Border.all(
+                      color: const Color(0xFFC59A27).withValues(alpha: 0.50),
+                      width: 1.5,
+                    ),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x10B8860B),
+                        blurRadius: 6,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: const Center(
-                    child: Icon(Icons.add_rounded, color: Colors.white, size: 28),
+                    child: Icon(Icons.add_rounded, color: Color(0xFFC59A27), size: 26),
                   ),
                 ),
                 const SizedBox(width: 14),
@@ -322,23 +411,36 @@ class _DuasSettingsScreenState extends State<DuasSettingsScreen> {
                       Text(
                         'Add New Dua to Category',
                         style: GoogleFonts.outfit(
-                          fontSize: 16,
+                          fontSize: 15.5,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: const Color(0xFF354033),
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         'Add custom Arabic, Urdu & English supplications',
-                        style: GoogleFonts.inter(
+                        style: GoogleFonts.plusJakartaSans(
                           fontSize: 11.5,
-                          color: Colors.white.withValues(alpha: 0.85),
+                          color: const Color(0xFF7C7365),
                         ),
                       ),
                     ],
                   ),
                 ),
-                const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white70, size: 16),
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: const Color(0xFFE8E1D2)),
+                  ),
+                  child: const Icon(
+                    Icons.arrow_forward_rounded,
+                    color: Color(0xFFC59A27),
+                    size: 16,
+                  ),
+                ),
               ],
             ),
           ),
@@ -352,13 +454,20 @@ class _DuasSettingsScreenState extends State<DuasSettingsScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE8E1D2)),
+        border: Border.all(color: const Color(0xFFECE4D8)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0A1B1C1E),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
       child: ListView.separated(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: _customDuas.length,
-        separatorBuilder: (_, _) => const Divider(height: 1, color: Color(0xFFF3F4F6)),
+        separatorBuilder: (_, _) => const Divider(height: 1, color: Color(0xFFECE4D8)),
         itemBuilder: (ctx, idx) {
           final dua = _customDuas[idx];
           final title = dua['title'] as String? ?? 'Custom Dua';
@@ -368,21 +477,30 @@ class _DuasSettingsScreenState extends State<DuasSettingsScreen> {
           return ListTile(
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
             leading: Container(
-              width: 36,
-              height: 36,
-              decoration: const BoxDecoration(
-                color: Color(0xFFEEF4FC),
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: const Color(0xFFFAF5EB),
                 shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFFE8E1D2)),
               ),
-              child: const Icon(Icons.menu_book_rounded, color: Color(0xFF1E3A60), size: 18),
+              child: const Icon(Icons.menu_book_rounded, color: Color(0xFFC59A27), size: 18),
             ),
             title: Text(
               title,
-              style: GoogleFonts.outfit(fontSize: 14.5, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+              style: GoogleFonts.outfit(
+                fontSize: 14.5,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF354033),
+              ),
             ),
             subtitle: Text(
               '$category • $arabic',
-              style: GoogleFonts.amiri(fontSize: 13, color: const Color(0xFF6B7280)),
+              style: const TextStyle(
+                fontFamily: 'Amiri',
+                fontSize: 13,
+                color: Color(0xFF7C7365),
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -471,7 +589,15 @@ class _AddDuaModalState extends State<_AddDuaModal> {
       ),
       decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        border: Border(top: BorderSide(color: Color(0xFFC5A059), width: 1.5)),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x33000000),
+            blurRadius: 24,
+            offset: Offset(0, -6),
+          ),
+        ],
       ),
       padding: EdgeInsets.fromLTRB(20, 16, 20, 20 + bottomInset + bottomPad),
       child: Form(
@@ -483,11 +609,11 @@ class _AddDuaModalState extends State<_AddDuaModal> {
             // Handle Bar & Title
             Center(
               child: Container(
-                width: 40,
+                width: 44,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFD1D5DB),
-                  borderRadius: BorderRadius.circular(2),
+                  color: const Color(0xFFE2E8F0),
+                  borderRadius: BorderRadius.circular(4),
                 ),
               ),
             ),
@@ -500,11 +626,19 @@ class _AddDuaModalState extends State<_AddDuaModal> {
                   style: GoogleFonts.outfit(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF0F172A),
+                    color: const Color(0xFF354033),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close_rounded, size: 20),
+                  icon: Container(
+                    width: 30,
+                    height: 30,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFF8F4EC),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.close_rounded, size: 16, color: Color(0xFF64748B)),
+                  ),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -515,24 +649,30 @@ class _AddDuaModalState extends State<_AddDuaModal> {
               child: ListView(
                 children: [
                   // Category Dropdown
-                  Text('Category', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF334155))),
+                  Text(
+                    'Category',
+                    style: GoogleFonts.outfit(fontSize: 12.5, fontWeight: FontWeight.bold, color: const Color(0xFF354033)),
+                  ),
                   const SizedBox(height: 6),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFAF7F2),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFE8E1D2)),
+                      border: Border.all(color: const Color(0xFFECE4D8)),
                     ),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         value: _selectedCategory,
                         isExpanded: true,
-                        icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF1E3A60)),
+                        icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFFC5A059)),
                         items: _categories.map((c) {
                           return DropdownMenuItem<String>(
                             value: c,
-                            child: Text(c, style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF0F172A))),
+                            child: Text(
+                              c,
+                              style: GoogleFonts.plusJakartaSans(fontSize: 13, color: const Color(0xFF354033)),
+                            ),
                           );
                         }).toList(),
                         onChanged: (val) {
@@ -545,7 +685,10 @@ class _AddDuaModalState extends State<_AddDuaModal> {
                   const SizedBox(height: 12),
 
                   // Dua Title
-                  Text('Dua Title / Name *', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF334155))),
+                  Text(
+                    'Dua Title / Name *',
+                    style: GoogleFonts.outfit(fontSize: 12.5, fontWeight: FontWeight.bold, color: const Color(0xFF354033)),
+                  ),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: _titleCtrl,
@@ -556,34 +699,43 @@ class _AddDuaModalState extends State<_AddDuaModal> {
                   const SizedBox(height: 12),
 
                   // Arabic Text
-                  Text('Arabic Text (عربی متن) *', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF334155))),
+                  Text(
+                    'Arabic Text (عربی متن) *',
+                    style: GoogleFonts.outfit(fontSize: 12.5, fontWeight: FontWeight.bold, color: const Color(0xFF354033)),
+                  ),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: _arabicCtrl,
                     textDirection: TextDirection.rtl,
                     maxLines: 3,
                     validator: (v) => v == null || v.trim().isEmpty ? 'Please enter Arabic text' : null,
-                    style: GoogleFonts.amiri(fontSize: 17, height: 1.4),
+                    style: const TextStyle(fontFamily: 'Amiri', fontSize: 18, height: 1.4, color: Color(0xFF354033)),
                     decoration: _inputDeco('بِسْمِ اللَّهِ وَلَجْنَا...'),
                   ),
 
                   const SizedBox(height: 12),
 
                   // Urdu Translation
-                  Text('Urdu Translation (اردو ترجمہ)', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF334155))),
+                  Text(
+                    'Urdu Translation (اردو ترجمہ)',
+                    style: GoogleFonts.outfit(fontSize: 12.5, fontWeight: FontWeight.bold, color: const Color(0xFF354033)),
+                  ),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: _urduCtrl,
                     textDirection: TextDirection.rtl,
                     maxLines: 2,
-                    style: GoogleFonts.notoNastaliqUrdu(fontSize: 13, height: 1.6),
+                    style: GoogleFonts.notoNastaliqUrdu(fontSize: 13, height: 1.6, color: const Color(0xFF354033)),
                     decoration: _inputDeco('اللہ کے نام کے ساتھ ہم داخل ہوئے...'),
                   ),
 
                   const SizedBox(height: 12),
 
                   // English Translation
-                  Text('English Translation', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF334155))),
+                  Text(
+                    'English Translation',
+                    style: GoogleFonts.outfit(fontSize: 12.5, fontWeight: FontWeight.bold, color: const Color(0xFF354033)),
+                  ),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: _englishCtrl,
@@ -594,7 +746,10 @@ class _AddDuaModalState extends State<_AddDuaModal> {
                   const SizedBox(height: 12),
 
                   // Transliteration
-                  Text('Transliteration (Pronunciation)', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF334155))),
+                  Text(
+                    'Transliteration (Pronunciation)',
+                    style: GoogleFonts.outfit(fontSize: 12.5, fontWeight: FontWeight.bold, color: const Color(0xFF354033)),
+                  ),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: _transliterationCtrl,
@@ -610,7 +765,10 @@ class _AddDuaModalState extends State<_AddDuaModal> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Reference / Hadith', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF334155))),
+                            Text(
+                              'Reference / Hadith',
+                              style: GoogleFonts.outfit(fontSize: 12.5, fontWeight: FontWeight.bold, color: const Color(0xFF354033)),
+                            ),
                             const SizedBox(height: 6),
                             TextFormField(
                               controller: _referenceCtrl,
@@ -623,7 +781,10 @@ class _AddDuaModalState extends State<_AddDuaModal> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Count', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF334155))),
+                          Text(
+                            'Count',
+                            style: GoogleFonts.outfit(fontSize: 12.5, fontWeight: FontWeight.bold, color: const Color(0xFF354033)),
+                          ),
                           const SizedBox(height: 6),
                           Container(
                             height: 48,
@@ -631,12 +792,12 @@ class _AddDuaModalState extends State<_AddDuaModal> {
                             decoration: BoxDecoration(
                               color: const Color(0xFFFAF7F2),
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: const Color(0xFFE8E1D2)),
+                              border: Border.all(color: const Color(0xFFECE4D8)),
                             ),
                             child: Row(
                               children: [
                                 IconButton(
-                                  icon: const Icon(Icons.remove, size: 16),
+                                  icon: const Icon(Icons.remove, size: 16, color: Color(0xFFC5A059)),
                                   onPressed: () {
                                     if (_repetitionCount > 1) {
                                       setState(() => _repetitionCount--);
@@ -645,10 +806,10 @@ class _AddDuaModalState extends State<_AddDuaModal> {
                                 ),
                                 Text(
                                   '$_repetitionCount',
-                                  style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.bold),
+                                  style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.bold, color: const Color(0xFF354033)),
                                 ),
                                 IconButton(
-                                  icon: const Icon(Icons.add, size: 16),
+                                  icon: const Icon(Icons.add, size: 16, color: Color(0xFFC5A059)),
                                   onPressed: () => setState(() => _repetitionCount++),
                                 ),
                               ],
@@ -659,19 +820,20 @@ class _AddDuaModalState extends State<_AddDuaModal> {
                     ],
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 22),
 
-                  // Save Button
+                  // Save Button in Royal Gold
                   SizedBox(
                     width: double.infinity,
                     height: 48,
                     child: ElevatedButton(
                       onPressed: _submit,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1E3A60),
+                        backgroundColor: const Color(0xFFC5A059),
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                        elevation: 2,
+                        elevation: 0,
+                        shadowColor: const Color(0x38B8860B),
                       ),
                       child: Text(
                         'Save Supplication',
@@ -691,12 +853,12 @@ class _AddDuaModalState extends State<_AddDuaModal> {
   InputDecoration _inputDeco(String hint) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF9E9E9E)),
+      hintStyle: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFF94A3B8)),
       filled: true,
-      fillColor: const Color(0xFFFAF9F6),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF1E3A60), width: 1.5)),
+      fillColor: const Color(0xFFFAF7F2),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFECE4D8))),
+      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFECE4D8))),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFC5A059), width: 1.5)),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
     );
   }

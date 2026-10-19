@@ -1,11 +1,10 @@
 // lib/core/widgets/app_drawer.dart
-// Shared Luxury Sidebar Drawer for Hafiz ul Quran app
-
+// Luxury Alabaster & Warm Gold Sidebar Drawer for Hifz ul Quran app
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../services/app_version_service.dart';
-import '../theme/app_theme.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -13,59 +12,114 @@ class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: AppTheme.background,
+      backgroundColor: const Color(0xFFFAF7F2),
+      surfaceTintColor: Colors.transparent,
       child: Column(
         children: [
-          // ── Royal Midnight Sapphire & Brushed Gold Header ──
+          // ── Luxury Alabaster & Brushed Gold Header ──
           Container(
             width: double.infinity,
             padding: EdgeInsets.fromLTRB(20, 48 + MediaQuery.paddingOf(context).top * 0.3, 20, 20),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Color(0xFF0F2038), Color(0xFF1E3A60)],
+                colors: [Color(0xFFFDFBF7), Color(0xFFF5ECE0)],
               ),
+              border: Border(
+                bottom: BorderSide(
+                  color: const Color(0xFFC59A27).withValues(alpha: 0.35),
+                  width: 1.2,
+                ),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF0E1E38).withValues(alpha: 0.04),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Stack(
+              clipBehavior: Clip.none,
               children: [
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0xFFD4AF37), width: 2.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.25),
-                        blurRadius: 10,
+                // Subtle Islamic Star Watermark on Top-Right
+                Positioned(
+                  right: -10,
+                  top: -15,
+                  child: Opacity(
+                    opacity: 0.08,
+                    child: Text(
+                      '✦',
+                      style: GoogleFonts.amiri(fontSize: 110, color: const Color(0xFFC59A27)),
+                    ),
+                  ),
+                ),
+
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Circular Emblem with Gold Bezel Ring
+                    Container(
+                      width: 56,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: const Color(0xFFD4AF37), width: 2.0),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x1CB8860B),
+                            blurRadius: 12,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: Image.asset(
-                    'assets/images/app_logo_emblem.png',
-                    fit: BoxFit.contain,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Hifz ul Quran',
-                  style: GoogleFonts.outfit(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'حفظ القرآن • Read, Listen, Reflect',
-                  style: GoogleFonts.outfit(
-                    fontSize: 12.5,
-                    color: const Color(0xFFFEF3C7),
-                    fontWeight: FontWeight.w600,
-                  ),
+                      padding: const EdgeInsets.all(2),
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/images/app_logo_emblem.png',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    // App Title
+                    Row(
+                      children: [
+                        Text(
+                          'Hifz ul Quran',
+                          style: GoogleFonts.outfit(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF0E1E38),
+                            letterSpacing: -0.3,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Container(
+                          width: 6,
+                          height: 6,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFC59A27),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 3),
+
+                    // Subtitle / Tagline in Gold
+                    Text(
+                      'حفظ القرآن • Read, Listen, Reflect',
+                      style: GoogleFonts.outfit(
+                        fontSize: 12.5,
+                        color: const Color(0xFF8C6D34),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -74,11 +128,11 @@ class AppDrawer extends StatelessWidget {
           // ── Navigation List ──
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
               children: [
                 _drawerTile(
                   context: context,
-                  icon: Icons.format_list_bulleted,
+                  icon: Icons.format_list_bulleted_rounded,
                   title: 'Surah & Juz Index',
                   subtitle: 'Complete 114 Surahs browser',
                   onTap: () {
@@ -194,20 +248,36 @@ class AppDrawer extends StatelessWidget {
           Container(
             padding: EdgeInsets.fromLTRB(16, 12, 16, 12 + MediaQuery.paddingOf(context).bottom),
             decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
+              color: Colors.white,
+              border: Border(top: BorderSide(color: Color(0xFFECE4D8))),
             ),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Icon(Icons.verified_rounded, color: Color(0xFF2563EB), size: 18),
-                const SizedBox(width: 8),
-                Text(
-                  'Hifz ul Quran • ${AppVersionService.displayVersion}',
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.textMuted,
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8F4EC),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFE8DFD0)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.verified_rounded, color: Color(0xFFC5A059), size: 16),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Hifz ul Quran • ${AppVersionService.displayVersion}',
+                        style: GoogleFonts.outfit(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF7C633E),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+                const Icon(Icons.favorite_rounded, color: Color(0xFFD4AF37), size: 16),
               ],
             ),
           ),
@@ -224,39 +294,82 @@ class AppDrawer extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 3),
+      margin: const EdgeInsets.only(bottom: 6),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE8E1D2).withValues(alpha: 0.7)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x061B1C1E),
+            blurRadius: 6,
+            offset: Offset(0, 1.5),
+          ),
+        ],
       ),
-      child: ListTile(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        leading: Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: AppTheme.primarySurface,
-            borderRadius: BorderRadius.circular(10),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          onTap: () {
+            HapticFeedback.lightImpact();
+            onTap();
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: Row(
+              children: [
+                // Warm Ivory / Champagne Icon Container
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFAF5EB),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: const Color(0xFFE8E1D2).withValues(alpha: 0.7),
+                    ),
+                  ),
+                  child: Icon(icon, color: const Color(0xFFC59A27), size: 20),
+                ),
+                const SizedBox(width: 12),
+
+                // Title & Subtitle
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: GoogleFonts.outfit(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF0E1E38),
+                        ),
+                      ),
+                      const SizedBox(height: 1.5),
+                      Text(
+                        subtitle,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 11,
+                          color: const Color(0xFF64748B),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Trailing Warm Gold Chevron
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  size: 18,
+                  color: Color(0xFFC59A27),
+                ),
+              ],
+            ),
           ),
-          child: Icon(icon, color: AppTheme.primary, size: 20),
         ),
-        title: Text(
-          title,
-          style: GoogleFonts.inter(
-            fontSize: 13.5,
-            fontWeight: FontWeight.w600,
-            color: AppTheme.textPrimary,
-          ),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: GoogleFonts.inter(
-            fontSize: 11,
-            color: AppTheme.textMuted,
-          ),
-        ),
-        trailing: const Icon(Icons.chevron_right_rounded, size: 18, color: AppTheme.textMuted),
-        onTap: onTap,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
       ),
     );
   }

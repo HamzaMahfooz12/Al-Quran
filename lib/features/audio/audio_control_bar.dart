@@ -373,176 +373,183 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
       child: Container(
         margin: EdgeInsets.fromLTRB(10, 0, 10, effectiveBottomMargin),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [
-              Color(0xFF1E3A60), // Midnight Sapphire
-              Color(0xFF0F2038), // Deep Royal Navy Shadow
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
-            color: const Color(0xFFD4AF37).withValues(alpha: 0.35),
-            width: 1.1,
+            color: const Color(0xFFE8E1D2),
+            width: 1.2,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.35),
+              color: const Color(0xFF625A45).withValues(alpha: 0.12),
               blurRadius: 18,
-              offset: const Offset(0, 5),
-            ),
-            BoxShadow(
-              color: const Color(0xFF1E3A60).withValues(alpha: 0.25),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
+              offset: const Offset(0, 4),
             ),
           ],
         ),
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 6),
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 6),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // ── Main Compact Control Row ──
+            // ── Row 1: Medallion + Surah Name + Speed, Repeat & Close Controls ──
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // 1. Ornamental 8-Point Scalloped Medallion Badge (Left)
                 _IslamicMedallionBadge(number: widget.surahNumber),
-
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    widget.surahName.startsWith('Surah')
+                        ? widget.surahName
+                        : 'Surah ${widget.surahName}',
+                    style: GoogleFonts.outfit(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF0F2038),
+                      letterSpacing: -0.2,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
                 const SizedBox(width: 8),
 
-                // 2. Surah Title & Tappable Reciter Name (Stacked with zero collision)
+                // Playback Speed Button (1.0x)
+                InkWell(
+                  onTap: () => _showSpeedMenu(context, audioService),
+                  borderRadius: BorderRadius.circular(6),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF5EFE6),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: const Color(0xFFE8DFC8)),
+                    ),
+                    child: Text(
+                      '${audioService.speed}x',
+                      style: GoogleFonts.outfit(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF876510),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 6),
+
+                // Repeat / Loop Toggle Button
+                InkWell(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    setState(() {
+                      audioService.isLooping = !audioService.isLooping;
+                    });
+                  },
+                  borderRadius: BorderRadius.circular(6),
+                  child: Padding(
+                    padding: const EdgeInsets.all(3),
+                    child: Icon(
+                      audioService.isLooping
+                          ? Icons.repeat_one_rounded
+                          : Icons.repeat_rounded,
+                      color: audioService.isLooping
+                          ? const Color(0xFFC59A27)
+                          : const Color(0xFF7C7365),
+                      size: 18,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 4),
+
+                // Close Button
+                InkWell(
+                  onTap: () {
+                    audioService.stop();
+                    widget.onClose?.call();
+                  },
+                  borderRadius: BorderRadius.circular(6),
+                  child: const Padding(
+                    padding: EdgeInsets.all(3),
+                    child: Icon(
+                      Icons.close_rounded,
+                      color: Color(0xFF7C7365),
+                      size: 19,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 6),
+
+            // ── Row 2: Reciter Name Pill (Left) + Playback Controls (Right) ──
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Reciter Selector Pill (Left)
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Line 1: Surah Name + Speed & Repeat Chips
-                      Row(
+                  child: InkWell(
+                    onTap: () => _showReciterPicker(context, settings),
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFAF7F2),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: const Color(0xFFE8E1D2)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
+                          const Icon(
+                            Icons.record_voice_over_rounded,
+                            color: Color(0xFFC59A27),
+                            size: 14,
+                          ),
+                          const SizedBox(width: 5),
                           Flexible(
                             child: Text(
-                              widget.surahName.startsWith('Surah')
-                                  ? widget.surahName
-                                  : 'Surah ${widget.surahName}',
-                              style: GoogleFonts.outfit(
-                                fontSize: 14.5,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                letterSpacing: 0.2,
+                              reciterName,
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF475569),
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          const SizedBox(width: 6),
-                          // Playback Speed Button (1.0x)
-                          InkWell(
-                            onTap: () => _showSpeedMenu(context, audioService),
-                            borderRadius: BorderRadius.circular(6),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 5, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                '${audioService.speed}x',
-                                style: GoogleFonts.outfit(
-                                  fontSize: 10.5,
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color(0xFFFEF3C7),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          // Repeat / Loop Toggle Button
-                          InkWell(
-                            onTap: () {
-                              HapticFeedback.lightImpact();
-                              setState(() {
-                                audioService.isLooping = !audioService.isLooping;
-                              });
-                            },
-                            borderRadius: BorderRadius.circular(6),
-                            child: Padding(
-                              padding: const EdgeInsets.all(2),
-                              child: Icon(
-                                audioService.isLooping
-                                    ? Icons.repeat_one_rounded
-                                    : Icons.repeat_rounded,
-                                color: audioService.isLooping
-                                    ? const Color(0xFFFFA000)
-                                    : Colors.white70,
-                                size: 16,
-                              ),
-                            ),
+                          const SizedBox(width: 3),
+                          const Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            color: Color(0xFF7C7365),
+                            size: 16,
                           ),
                         ],
                       ),
-
-                      const SizedBox(height: 2),
-
-                      // Line 2: Reciter Name with dropdown arrow (Tappable)
-                      InkWell(
-                        onTap: () => _showReciterPicker(context, settings),
-                        borderRadius: BorderRadius.circular(6),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.record_voice_over_rounded,
-                              color: Color(0xFFC5D5E8),
-                              size: 13,
-                            ),
-                            const SizedBox(width: 4),
-                            Flexible(
-                              child: Text(
-                                reciterName,
-                                style: GoogleFonts.inter(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  color: const Color(0xFFC5D5E8),
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            const SizedBox(width: 2),
-                            const Icon(
-                              Icons.keyboard_arrow_down_rounded,
-                              color: Color(0xFFC5D5E8),
-                              size: 15,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
 
-                const SizedBox(width: 4),
+                const SizedBox(width: 10),
 
-                // 3. Playback Controls (Skip Prev, Play/Pause, Skip Next, Close)
+                // Playback Controls (Skip Prev, Circular Raised Gold Play, Skip Next)
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // Skip Previous
                     IconButton(
                       icon: const Icon(Icons.skip_previous_rounded,
-                          color: Colors.white, size: 22),
+                          color: Color(0xFF0F2038), size: 24),
                       constraints:
-                          const BoxConstraints(minWidth: 30, minHeight: 30),
+                          const BoxConstraints(minWidth: 32, minHeight: 32),
                       padding: EdgeInsets.zero,
                       onPressed: widget.onPrevAyah,
                       tooltip: 'Previous Ayah',
                     ),
-                    const SizedBox(width: 2),
+                    const SizedBox(width: 4),
 
-                    // Circular Vibrant Orange Play / Pause Button
+                    // Circular Raised Gold Play / Pause Button
                     StreamBuilder<PlayerState>(
                       stream: audioService.playerStateStream,
                       builder: (context, snapshot) {
@@ -563,13 +570,14 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                             }
                           },
                           child: Container(
-                            width: 40,
-                            height: 40,
+                            width: 38,
+                            height: 38,
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
                                 colors: [
-                                  Color(0xFFFFA000), // Vibrant Amber-Orange
-                                  Color(0xFFF59E0B), // Glowing Gold Accent
+                                  Color(0xFFE8B931),
+                                  Color(0xFFC59A27),
+                                  Color(0xFFA37B1B),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -577,9 +585,9 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFFFFA000)
-                                      .withValues(alpha: 0.4),
-                                  blurRadius: 10,
+                                  color: const Color(0xFFC59A27)
+                                      .withValues(alpha: 0.35),
+                                  blurRadius: 8,
                                   offset: const Offset(0, 2),
                                 ),
                               ],
@@ -587,50 +595,36 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                             child: Center(
                               child: isBuffering
                                   ? const SizedBox(
-                                      width: 18,
-                                      height: 18,
+                                      width: 17,
+                                      height: 17,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2.2,
-                                        color: Color(0xFF0F2038),
+                                        color: Colors.white,
                                       ),
                                     )
                                   : Icon(
                                       isPlaying
                                           ? Icons.pause_rounded
                                           : Icons.play_arrow_rounded,
-                                      size: 24,
-                                      color: const Color(0xFF0F2038),
+                                      size: 23,
+                                      color: Colors.white,
                                     ),
                             ),
                           ),
                         );
                       },
                     ),
-                    const SizedBox(width: 2),
+                    const SizedBox(width: 4),
 
                     // Skip Next
                     IconButton(
                       icon: const Icon(Icons.skip_next_rounded,
-                          color: Colors.white, size: 22),
+                          color: Color(0xFF0F2038), size: 24),
                       constraints:
-                          const BoxConstraints(minWidth: 30, minHeight: 30),
+                          const BoxConstraints(minWidth: 32, minHeight: 32),
                       padding: EdgeInsets.zero,
                       onPressed: widget.onNextAyah,
                       tooltip: 'Next Ayah',
-                    ),
-
-                    // Close Button
-                    IconButton(
-                      icon: const Icon(Icons.close_rounded,
-                          color: Colors.white60, size: 18),
-                      constraints:
-                          const BoxConstraints(minWidth: 26, minHeight: 26),
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
-                        audioService.stop();
-                        widget.onClose?.call();
-                      },
-                      tooltip: 'Close player',
                     ),
                   ],
                 ),
@@ -659,7 +653,7 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                     return Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // Thin Vibrant Orange Slider
+                        // Thin Gold Slider
                         SliderTheme(
                           data: SliderThemeData(
                             trackHeight: 2.5,
@@ -667,11 +661,10 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                                 enabledThumbRadius: 5.0),
                             overlayShape: const RoundSliderOverlayShape(
                                 overlayRadius: 9),
-                            activeTrackColor: const Color(0xFFFFA000),
-                            inactiveTrackColor:
-                                Colors.white.withValues(alpha: 0.22),
-                            thumbColor: const Color(0xFFFFA000),
-                            overlayColor: const Color(0xFFFFA000)
+                            activeTrackColor: const Color(0xFFC59A27),
+                            inactiveTrackColor: const Color(0xFFE8E1D2),
+                            thumbColor: const Color(0xFFC59A27),
+                            overlayColor: const Color(0xFFC59A27)
                                 .withValues(alpha: 0.2),
                           ),
                           child: Slider(
@@ -693,18 +686,18 @@ class _AudioControlBarState extends ConsumerState<AudioControlBar> {
                             children: [
                               Text(
                                 _formatDuration(position),
-                                style: GoogleFonts.inter(
+                                style: GoogleFonts.plusJakartaSans(
                                   fontSize: 10.5,
                                   fontWeight: FontWeight.w600,
-                                  color: const Color(0xFFC5D5E8),
+                                  color: const Color(0xFF7C7365),
                                 ),
                               ),
                               Text(
                                 '-${_formatDuration(remaining)}',
-                                style: GoogleFonts.inter(
+                                style: GoogleFonts.plusJakartaSans(
                                   fontSize: 10.5,
                                   fontWeight: FontWeight.w600,
-                                  color: const Color(0xFFC5D5E8),
+                                  color: const Color(0xFF7C7365),
                                 ),
                               ),
                             ],

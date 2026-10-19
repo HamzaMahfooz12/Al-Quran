@@ -5,24 +5,35 @@ import 'package:google_fonts/google_fonts.dart';
 class AppTheme {
   AppTheme._();
 
-  // ── Color Palette: Imperial Midnight Sapphire & Brushed Gold ──────────────
-  static const Color primary        = Color(0xFF0F2038);   // Imperial Midnight Sapphire
-  static const Color primaryLight   = Color(0xFF1E3A60);   // Royal Sapphire Blue
-  static const Color primaryDark    = Color(0xFF071424);   // Deep Night Void
-  static const Color primarySurface = Color(0xFFEDF3FB);   // Soft Sapphire Tint
-  static const Color gold           = Color(0xFFD4AF37);   // Radiant Brushed Gold
-  static const Color goldLight      = Color(0xFFF3C64F);   // Luminous Gold
-  static const Color goldDark       = Color(0xFFB8860B);   // Antique Gold
-  static const Color goldSurface    = Color(0xFFFFFBEB);   // Soft Amber Ivory Tint
+  // ── Color Palette: Warm Daylight Tactile Paper & Royal Gold ─────────────────
+  // Based on Figma's daylight design: quiet, tactile surfaces instead of harsh navy panels.
+  static const Color primary        = Color(0xFF3F4938);   // Tactile Deep Olive Slate (Figma --navy-dark)
+  static const Color primaryLight   = Color(0xFF59634A);   // Tactile Olive Gray (Figma --navy)
+  static const Color primaryDark    = Color(0xFF354033);   // Deep Ink (Figma --ink)
+  static const Color primarySurface = Color(0xFFEDF2E8);   // Soothing Pale Sage Cream Tint
+  static const Color gold           = Color(0xFFC6A15B);   // Tactile Warm Gold (Figma --gold)
+  static const Color goldLight      = Color(0xFFD8B873);   // Luminous Gold (Figma --bright-gold)
+  static const Color goldDark       = Color(0xFF96743B);   // Antique Gold (Figma --gold-dark)
+  static const Color goldSurface    = Color(0xFFF7F1E5);   // Soft Champagne Ivory Tint
   static const Color surface        = Color(0xFFFFFFFF);   // Pure Ivory Surface
-  static const Color background     = Color(0xFFF8FAFC);   // Clean Modern Off-White
+  static const Color background     = Color(0xFFFAF7F2);   // Warm Alabaster Parchment (Figma --paper)
   static const Color cardBg         = Color(0xFFFFFFFF);   // Elevated Card Surface
-  static const Color cardBgSecondary= Color(0xFFF1F5F9);   // Cool Slate Card
-  static const Color textPrimary    = Color(0xFF0F172A);   // Deep Slate Charcoal
-  static const Color textSecondary  = Color(0xFF334155);   // Slate Charcoal
-  static const Color textMuted      = Color(0xFF64748B);   // Muted Slate
-  static const Color divider        = Color(0xFFE2E8F0);   // Light Slate Border
+  static const Color cardBgSecondary= Color(0xFFF7F4EE);   // Warm Light Parchment Tint
+  static const Color textPrimary    = Color(0xFF354033);   // Tactile Slate Ink (Figma --ink)
+  static const Color textSecondary  = Color(0xFF59634A);   // Slate Charcoal (Figma --navy)
+  static const Color textMuted      = Color(0xFF7A8075);   // Muted Slate (Figma --muted)
+  static const Color divider        = Color(0xFFEDE7DC);   // Soft Warm Border
   static const Color error          = Color(0xFFDC2626);   // Crimson Red
+  static const Color parchment      = Color(0xFFFAF7F2);   // Warm Alabaster Parchment
+  static const Color parchmentLight = Color(0xFFFCFAF7);   // Luminous Parchment
+  static const Color borderWarm     = Color(0xFFDED6C6);   // Soft Warm Border
+  static const Color borderSoft     = Color(0xFFE8E0D0);   // Subtle Warm Border
+  static const Color accentGold     = Color(0xFFC6A15B);   // Royal Stitch Gold
+  static const Color accentGoldLight= Color(0xFFD8B873);   // Luminous Accent Gold
+  static const Color accentGoldSoft = Color(0xFFEDE1C5);   // Champagne Ivory Gold
+  static const Color brightGold     = Color(0xFFD8B873);   // Vibrant Accent Gold
+  static const Color sageBadge      = Color(0xFF748164);   // Ayah Medallion Sage Green
+  static const Color sageLight      = Color(0xFFEDF2E8);   // Pale Sage Tint
 
   // ── Arabic font size ──────────────────────────────────────────────────────
   static const double kArabicFontSizeDefault = 28.0;
@@ -42,8 +53,8 @@ class AppTheme {
           backgroundColor: background,
           foregroundColor: textPrimary,
           elevation: 0,
-          scrolledUnderElevation: 1.5,
-          shadowColor: divider.withValues(alpha: 0.5),
+          scrolledUnderElevation: 0,
+          shadowColor: Colors.transparent,
           titleTextStyle: GoogleFonts.outfit(
             fontSize: 19,
             fontWeight: FontWeight.w700,
@@ -117,22 +128,10 @@ class AppTheme {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(color: primaryLight, width: 1.6),
+            borderSide: const BorderSide(color: gold, width: 1.5),
           ),
           contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        ),
-        dividerTheme: const DividerThemeData(
-          color: divider,
-          thickness: 1,
-          space: 0,
-        ),
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: Colors.transparent,
-          selectedItemColor: primary,
-          unselectedItemColor: textMuted,
-          elevation: 0,
-          type: BottomNavigationBarType.fixed,
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),
       );
 }

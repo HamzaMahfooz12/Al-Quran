@@ -14,6 +14,11 @@ final quranRepositoryProvider = Provider<QuranRepository>(
   (ref) => QuranRepository(DatabaseHelper.instance),
 );
 
+final lastReadMushafProvider = FutureProvider<Map<String, dynamic>?>((ref) async {
+  final repo = ref.watch(quranRepositoryProvider);
+  return repo.getLastReadMushaf();
+});
+
 class QuranRepository {
   final DatabaseHelper _db;
   QuranRepository(this._db);
@@ -304,6 +309,23 @@ class QuranRepository {
       limit: 1,
     );
     return rows.isEmpty ? null : rows.first;
+  }
+
+  Future<Map<String, dynamic>?> getLastReadMushaf() async {
+    final rows = await _db.query(
+      'last_read',
+      where: "section IN ('mushaf_16', 'mushaf_15')",
+      orderBy: 'updated_at DESC',
+      limit: 1,
+    );
+    if (rows.isNotEmpty) return rows.first;
+    return {
+      'section': 'mushaf_16',
+      'surah': 1,
+      'ayah': 1,
+      'page': 1,
+      'updated_at': 0,
+    };
   }
 
   Future<void> saveLastRead({

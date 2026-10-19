@@ -12,7 +12,6 @@ import '../audio/audio_control_bar.dart';
 import '../mushaf_shared/widgets/mushaf_bottom_control_bar.dart';
 import '../mushaf_shared/widgets/mushaf_page_widget.dart';
 import '../shared/jump_navigation_dialog.dart';
-import '../mark_mistakes/mistakes_report_screen.dart';
 
 class Mushaf15Screen extends ConsumerStatefulWidget {
   final int initialPage; // 1-610
@@ -182,12 +181,13 @@ class _Mushaf15ScreenState extends ConsumerState<Mushaf15Screen> {
     final repo = ref.read(quranRepositoryProvider);
     final lastRead = await repo.getLastRead('mushaf_15');
     int page = widget.initialPage;
-    if (lastRead != null) {
+    if (page == 1 && lastRead != null) {
       page = lastRead['page'] as int? ?? widget.initialPage;
     }
     _currentPage = page;
     _pageCtrl = PageController(initialPage: page - 1);
     _pageCtrl!.addListener(_onScrollPage);
+    _saveLastRead(page);
     if (mounted) {
       setState(() {
         _loadingLastRead = false;
@@ -334,6 +334,7 @@ class _Mushaf15ScreenState extends ConsumerState<Mushaf15Screen> {
       ayah = words.first['ayah'] as int? ?? 1;
     }
     await repo.saveLastRead(section: 'mushaf_15', surah: surah, ayah: ayah, page: pageNum);
+    ref.invalidate(lastReadMushafProvider);
   }
 
   Future<void> _playSurahAyah(int surah, int ayah) async {
@@ -420,9 +421,9 @@ class _Mushaf15ScreenState extends ConsumerState<Mushaf15Screen> {
   Widget build(BuildContext context) {
     if (_loadingLastRead) {
       return const Scaffold(
-        backgroundColor: Color(0xFF0F2038),
+        backgroundColor: Color(0xFFFAF7F2),
         body: Center(
-          child: CircularProgressIndicator(color: Colors.white),
+          child: CircularProgressIndicator(color: Color(0xFFC59A27)),
         ),
       );
     }
@@ -437,52 +438,110 @@ class _Mushaf15ScreenState extends ConsumerState<Mushaf15Screen> {
     final isAudioActive = audio.currentPlayingAyahId != null;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F2038),
+      backgroundColor: const Color(0xFFFAF7F2),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F2038),
+        backgroundColor: const Color(0xFFFAF7F2),
         elevation: 0,
+        scrolledUnderElevation: 0,
+        toolbarHeight: 64,
+        centerTitle: true,
+        leading: Center(
+          child: InkWell(
+            onTap: () => Navigator.of(context).pop(),
+            borderRadius: BorderRadius.circular(50),
+            child: Container(
+              width: 38,
+              height: 38,
+              margin: const EdgeInsets.only(left: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFFE8E1D2)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.03),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF0F2038), size: 16),
+            ),
+          ),
+        ),
         title: Text(
           '15-Line Madani Mushaf',
-          style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+          style: GoogleFonts.outfit(
+            fontSize: 16.5,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFF0F2038),
+            letterSpacing: -0.2,
+          ),
         ),
         actions: [
           // Keep Screen Awake Toggle
-          IconButton(
-            icon: Icon(
-              _isKeepScreenAwake ? Icons.light_mode : Icons.light_mode_outlined,
-              color: _isKeepScreenAwake ? const Color(0xFFFFD54F) : Colors.white70,
+          Center(
+            child: InkWell(
+              onTap: _toggleKeepScreenAwake,
+              borderRadius: BorderRadius.circular(50),
+              child: Container(
+                width: 38,
+                height: 38,
+                margin: const EdgeInsets.only(right: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: _isKeepScreenAwake
+                        ? const Color(0xFFC59A27)
+                        : const Color(0xFFE8E1D2),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.03),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  _isKeepScreenAwake ? Icons.light_mode : Icons.light_mode_outlined,
+                  color: _isKeepScreenAwake ? const Color(0xFFC59A27) : const Color(0xFF0F2038),
+                  size: 19,
+                ),
+              ),
             ),
-            tooltip: _isKeepScreenAwake ? 'Screen Keep-Awake: ON' : 'Screen Keep-Awake: OFF',
-            onPressed: _toggleKeepScreenAwake,
           ),
           // Jump Navigation Dialog Button
-          IconButton(
-            icon: const Icon(Icons.explore_outlined, color: Colors.white),
-            tooltip: 'Jump to Location',
-            onPressed: () => JumpNavigationDialog.show(
-              context,
-              mushafType: '15_line',
-              onJumpToPage: (p) {
-                _pageCtrl?.jumpToPage(p - 1);
-                setState(() => _currentPage = p);
-              },
-            ),
-          ),
-          // Mark Mistakes Report / Toggle
-          IconButton(
-            icon: Icon(
-              _isMarkMistakesMode ? Icons.edit_note : Icons.edit_note_outlined,
-              color: _isMarkMistakesMode ? Colors.amberAccent : Colors.white,
-            ),
-            tooltip: 'Mark Mistakes Mode',
-            onPressed: _toggleMarkMistakes,
-          ),
-          // View Marked Mistakes Report
-          IconButton(
-            icon: const Icon(Icons.fact_check_outlined, color: Colors.white),
-            tooltip: 'Mistakes Report',
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const MistakesReportScreen()),
+          Center(
+            child: InkWell(
+              onTap: () => JumpNavigationDialog.show(
+                context,
+                mushafType: '15_line',
+                onJumpToPage: (p) {
+                  _pageCtrl?.jumpToPage(p - 1);
+                  setState(() => _currentPage = p);
+                },
+              ),
+              borderRadius: BorderRadius.circular(50),
+              child: Container(
+                width: 38,
+                height: 38,
+                margin: const EdgeInsets.only(right: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: const Color(0xFFE8E1D2)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.03),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: const Icon(Icons.explore_outlined, color: Color(0xFF0F2038), size: 19),
+              ),
             ),
           ),
         ],

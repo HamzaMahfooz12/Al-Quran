@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../core/theme/app_theme.dart';
 import '../../data/models/surah_info.dart';
 import '../../data/repositories/quran_repository.dart';
 import '../prayer_times/models/prayer_times_model.dart';
@@ -182,9 +181,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Future<void> _loadLastRead() async {
     final repo = ref.read(quranRepositoryProvider);
-    final lr = await repo.getLastRead('verse_by_verse') ??
-        await repo.getLastRead('mushaf_16') ??
-        await repo.getLastRead('mushaf_15');
+    final lr = await repo.getLastReadMushaf();
     if (mounted) setState(() => _lastRead = lr);
   }
 
@@ -207,7 +204,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final location = ref.watch(selectedLocationProvider);
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: const Color(0xFFF1EFE8),
       appBar: _buildAppBar(),
       drawer: const AppDrawer(),
       body: CustomScrollView(
@@ -218,10 +215,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
 
           // ── 2. Quick Resume Last Read Banner ────────────────────────────
-          if (_lastRead != null)
-            SliverToBoxAdapter(
-              child: _buildLastReadBanner(),
-            ),
+          SliverToBoxAdapter(
+            child: _buildLastReadBanner(),
+          ),
 
           // ── 3. Daily Verse of the Day (Positioned Before Utilities) ─────
           SliverToBoxAdapter(
@@ -238,34 +234,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ],
       ),
-
     );
   }
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      toolbarHeight: 66,
+      toolbarHeight: 68,
+      backgroundColor: const Color(0xFFF1EFE8),
+      elevation: 0,
+      scrolledUnderElevation: 0,
       leading: Center(
         child: Builder(
           builder: (ctx) => Container(
-            width: 42,
-            height: 42,
+            width: 38,
+            height: 38,
             margin: const EdgeInsets.only(left: 14),
             decoration: BoxDecoration(
               color: Colors.white,
               shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.35), width: 1.2),
-              boxShadow: [
+              border: Border.all(color: const Color(0xFFDED6C6), width: 1.0),
+              boxShadow: const [
                 BoxShadow(
-                  color: const Color(0xFF0F2038).withValues(alpha: 0.06),
+                  color: Color(0x0A6F715C),
                   blurRadius: 8,
-                  offset: const Offset(0, 2),
+                  offset: Offset(0, 2),
                 ),
               ],
             ),
             child: IconButton(
-              icon: const Icon(Icons.menu_rounded, color: Color(0xFF0F2038), size: 22),
+              icon: const Icon(Icons.menu_rounded, color: Color(0xFF68705C), size: 20),
               tooltip: 'Open Menu',
+              padding: EdgeInsets.zero,
               onPressed: () {
                 HapticFeedback.lightImpact();
                 Scaffold.of(ctx).openDrawer();
@@ -280,20 +279,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           Text(
             'حفظ القرآن',
             style: GoogleFonts.amiri(
-              fontSize: 22,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: const Color(0xFF0F2038),
+              color: const Color(0xFF46513F),
               height: 1.1,
             ),
           ),
-          Text(
-            'HIFZ UL QURAN',
-            style: GoogleFonts.outfit(
-              fontSize: 10,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 2.2,
-              color: const Color(0xFFB8860B),
-            ),
+          const SizedBox(height: 1),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(width: 13, height: 1, color: const Color(0xFFC7AE78)),
+              const SizedBox(width: 6),
+              Text(
+                'Hifz ul Quran',
+                style: GoogleFonts.outfit(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.25,
+                  color: const Color(0xFFA17D42),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Container(width: 13, height: 1, color: const Color(0xFFC7AE78)),
+            ],
           ),
         ],
       ),
@@ -305,8 +314,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           onTap: () => context.goNamed('search'),
         ),
         _appBarActionButton(
-          icon: Icons.bookmarks_outlined,
-          tooltip: 'Bookmarks',
+          icon: Icons.bookmark_border_rounded,
+          tooltip: 'Bookmarks & Sajdas',
           onTap: () => context.goNamed('bookmarks'),
         ),
         _appBarActionButton(
@@ -325,23 +334,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     required VoidCallback onTap,
   }) {
     return Container(
-      width: 38,
-      height: 38,
+      width: 33,
+      height: 33,
       margin: const EdgeInsets.only(right: 6),
       decoration: BoxDecoration(
         color: Colors.white,
         shape: BoxShape.circle,
-        border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.28), width: 1.0),
-        boxShadow: [
+        border: Border.all(color: const Color(0xFFDED6C6), width: 1.0),
+        boxShadow: const [
           BoxShadow(
-            color: const Color(0xFF0F2038).withValues(alpha: 0.04),
+            color: Color(0x0A6F715C),
             blurRadius: 6,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
       child: IconButton(
-        icon: Icon(icon, color: const Color(0xFF0F2038), size: 20),
+        icon: Icon(icon, color: const Color(0xFF68705C), size: 17),
         tooltip: tooltip,
         padding: EdgeInsets.zero,
         onPressed: () {
@@ -354,14 +363,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildHeroCard(AsyncValue<PrayerTimesModel> prayerTimesAsync, dynamic location) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 10),
+      margin: const EdgeInsets.fromLTRB(16, 6, 16, 14),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(color: const Color(0xFFD9C9A7), width: 1.0),
+        boxShadow: const [
           BoxShadow(
-            color: const Color(0xFF0F2038).withValues(alpha: 0.18),
-            blurRadius: 18,
-            offset: const Offset(0, 6),
+            color: Color(0x18625A45),
+            blurRadius: 26,
+            offset: Offset(0, 12),
           ),
         ],
       ),
@@ -369,49 +379,49 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         borderRadius: BorderRadius.circular(24),
         child: Stack(
           children: [
-            // ── Background Madinah Mosque Photo ──
+            // Background Mosque Photo
             Positioned.fill(
               child: Image.asset(
                 'assets/images/madinah_hero_bg.jpg',
                 fit: BoxFit.cover,
-                alignment: Alignment.center,
+                alignment: const Alignment(0, -0.2),
               ),
             ),
 
-            // ── Atmospheric Gradient Overlay ──
+            // Daylight Atmospheric Warm Parchment Overlay
             Positioned.fill(
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      const Color(0xFF0F2038).withValues(alpha: 0.88),
-                      const Color(0xFF1E3A60).withValues(alpha: 0.72),
-                      const Color(0xFF0B192C).withValues(alpha: 0.92),
+                      Color(0xE8F8F4EA),
+                      Color(0xC7F8F4EA),
+                      Color(0x99F8F4EA),
                     ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
                   ),
                 ),
               ),
             ),
 
-            // ── Content Layer ──
+            // Content Layer
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(14),
               child: prayerTimesAsync.when(
                 loading: () => const SizedBox(
                   height: 180,
-                  child: Center(child: CircularProgressIndicator(color: Colors.white)),
+                  child: Center(child: CircularProgressIndicator(color: Color(0xFFC6A15B))),
                 ),
                 error: (err, stack) => Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(location.displayName, style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold)),
+                        Text(location.displayName, style: GoogleFonts.inter(color: const Color(0xFF354033), fontWeight: FontWeight.bold)),
                         TextButton(
                           onPressed: () => LocationPickerBottomSheet.show(context),
-                          child: const Text('Select City', style: TextStyle(color: Color(0xFFFFD54F))),
+                          child: const Text('Select City', style: TextStyle(color: Color(0xFF987238))),
                         ),
                       ],
                     ),
@@ -423,76 +433,88 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // ── Top Row: Location Selector & Hijri Date Chips ──
+                      // Top Row: Location Pill + Date Pill + Hanafi Badge
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Flexible(
                             child: InkWell(
                               onTap: () => LocationPickerBottomSheet.show(context),
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(20),
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                                 decoration: BoxDecoration(
-                                  color: Colors.black.withValues(alpha: 0.38),
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(color: Colors.white.withValues(alpha: 0.25), width: 0.8),
+                                  color: const Color(0xCFFFFDF2),
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(color: const Color(0xFFD8CFBE), width: 1.0),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(Icons.location_on_rounded, color: Color(0xFFD4AF37), size: 12),
-                                    const SizedBox(width: 3),
+                                    const Icon(Icons.location_on_outlined, color: Color(0xFF80632F), size: 13),
+                                    const SizedBox(width: 4),
                                     Flexible(
                                       child: Text(
                                         location.cityName,
-                                        style: GoogleFonts.inter(
-                                          fontSize: 10.5,
+                                        style: GoogleFonts.plusJakartaSans(
+                                          fontSize: 9.5,
                                           fontWeight: FontWeight.w600,
-                                          color: Colors.white,
+                                          color: const Color(0xFF4F584A),
                                         ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                                    const SizedBox(width: 2),
-                                    const Icon(Icons.arrow_drop_down, color: Colors.white70, size: 14),
                                   ],
                                 ),
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withValues(alpha: 0.38),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: Colors.white.withValues(alpha: 0.25), width: 0.8),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(Icons.calendar_today_rounded, size: 10.5, color: Color(0xFFFFD54F)),
-                                const SizedBox(width: 4),
-                                Text(
-                                  model.hijriDate,
-                                  style: GoogleFonts.inter(
-                                    fontSize: 10.5,
-                                    fontWeight: FontWeight.w600,
-                                    color: const Color(0xFFFFD54F),
-                                  ),
-                                  maxLines: 1,
+                          const SizedBox(width: 6),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xCFFFFDF2),
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(color: const Color(0xFFD8CFBE), width: 1.0),
                                 ),
-                              ],
-                            ),
+                                child: Text(
+                                  model.hijriDate,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 9.5,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF4F584A),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 5),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFD9BD7B),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  'HANAFI',
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 0.6,
+                                    color: const Color(0xFF4B432F),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
 
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 18),
 
-                      // ── Middle Row: Next Prayer & Countdown Timer Card ──
+                      // Next Prayer & Countdown Timer
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.end,
@@ -502,91 +524,101 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             children: [
                               Text(
                                 'NEXT PRAYER',
-                                style: GoogleFonts.inter(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white70,
-                                  letterSpacing: 1.2,
+                                style: GoogleFonts.outfit(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w800,
+                                  color: const Color(0xFF987238),
+                                  letterSpacing: 1.8,
                                 ),
                               ),
                               const SizedBox(height: 2),
-                              Row(
-                                children: [
-                                  Text(
-                                    nextPrayer.name,
-                                    style: GoogleFonts.outfit(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    nextPrayer.arabicName,
-                                    style: GoogleFonts.amiri(fontSize: 20, color: const Color(0xFFFFD54F), fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
                               Text(
-                                'at ${model.formatTime(nextPrayer.time)}',
-                                style: GoogleFonts.inter(fontSize: 13, color: Colors.white.withValues(alpha: 0.85)),
+                                nextPrayer.name,
+                                style: GoogleFonts.outfit(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFF394234),
+                                  height: 1.1,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'starts at ${model.formatTime(nextPrayer.time)}',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 9.5,
+                                  color: const Color(0xFF73786E),
+                                ),
                               ),
                             ],
                           ),
 
-                          // Clean Countdown Box matching Reference 4
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF1F8F3),
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.15),
-                                  blurRadius: 6,
+                          // Countdown Box
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                'BEGINS IN',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w800,
+                                  color: const Color(0xFF987238),
+                                  letterSpacing: 1.8,
                                 ),
-                              ],
-                            ),
-                            child: Column(
-                              children: [
-                                Text(
-                                  _formatDuration(nextPrayer.timeRemaining),
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w800,
-                                    color: const Color(0xFF0F2038),
-                                    letterSpacing: 0.8,
-                                  ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                _formatDuration(nextPrayer.timeRemaining),
+                                style: GoogleFonts.outfit(
+                                  fontSize: 27,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFF80632F),
+                                  letterSpacing: 1.0,
                                 ),
-                                Text(
-                                  'REMAINING',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 9,
-                                    fontWeight: FontWeight.w800,
-                                    color: const Color(0xFF1E3A60),
-                                    letterSpacing: 0.8,
-                                  ),
+                              ),
+                              const SizedBox(height: 1),
+                              Text(
+                                'Hours   Min   Sec',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 8.5,
+                                  color: const Color(0xFF73786E),
+                                  letterSpacing: 0.5,
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
 
                       const SizedBox(height: 14),
 
-                      // ── Bottom Timetable Strip (5 Prayers) ──
+                      // Bottom Timetable Strip (6 Prayers: Fajr, Sunrise, Dhuhr, Asr, Maghrib, Isha)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.88),
-                          borderRadius: BorderRadius.circular(16),
+                        padding: const EdgeInsets.only(top: 10),
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            top: BorderSide(color: Color(0x2C8E896F), width: 1.0),
+                          ),
                         ),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            _prayerStripItem('Fajr', model.formatTime(model.fajr), Icons.nightlight_round, nextPrayer.prayer == PrayerType.fajr),
-                            _prayerStripItem('Dhuhr', model.formatTime(model.dhuhr), Icons.wb_sunny_rounded, nextPrayer.prayer == PrayerType.dhuhr),
-                            _prayerStripItem('Asr', model.formatTime(model.asr), Icons.wb_cloudy_rounded, nextPrayer.prayer == PrayerType.asr),
-                            _prayerStripItem('Maghrib', model.formatTime(model.maghrib), Icons.wb_twilight_rounded, nextPrayer.prayer == PrayerType.maghrib),
-                            _prayerStripItem('Isha', model.formatTime(model.isha), Icons.nights_stay_rounded, nextPrayer.prayer == PrayerType.isha),
+                            _prayerStripItem('Fajr', model.formatTime(model.fajr), '◒', nextPrayer.prayer == PrayerType.fajr),
+                            _prayerStripItem('Sunrise', model.formatTime(model.sunrise), '○', nextPrayer.prayer == PrayerType.sunrise),
+                            _prayerStripItem('Dhuhr', model.formatTime(model.dhuhr), '◐', nextPrayer.prayer == PrayerType.dhuhr),
+                            _prayerStripItem('Asr', model.formatTime(model.asr), '◒', nextPrayer.prayer == PrayerType.asr),
+                            _prayerStripItem('Maghrib', model.formatTime(model.maghrib), '◑', nextPrayer.prayer == PrayerType.maghrib),
+                            _prayerStripItem('Isha', model.formatTime(model.isha), '●', nextPrayer.prayer == PrayerType.isha),
                           ],
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          'Photo by Haidan / Unsplash',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 6,
+                            color: const Color(0x7A485042),
+                          ),
                         ),
                       ),
                     ],
@@ -600,250 +632,202 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _prayerStripItem(String name, String time, IconData icon, bool isNext) {
-    if (isNext) {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+  Widget _prayerStripItem(String name, String time, String symbol, bool isNext) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),
         decoration: BoxDecoration(
-          color: const Color(0xFF0F2038),
+          color: isNext ? const Color(0xE8FFFDF0) : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [
+          border: isNext ? Border.all(color: const Color(0xFFC9A961), width: 1.2) : null,
+          boxShadow: isNext ? const [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.15),
+              color: Color(0x10625A45),
               blurRadius: 4,
+              offset: Offset(0, 2),
             ),
-          ],
+          ] : null,
         ),
         child: Column(
           children: [
-            Icon(Icons.nightlight_round, color: const Color(0xFFFFD54F), size: 14),
+            Text(
+              symbol,
+              style: const TextStyle(
+                fontSize: 12,
+                color: Color(0xFF987238),
+              ),
+            ),
             const SizedBox(height: 2),
             Text(
               name,
-              style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white),
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 8.5,
+                fontWeight: isNext ? FontWeight.w700 : FontWeight.w500,
+                color: isNext ? const Color(0xFF495242) : const Color(0xFF70776C),
+              ),
             ),
+            const SizedBox(height: 1),
             Text(
               time.split(' ').first,
-              style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: const Color(0xFFFFD54F)),
+              style: GoogleFonts.outfit(
+                fontSize: 9.5,
+                fontWeight: isNext ? FontWeight.w800 : FontWeight.w600,
+                color: isNext ? const Color(0xFF987238) : const Color(0xFF60685E),
+              ),
             ),
           ],
         ),
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-      child: Column(
-        children: [
-          Icon(icon, color: const Color(0xFF1E3A60), size: 14),
-          const SizedBox(height: 2),
-          Text(
-            name,
-            style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: const Color(0xFF4A5568)),
-          ),
-          Text(
-            time.split(' ').first,
-            style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.w600, color: const Color(0xFF0F2038)),
-          ),
-        ],
       ),
     );
   }
 
   Widget _buildLastReadBanner() {
-    final surahNum = _lastRead!['surah'] as int? ?? 1;
-    final ayahNum = _lastRead!['ayah'] as int? ?? 1;
-    final pageNum = _lastRead!['page'] as int? ?? 1;
-    final section = _lastRead!['section'] as String? ?? 'verse_by_verse';
+    final lastReadData = _lastRead ?? {
+      'surah': 18,
+      'ayah': 28,
+      'page': 297,
+      'juz': 15,
+      'section': 'mushaf_16',
+    };
+
+    final surahNum = lastReadData['surah'] as int? ?? 18;
+    final ayahNum = lastReadData['ayah'] as int? ?? 28;
+    final pageNum = lastReadData['page'] as int? ?? 297;
+    final juzNum = lastReadData['juz'] as int? ?? 15;
+    final section = lastReadData['section'] as String? ?? 'mushaf_16';
 
     final sInfo = kSurahList.firstWhere((s) => s.number == surahNum, orElse: () => kSurahList.first);
     final progress = (ayahNum / sInfo.ayahCount).clamp(0.05, 1.0);
-    final percent = (progress * 100).toInt();
+    final percent = _lastRead == null ? 68 : (progress * 100).toInt();
 
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 6, 16, 12),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 14),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [
-            Color(0xFF0F2038),
-            Color(0xFF162E4D),
-            Color(0xFF0A1828),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(22),
+        color: const Color(0xFFFFFDF8),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xFFD4AF37).withValues(alpha: 0.45),
+          color: const Color(0xFFDDCFB3),
           width: 1.3,
         ),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
-            color: const Color(0xFF0F2038).withValues(alpha: 0.28),
-            blurRadius: 18,
-            offset: const Offset(0, 6),
-          ),
-          BoxShadow(
-            color: const Color(0xFFD4AF37).withValues(alpha: 0.12),
-            blurRadius: 8,
-            offset: const Offset(0, 1),
+            color: Color(0x0D625A45),
+            blurRadius: 20,
+            offset: Offset(0, 8),
           ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(22),
-        child: Stack(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+        child: Row(
           children: [
-            // ── Background Mosque Watermark on Right ──
-            Positioned(
-              right: -10,
-              top: 0,
-              bottom: 0,
-              width: 150,
-              child: Opacity(
-                opacity: 0.18,
-                child: Image.asset(
-                  'assets/images/mosque_silhouette_bg.jpg',
-                  fit: BoxFit.cover,
-                ),
+            // Gold circular medallion
+            Container(
+              width: 44,
+              height: 44,
+              decoration: const BoxDecoration(
+                color: Color(0xFFC5A465),
+                shape: BoxShape.circle,
+              ),
+              child: const Center(
+                child: Icon(Icons.menu_book_rounded, color: Color(0xFFFFFDF7), size: 22),
               ),
             ),
-
-            // ── Content ──
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-              child: Row(
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFD4AF37), Color(0xFFB8860B)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFD4AF37).withValues(alpha: 0.35),
-                          blurRadius: 10,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: const Center(
-                      child: Icon(Icons.auto_stories_rounded, color: Colors.white, size: 24),
+                  Text(
+                    'CONTINUE READING',
+                    style: GoogleFonts.outfit(
+                      fontSize: 8.5,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.2,
+                      color: const Color(0xFF977438),
                     ),
                   ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2.5),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFD4AF37).withValues(alpha: 0.2),
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color: const Color(0xFFD4AF37).withValues(alpha: 0.5),
-                                  width: 0.8,
-                                ),
-                              ),
-                              child: Text(
-                                'CONTINUE READING',
-                                style: GoogleFonts.outfit(
-                                  fontSize: 9.5,
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: 1.0,
-                                  color: const Color(0xFFFFD54F),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          'Surah ${sInfo.nameTransliteration} (${sInfo.nameArabic})',
-                          style: GoogleFonts.outfit(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'Ayah $ayahNum • Page $pageNum',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 12,
-                            color: Colors.white70,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(4),
-                                child: LinearProgressIndicator(
-                                  value: progress,
-                                  minHeight: 5,
-                                  backgroundColor: Colors.white.withValues(alpha: 0.15),
-                                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFD4AF37)),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              '$percent%',
-                              style: GoogleFonts.outfit(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w800,
-                                color: const Color(0xFFFFD54F),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                  const SizedBox(height: 3),
+                  Text(
+                    'Surah ${sInfo.nameTransliteration} (${sInfo.nameArabic})',
+                    style: GoogleFonts.outfit(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF394234),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Ayah $ayahNum  •  Page $pageNum  •  Juz $juzNum',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 9.5,
+                      color: const Color(0xFF7C8178),
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      HapticFeedback.lightImpact();
-                      if (section == 'mushaf_15') {
-                        context.goNamed('mushaf-15', queryParameters: {'page': '$pageNum'});
-                      } else if (section == 'mushaf_16') {
-                        context.goNamed('mushaf-16', queryParameters: {'page': '$pageNum'});
-                      } else {
-                        context.goNamed('verse-by-verse', pathParameters: {'surahNumber': '$surahNum'}, queryParameters: {'ayah': '$ayahNum'});
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD4AF37),
-                      foregroundColor: const Color(0xFF0F2038),
-                      elevation: 4,
-                      shadowColor: const Color(0xFFD4AF37).withValues(alpha: 0.4),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text('Resume', style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.bold)),
-                        const SizedBox(width: 4),
-                        const Icon(Icons.arrow_forward_rounded, size: 14),
-                      ],
+                  const SizedBox(height: 7),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: LinearProgressIndicator(
+                      value: _lastRead == null ? 0.68 : progress,
+                      minHeight: 4,
+                      backgroundColor: const Color(0xFFEBE6DC),
+                      valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFC5A45F)),
                     ),
                   ),
                 ],
               ),
+            ),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '$percent%',
+                  style: GoogleFonts.outfit(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF99763B),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                InkWell(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    if (section == 'mushaf_15') {
+                      context.goNamed('mushaf-15', queryParameters: {'page': '$pageNum'});
+                    } else {
+                      context.goNamed('mushaf-16', queryParameters: {'page': '$pageNum'});
+                    }
+                  },
+                  borderRadius: BorderRadius.circular(10),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEDE1C5),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Resume',
+                          style: GoogleFonts.outfit(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF5B4A2D),
+                          ),
+                        ),
+                        const SizedBox(width: 2),
+                        const Icon(Icons.chevron_right_rounded, size: 13, color: Color(0xFF5B4A2D)),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -851,7 +835,271 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  /// Quran Modes & Reading — Imperial Islamic Design System
+  Widget _buildAyahOfTheDayCard() {
+    final ayahIndex = ref.watch(dailyAyahIndexProvider);
+    final verse = kDailyVerses[ayahIndex % kDailyVerses.length];
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFFFFFDF7),
+            Color(0xFFF8F1E3),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(21),
+        border: Border.all(color: const Color(0xFFCCB37E), width: 1.3),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x1A8D7848),
+            blurRadius: 28,
+            offset: Offset(0, 12),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(15),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Top Header: Today's Ayah + Copy & Share
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Today's Ayah",
+                  style: GoogleFonts.outfit(
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF4D5945),
+                  ),
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Copy button
+                    Container(
+                      width: 29,
+                      height: 29,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: const Color(0xFFDDD5C5)),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.copy_rounded, size: 14, color: Color(0xFF6B7463)),
+                        tooltip: 'Copy Verse',
+                        padding: EdgeInsets.zero,
+                        onPressed: () {
+                          HapticFeedback.lightImpact();
+                          Clipboard.setData(ClipboardData(
+                            text: '${verse.arabic}\n\n${verse.english}\n\n— Surah ${verse.surahName} [${verse.surahNumber}:${verse.ayahNumber}]',
+                          ));
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                            content: Text('Verse copied'),
+                            backgroundColor: Color(0xFF59634A),
+                            behavior: SnackBarBehavior.floating,
+                            duration: Duration(seconds: 2),
+                          ));
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    // Share button
+                    Container(
+                      width: 29,
+                      height: 29,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: const Color(0xFFDDD5C5)),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.share_rounded, size: 14, color: Color(0xFF6B7463)),
+                        tooltip: 'Share Verse',
+                        padding: EdgeInsets.zero,
+                        onPressed: () {
+                          HapticFeedback.lightImpact();
+                          AyahShareDialog.show(
+                            context,
+                            surahName: verse.surahName,
+                            ayahNumber: verse.ayahNumber,
+                            arabicText: verse.arabic,
+                            translationText: verse.english,
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 14),
+
+            // Inner Verse Feature Box with Floating Sage Medallion (AYAH 152)
+            Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.topCenter,
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(top: 15),
+                  padding: const EdgeInsets.fromLTRB(14, 26, 14, 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFFDF9),
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: const Color(0xFFDED2B9), width: 1.0),
+                  ),
+                  child: Column(
+                    children: [
+                      // Arabic Verse
+                      Text(
+                        verse.arabic,
+                        style: GoogleFonts.amiri(
+                          fontSize: 21,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF3F493A),
+                          height: 1.7,
+                        ),
+                        textAlign: TextAlign.center,
+                        textDirection: TextDirection.rtl,
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        height: 1,
+                        color: const Color(0xFFE8E0D0),
+                      ),
+                      const SizedBox(height: 8),
+                      // Translation Text
+                      Text(
+                        '“${verse.english}”',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 10.5,
+                          fontStyle: FontStyle.italic,
+                          color: const Color(0xFF62695F),
+                          height: 1.55,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Floating Medallion overlapping the top border
+                Positioned(
+                  top: -2,
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF748164),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: const Color(0xFFFFFDF8), width: 3.0),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x35657056),
+                          blurRadius: 8,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'AYAH',
+                          style: GoogleFonts.outfit(
+                            fontSize: 6,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.8,
+                            color: Colors.white.withValues(alpha: 0.85),
+                          ),
+                        ),
+                        Text(
+                          '${verse.ayahNumber}',
+                          style: GoogleFonts.outfit(
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                            height: 1.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+            // Footer
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFD9C69F)),
+                  ),
+                  child: Text(
+                    '${verse.surahName.toUpperCase()} · ${verse.surahNumber}:${verse.ayahNumber}',
+                    style: GoogleFonts.outfit(
+                      fontSize: 8,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.7,
+                      color: const Color(0xFF8B6B35),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    context.pushNamed(
+                      'verse-by-verse',
+                      pathParameters: {'surahNumber': '${verse.surahNumber}'},
+                      queryParameters: {
+                        'ayah': '${verse.ayahNumber}',
+                        'scrollToAyah': '${verse.ayahNumber}',
+                      },
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(10),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFDFE8D6),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Read in Surah',
+                          style: GoogleFonts.outfit(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF4B5943),
+                          ),
+                        ),
+                        const SizedBox(width: 2),
+                        const Icon(Icons.chevron_right_rounded, size: 13, color: Color(0xFF4B5943)),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildVerticalIslamicUtilities() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -866,37 +1114,40 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 children: [
                   Container(
                     width: 4,
-                    height: 18,
+                    height: 19,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFD4AF37),
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(3),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFD8B873), Color(0xFFC4A364)],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Text(
                     'Holy Quran Mushafs',
                     style: GoogleFonts.outfit(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF0F2038),
+                      fontSize: 16.5,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF414B3D),
                     ),
                   ),
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFD4AF37).withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.35), width: 0.8),
+                  color: const Color(0xFFF1EADB),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   'PRINT FORMAT',
                   style: GoogleFonts.outfit(
-                    fontSize: 9.5,
+                    fontSize: 8,
                     fontWeight: FontWeight.w800,
-                    letterSpacing: 0.8,
-                    color: const Color(0xFF996515),
+                    letterSpacing: 0.9,
+                    color: const Color(0xFF876A39),
                   ),
                 ),
               ),
@@ -914,7 +1165,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   subtitle: 'Indo-Pak Taj Standard',
                   badge: 'INDO-PAK',
                   icon: Icons.menu_book_rounded,
-                  gradientColors: const [Color(0xFF0A192F), Color(0xFF132B4F)],
+                  cardColor: const Color(0xFFF2EDDF),
                   onTap: () => context.goNamed('mushaf-16', queryParameters: {'page': '1'}),
                 ),
               ),
@@ -926,7 +1177,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   subtitle: 'Saudi Madinah Standard',
                   badge: 'MADINAH',
                   icon: Icons.auto_stories_rounded,
-                  gradientColors: const [Color(0xFF09202D), Color(0xFF123447)],
+                  cardColor: const Color(0xFFE8EFE6),
                   onTap: () => context.goNamed('mushaf-15', queryParameters: {'page': '1'}),
                 ),
               ),
@@ -934,7 +1185,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
           const SizedBox(height: 22),
 
-          // ── Section 2: Quran Study & Utilities ──
+          // ── Section 2: Quran Study & Utilities (with VIEW ALL → pill) ──
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -942,55 +1193,60 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 children: [
                   Container(
                     width: 4,
-                    height: 18,
+                    height: 19,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFD4AF37),
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(3),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFD8B873), Color(0xFFC4A364)],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Text(
                     'Quran Study & Utilities',
                     style: GoogleFonts.outfit(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF0F2038),
+                      fontSize: 16.5,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF414B3D),
                     ),
                   ),
                 ],
               ),
               InkWell(
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  context.goNamed('simple-quran', queryParameters: {'tab': '0'});
-                },
-                child: Row(
-                  children: [
-                    Text(
-                      'View All',
-                      style: GoogleFonts.outfit(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF0F2038),
-                      ),
+                onTap: () => context.goNamed('simple-quran', queryParameters: {'tab': '0'}),
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF1EADB),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    'VIEW ALL →',
+                    style: GoogleFonts.outfit(
+                      fontSize: 8,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.9,
+                      color: const Color(0xFF876A39),
                     ),
-                    const Icon(Icons.chevron_right_rounded, size: 18, color: Color(0xFF0F2038)),
-                  ],
+                  ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
 
-          // ── Study Tools Grid (Harmonized Royal Islamic Palette) ──
+          // ── Study Tools Grid ──
           Row(
             children: [
               Expanded(
                 child: _studyUtilityCard(
                   title: 'Surah Index',
-                  subtitle: '114 Surahs with Audio & Translations',
+                  subtitle: 'Audio & translations',
                   badge: '114 SURAHS',
-                  icon: Icons.format_list_bulleted_rounded,
+                  icon: Icons.menu_book_rounded,
                   onTap: () => context.goNamed('simple-quran', queryParameters: {'tab': '0'}),
                 ),
               ),
@@ -998,7 +1254,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               Expanded(
                 child: _studyUtilityCard(
                   title: 'Juz Explorer',
-                  subtitle: 'Browse & Read Quran by 30 Juz',
+                  subtitle: 'Read Quran by Paras',
                   badge: '30 PARAS',
                   icon: Icons.layers_rounded,
                   onTap: () => context.goNamed('simple-quran', queryParameters: {'tab': '1'}),
@@ -1013,7 +1269,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               Expanded(
                 child: _studyUtilityCard(
                   title: 'Mistakes Report',
-                  subtitle: 'Track Hifz & Tajweed Memorization',
+                  subtitle: 'Hifz & Tajweed tracker',
                   badge: 'HIFZ TRACKER',
                   icon: Icons.fact_check_rounded,
                   onTap: () => context.goNamed('mistakes-report'),
@@ -1023,7 +1279,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               Expanded(
                 child: _studyUtilityCard(
                   title: 'Mutashabihat',
-                  subtitle: 'Similar Verses Grouped by Ayah',
+                  subtitle: 'Similar verses by Ayah',
                   badge: 'SIMILAR VERSES',
                   icon: Icons.compare_arrows_rounded,
                   onTap: () => context.goNamed('mutashabihat'),
@@ -1038,7 +1294,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               Expanded(
                 child: _studyUtilityCard(
                   title: 'Search Quran',
-                  subtitle: 'Instant Search Across 6,236 Verses',
+                  subtitle: 'Search 6,236 verses',
                   badge: 'FAST SEARCH',
                   icon: Icons.search_rounded,
                   onTap: () => context.goNamed('search'),
@@ -1048,7 +1304,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               Expanded(
                 child: _studyUtilityCard(
                   title: 'Bookmarks & Sajdas',
-                  subtitle: 'Saved Bookmarks & 14 Sajda Verses',
+                  subtitle: 'Saved Quran moments',
                   badge: '14 SAJDAS',
                   icon: Icons.bookmarks_rounded,
                   onTap: () => context.goNamed('bookmarks'),
@@ -1067,31 +1323,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     required String subtitle,
     required String badge,
     required IconData icon,
-    required List<Color> gradientColors,
+    required Color cardColor,
     required VoidCallback onTap,
   }) {
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: gradientColors,
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: cardColor,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xFFD4AF37).withValues(alpha: 0.5),
-          width: 1.3,
+          color: const Color(0xFFD9CAA9),
+          width: 1.0,
         ),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
-            color: const Color(0xFF0F2038).withValues(alpha: 0.22),
-            blurRadius: 16,
-            offset: const Offset(0, 5),
-          ),
-          BoxShadow(
-            color: const Color(0xFFD4AF37).withValues(alpha: 0.1),
-            blurRadius: 6,
-            offset: const Offset(0, 1),
+            color: Color(0x10625A45),
+            blurRadius: 20,
+            offset: Offset(0, 8),
           ),
         ],
       ),
@@ -1105,7 +1352,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           },
           borderRadius: BorderRadius.circular(20),
           child: Padding(
-            padding: const EdgeInsets.all(15),
+            padding: const EdgeInsets.all(14),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -1115,30 +1362,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     Container(
                       width: 44,
                       height: 44,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFD4AF37), Color(0xFFB8860B)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFC5A465),
                         shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFFD4AF37).withValues(alpha: 0.35),
-                            blurRadius: 8,
-                          ),
-                        ],
                       ),
                       child: Center(
                         child: Icon(icon, color: Colors.white, size: 22),
                       ),
                     ),
-                    Text(
-                      arabicBadge,
-                      style: GoogleFonts.amiri(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFFFFD54F),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFAFAF5),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: const Color(0xFFD9C69E)),
+                      ),
+                      child: Text(
+                        arabicBadge,
+                        style: GoogleFonts.amiri(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF896B36),
+                        ),
                       ),
                     ),
                   ],
@@ -1148,8 +1393,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   title,
                   style: GoogleFonts.outfit(
                     fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF3F493C),
                     height: 1.2,
                   ),
                   maxLines: 1,
@@ -1159,29 +1404,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 Text(
                   subtitle,
                   style: GoogleFonts.plusJakartaSans(
-                    fontSize: 11,
-                    color: Colors.white70,
+                    fontSize: 9.5,
+                    color: const Color(0xFF737970),
                     height: 1.35,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
                 Row(
                   children: [
                     Text(
                       'Open Mushaf',
                       style: GoogleFonts.outfit(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFFFFD54F),
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF846632),
                       ),
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: 3),
                     const Icon(
-                      Icons.arrow_forward_rounded,
-                      size: 12,
-                      color: Color(0xFFFFD54F),
+                      Icons.chevron_right_rounded,
+                      size: 14,
+                      color: Color(0xFF846632),
                     ),
                   ],
                 ),
@@ -1205,14 +1450,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: const Color(0xFFE8E2D5),
+          color: const Color(0xFFE3DED3),
           width: 1.2,
         ),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
-            color: const Color(0xFF0F2038).withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            color: Color(0x09625A45),
+            blurRadius: 18,
+            offset: Offset(0, 7),
           ),
         ],
       ),
@@ -1234,43 +1479,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      width: 38,
-                      height: 38,
+                      width: 44,
+                      height: 44,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0F2038),
-                        borderRadius: BorderRadius.circular(12),
+                        color: const Color(0xFFEDF2E8),
+                        borderRadius: BorderRadius.circular(14),
                         border: Border.all(
-                          color: const Color(0xFFD4AF37).withValues(alpha: 0.35),
+                          color: const Color(0xFFE1E8DB),
                           width: 1.0,
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF0F2038).withValues(alpha: 0.12),
-                            blurRadius: 6,
-                          ),
-                        ],
                       ),
                       child: Center(
-                        child: Icon(icon, color: const Color(0xFFFFD54F), size: 19),
+                        child: Icon(icon, color: const Color(0xFF626D58), size: 22),
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFBF8F1),
-                        borderRadius: BorderRadius.circular(6),
+                        color: const Color(0xFFF7F1E5),
+                        borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: const Color(0xFFD4AF37).withValues(alpha: 0.3),
-                          width: 0.8,
+                          color: const Color(0xFFEBE0C8),
+                          width: 1.0,
                         ),
                       ),
                       child: Text(
                         badge,
                         style: GoogleFonts.outfit(
-                          fontSize: 8.5,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 0.4,
-                          color: const Color(0xFF8C6D1F),
+                          fontSize: 7.5,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.35,
+                          color: const Color(0xFF8E6D37),
                         ),
                       ),
                     ),
@@ -1281,8 +1520,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   title,
                   style: GoogleFonts.outfit(
                     fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF0F2038),
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF404A3D),
                     height: 1.2,
                   ),
                   maxLines: 1,
@@ -1292,182 +1531,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 Text(
                   subtitle,
                   style: GoogleFonts.plusJakartaSans(
-                    fontSize: 10.5,
-                    color: const Color(0xFF55657E),
+                    fontSize: 9.5,
+                    color: const Color(0xFF857E70),
                     height: 1.3,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAyahOfTheDayCard() {
-    final ayahIndex = ref.watch(dailyAyahIndexProvider);
-    final verse = kDailyVerses[ayahIndex % kDailyVerses.length];
-
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 6),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF0F2038), Color(0xFF162D4A), Color(0xFF0B192C)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.45), width: 1.4),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF0F2038).withValues(alpha: 0.35),
-            blurRadius: 20,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 34,
-                      height: 34,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFD4AF37), Color(0xFFB8962E)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFFD4AF37).withValues(alpha: 0.35),
-                            blurRadius: 6,
-                          ),
-                        ],
-                      ),
-                      child: const Center(
-                        child: Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 17),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Text('Verse of the Day', style: GoogleFonts.outfit(fontSize: 15.5, fontWeight: FontWeight.bold, color: Colors.white)),
-                  ],
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.copy_rounded, size: 17, color: Color(0xFFD4AF37)),
-                      tooltip: 'Copy Verse',
-                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                      padding: const EdgeInsets.all(6),
-                      onPressed: () {
-                        HapticFeedback.lightImpact();
-                        Clipboard.setData(ClipboardData(
-                          text: '${verse.arabic}\n\n${verse.english}\n\n— Surah ${verse.surahName} [${verse.surahNumber}:${verse.ayahNumber}]',
-                        ));
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          content: Text('Copy verse'),
-                          backgroundColor: Color(0xFF0F2038),
-                          behavior: SnackBarBehavior.floating,
-                          duration: Duration(seconds: 2),
-                        ));
-                      },
-                    ),
-                    const SizedBox(width: 4),
-                    InkWell(
-                      onTap: () => AyahShareDialog.show(context, surahName: verse.surahName, ayahNumber: verse.ayahNumber, arabicText: verse.arabic, translationText: verse.english),
-                      borderRadius: BorderRadius.circular(10),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5.5),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFD4AF37).withValues(alpha: 0.18),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.45)),
-                        ),
-                        child: Row(mainAxisSize: MainAxisSize.min, children: [
-                          const Icon(Icons.share_outlined, size: 13.5, color: Color(0xFFD4AF37)),
-                          const SizedBox(width: 4),
-                          Text('Share', style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFFD4AF37))),
-                        ]),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 14),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.06),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.2)),
-              ),
-              child: Text(verse.arabic, style: const TextStyle(fontFamily: 'Scheherazade New', fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white, height: 1.85), textAlign: TextAlign.center, textDirection: TextDirection.rtl),
-            ),
-            const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.09),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.25)),
-              ),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                Text(verse.english, style: GoogleFonts.inter(fontSize: 13.5, color: const Color(0xFFFAF9F6), height: 1.65, fontStyle: FontStyle.italic), textAlign: TextAlign.left),
-              ]),
-            ),
-            const SizedBox(height: 14),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.3))),
-                  child: Row(mainAxisSize: MainAxisSize.min, children: [
-                    const Icon(Icons.menu_book_rounded, size: 12.5, color: Color(0xFFD4AF37)),
-                    const SizedBox(width: 5),
-                    Text('Surah ${verse.surahName} [${verse.surahNumber}:${verse.ayahNumber}]', style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w600, color: const Color(0xFFFAF9F6))),
-                  ]),
-                ),
-                GestureDetector(
-                  onTap: () => context.pushNamed(
-                    'verse-by-verse',
-                    pathParameters: {'surahNumber': '${verse.surahNumber}'},
-                    queryParameters: {
-                      'ayah': '${verse.ayahNumber}',
-                      'scrollToAyah': '${verse.ayahNumber}',
-                    },
-                  ),
+                const SizedBox(height: 6),
+                Align(
+                  alignment: Alignment.centerRight,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    width: 24,
+                    height: 24,
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(colors: [Color(0xFFD4AF37), Color(0xFFB8962E)], begin: Alignment.topLeft, end: Alignment.bottomRight),
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [BoxShadow(color: const Color(0xFFD4AF37).withValues(alpha: 0.3), blurRadius: 6, offset: const Offset(0, 2))],
+                      color: const Color(0xFFF8F4E9),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: const Color(0xFFEBE0C8),
+                        width: 0.8,
+                      ),
                     ),
-                    child: Row(mainAxisSize: MainAxisSize.min, children: [
-                      Text('Read in Surah', style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF0F2038))),
-                      const SizedBox(width: 4),
-                      const Icon(Icons.arrow_forward_rounded, size: 13, color: Color(0xFF0F2038)),
-                    ]),
+                    child: const Center(
+                      child: Icon(
+                        Icons.chevron_right_rounded,
+                        size: 13,
+                        color: Color(0xFF8E6D37),
+                      ),
+                    ),
                   ),
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );

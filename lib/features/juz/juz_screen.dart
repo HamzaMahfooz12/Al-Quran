@@ -442,9 +442,11 @@ class _JuzScreenState extends ConsumerState<JuzScreen> {
     if (!mounted) return;
 
     if (pairs.isEmpty) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('No Mutashabihat (similar verses) registered for Ayah ${ayah.ayahNumber}.'),
+          duration: const Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
         ),
       );

@@ -58,33 +58,77 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
     final accuracyScore = (100.0 - (totalMistakes * 0.15)).clamp(0.0, 100.0);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF9F6),
+      backgroundColor: const Color(0xFFFAF7F2),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F2038),
+        backgroundColor: const Color(0xFFFAF7F2),
         elevation: 0,
+        scrolledUnderElevation: 0,
+        toolbarHeight: 66,
+        centerTitle: true,
+        leading: Center(
+          child: InkWell(
+            onTap: () => Navigator.of(context).pop(),
+            borderRadius: BorderRadius.circular(50),
+            child: Container(
+              width: 40,
+              height: 40,
+              margin: const EdgeInsets.only(left: 14),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFFE8E1D2)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.03),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF0F2038), size: 17),
+            ),
+          ),
+        ),
         title: Text(
           'Mistakes Analytics & Report',
-          style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+          style: GoogleFonts.outfit(
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFF0F2038),
+            letterSpacing: -0.2,
+          ),
         ),
-        bottom: TabBar(
-          controller: _tabCtrl,
-          indicatorColor: const Color(0xFFD4AF37),
-          indicatorWeight: 3,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
-          labelStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
-          tabs: const [
-            Tab(text: 'By Para (Juz)'),
-            Tab(text: 'By Surah'),
-            Tab(text: 'Timeline Logs'),
-          ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: Container(
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: Color(0xFFE8E1D2), width: 1.0),
+              ),
+            ),
+            child: TabBar(
+              controller: _tabCtrl,
+              indicatorColor: const Color(0xFFC59A27),
+              indicatorWeight: 3,
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelColor: const Color(0xFF0F2038),
+              unselectedLabelColor: const Color(0xFF7C7365),
+              labelStyle: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.bold),
+              unselectedLabelStyle: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w500),
+              tabs: const [
+                Tab(text: 'By Para (Juz)'),
+                Tab(text: 'By Surah'),
+                Tab(text: 'Timeline Logs'),
+              ],
+            ),
+          ),
         ),
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF1E3A60)))
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFFC59A27)))
           : Column(
               children: [
-                // Top Summary Header Cards
+                // Top Summary Header Cards (Warm Daylight Theme)
                 _buildSummaryDashboard(totalMistakes, accuracyScore),
 
                 // Tab Content
@@ -105,56 +149,105 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
 
   Widget _buildSummaryDashboard(int totalMistakes, double accuracyScore) {
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFF0F2038), Color(0xFF1E3A60)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+      margin: const EdgeInsets.fromLTRB(14, 12, 14, 6),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8F4EA),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFD9C9A7), width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF625A45).withValues(alpha: 0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          // Total Mistakes Badge
+          // Total Mistakes Badge Card
           Expanded(
             child: Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.white24),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: totalMistakes > 0
+                      ? const Color(0xFFF8B4B4)
+                      : const Color(0xFFE8E1D2),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.02),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Column(
                 children: [
                   Text(
                     '$totalMistakes',
-                    style: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.bold, color: const Color(0xFFFEF3C7)),
+                    style: GoogleFonts.outfit(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: totalMistakes > 0
+                          ? const Color(0xFFC62828)
+                          : const Color(0xFF0F2038),
+                    ),
                   ),
                   const SizedBox(height: 2),
-                  Text('Marked Mistakes', style: GoogleFonts.inter(fontSize: 11, color: Colors.white70)),
+                  Text(
+                    'Marked Mistakes',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF7C7365),
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
-          const SizedBox(width: 12),
-          // Accuracy Score Gauge
+          const SizedBox(width: 10),
+          // Accuracy Score Gauge Card
           Expanded(
             child: Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.white24),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: const Color(0xFFC59A27).withValues(alpha: 0.50),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFC59A27).withValues(alpha: 0.08),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Column(
                 children: [
                   Text(
                     '${accuracyScore.toStringAsFixed(1)}%',
-                    style: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.bold, color: const Color(0xFFFFD54F)),
+                    style: GoogleFonts.outfit(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFFC59A27),
+                    ),
                   ),
                   const SizedBox(height: 2),
-                  Text('Hifz Accuracy Rate', style: GoogleFonts.inter(fontSize: 11, color: Colors.white70)),
+                  Text(
+                    'Hifz Accuracy Rate',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF7C7365),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -167,7 +260,7 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
   // ── Tab 1: Para (Juz) Breakdown (1–30) ──────────────────────────────────
   Widget _buildJuzTab() {
     return ListView.separated(
-      padding: EdgeInsets.fromLTRB(14, 14, 14, 100 + MediaQuery.paddingOf(context).bottom),
+      padding: EdgeInsets.fromLTRB(14, 10, 14, 100 + MediaQuery.paddingOf(context).bottom),
       itemCount: 30,
       separatorBuilder: (_, _) => const SizedBox(height: 8),
       itemBuilder: (ctx, idx) {
@@ -176,66 +269,128 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
         final maxCount = _juzCounts.values.isEmpty ? 1 : (_juzCounts.values.reduce((a, b) => a > b ? a : b));
         final ratio = count == 0 ? 0.0 : (count / maxCount).clamp(0.05, 1.0);
 
-        return Card(
-          elevation: 1,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          child: InkWell(
-            onTap: () => context.push('/home/juz/$juzNum'),
-            borderRadius: BorderRadius.circular(12),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 16,
-                        backgroundColor: count > 0 ? const Color(0xFFFFEBEE) : const Color(0xFFEEF4FC),
-                        child: Text(
-                          '$juzNum',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: count > 0 ? const Color(0xFFC62828) : const Color(0xFF1E3A60),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Juz $juzNum (پارہ $juzNum)',
-                              style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(0xFF0F172A)),
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: count > 0 ? const Color(0xFFF3C0C0) : const Color(0xFFE8E1D2),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+            child: InkWell(
+              onTap: () => context.push('/home/juz/$juzNum'),
+              borderRadius: BorderRadius.circular(16),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        // Leading Number Pill Widget
+                        Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: count > 0 ? const Color(0xFFFDE8E8) : const Color(0xFFF5EFE6),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: count > 0 ? const Color(0xFFF8B4B4) : const Color(0xFFE8DFC8),
                             ),
-                            Text(
-                              count == 0 ? 'No mistakes logged' : '$count mistake${count > 1 ? 's' : ''} recorded',
-                              style: GoogleFonts.inter(
-                                fontSize: 11,
-                                color: count > 0 ? Colors.red[700] : Colors.grey[600],
+                          ),
+                          child: Center(
+                            child: Text(
+                              '$juzNum',
+                              style: GoogleFonts.outfit(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: count > 0 ? const Color(0xFFC62828) : const Color(0xFF876510),
                               ),
                             ),
-                          ],
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    'Juz $juzNum',
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 14.5,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color(0xFF0F2038),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  // Arabic Sub-Pill Widget
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFF5EFE6),
+                                      borderRadius: BorderRadius.circular(6),
+                                      border: Border.all(color: const Color(0xFFE8DFC8)),
+                                    ),
+                                    child: Text(
+                                      'پارہ $juzNum',
+                                      style: GoogleFonts.amiri(
+                                        fontSize: 11.5,
+                                        fontWeight: FontWeight.bold,
+                                        color: const Color(0xFF78540E),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                count == 0 ? 'No mistakes logged' : '$count mistake${count > 1 ? 's' : ''} recorded',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w500,
+                                  color: count > 0 ? const Color(0xFFC62828) : const Color(0xFF7C7365),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          width: 30,
+                          height: 30,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFFAF7F2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.chevron_right_rounded, color: Color(0xFF7C7365), size: 18),
+                        ),
+                      ],
+                    ),
+                    if (count > 0) ...[
+                      const SizedBox(height: 10),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: ratio,
+                          minHeight: 5,
+                          backgroundColor: const Color(0xFFFDE8E8),
+                          valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFE53935)),
                         ),
                       ),
-                      const Icon(Icons.chevron_right, size: 20, color: Colors.grey),
                     ],
-                  ),
-                  if (count > 0) ...[
-                    const SizedBox(height: 8),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: LinearProgressIndicator(
-                        value: ratio,
-                        minHeight: 6,
-                        backgroundColor: Colors.red[50],
-                        valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFE53935)),
-                      ),
-                    ),
                   ],
-                ],
+                ),
               ),
             ),
           ),
@@ -251,11 +406,17 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.check_circle_outline, size: 54, color: Color(0xFF2563EB)),
+            const Icon(Icons.check_circle_outline_rounded, size: 54, color: Color(0xFFC59A27)),
             const SizedBox(height: 12),
-            Text('No Mistakes Recorded!', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text(
+              'No Mistakes Recorded!',
+              style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: const Color(0xFF0F2038)),
+            ),
             const SizedBox(height: 4),
-            Text('Turn ON "Mark Mistakes" in Mushaf mode to log mistakes.', style: GoogleFonts.inter(fontSize: 12, color: Colors.grey)),
+            Text(
+              'Turn ON "Mark Mistakes" in Mushaf mode to log mistakes.',
+              style: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFF7C7365)),
+            ),
           ],
         ),
       );
@@ -265,7 +426,7 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
       ..sort((a, b) => b.value.compareTo(a.value));
 
     return ListView.separated(
-      padding: EdgeInsets.fromLTRB(14, 14, 14, 100 + MediaQuery.paddingOf(context).bottom),
+      padding: EdgeInsets.fromLTRB(14, 10, 14, 100 + MediaQuery.paddingOf(context).bottom),
       itemCount: sortedSurahs.length,
       separatorBuilder: (_, _) => const SizedBox(height: 8),
       itemBuilder: (ctx, idx) {
@@ -274,38 +435,122 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
         final count = entry.value;
         final surahInfo = kSurahList[surahNum - 1];
 
-        return Card(
-          elevation: 1,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-            leading: CircleAvatar(
-              backgroundColor: const Color(0xFFFFEBEE),
-              child: Text(
-                '$surahNum',
-                style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFFC62828)),
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFE8E1D2)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+            child: InkWell(
+              onTap: () => context.push('/home/surah/$surahNum'),
+              borderRadius: BorderRadius.circular(16),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                child: Row(
+                  children: [
+                    // Leading Pill Widget
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFDE8E8),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFFF8B4B4)),
+                      ),
+                      child: Center(
+                        child: Text(
+                          '$surahNum',
+                          style: GoogleFonts.outfit(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFFC62828),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                surahInfo.nameTransliteration,
+                                style: GoogleFonts.outfit(
+                                  fontSize: 14.5,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF0F2038),
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF5EFE6),
+                                  borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(color: const Color(0xFFE8DFC8)),
+                                ),
+                                child: Text(
+                                  surahInfo.nameArabic,
+                                  style: GoogleFonts.amiri(
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFF78540E),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '$count mistake${count > 1 ? 's' : ''} in Surah ${surahInfo.nameArabic}',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFFC62828),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Review Pill Button
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFC59A27),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFC59A27).withValues(alpha: 0.25),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        'Review',
+                        style: GoogleFonts.outfit(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            title: Text(
-              surahInfo.nameTransliteration,
-              style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600),
-            ),
-            subtitle: Text(
-              '$count mistake${count > 1 ? 's' : ''} in Surah ${surahInfo.nameArabic}',
-              style: GoogleFonts.inter(fontSize: 11, color: Colors.red[700]),
-            ),
-            trailing: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: const Color(0xFF1E3A60),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                'Review',
-                style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.white),
-              ),
-            ),
-            onTap: () => context.push('/home/surah/$surahNum'),
           ),
         );
       },
@@ -316,14 +561,17 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
   Widget _buildTimelineTab() {
     if (_allMistakes.isEmpty) {
       return Center(
-        child: Text('No mistake history logged yet.', style: GoogleFonts.inter(color: Colors.grey)),
+        child: Text(
+          'No mistake history logged yet.',
+          style: GoogleFonts.plusJakartaSans(color: const Color(0xFF7C7365), fontSize: 13),
+        ),
       );
     }
 
     final dateFormat = DateFormat('MMM dd, yyyy — hh:mm a');
 
     return ListView.separated(
-      padding: EdgeInsets.fromLTRB(14, 14, 14, 28 + MediaQuery.paddingOf(context).bottom),
+      padding: EdgeInsets.fromLTRB(14, 10, 14, 100 + MediaQuery.paddingOf(context).bottom),
       itemCount: _allMistakes.length,
       separatorBuilder: (_, _) => const SizedBox(height: 8),
       itemBuilder: (ctx, idx) {
@@ -337,22 +585,135 @@ class _MistakesReportScreenState extends ConsumerState<MistakesReportScreen> wit
         final dateStr = dateFormat.format(DateTime.fromMillisecondsSinceEpoch(timestamp));
         final surahInfo = kSurahList[surah - 1];
 
-        return Card(
-          elevation: 1,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          child: ListTile(
-            leading: const Icon(Icons.bookmark_remove_rounded, color: Color(0xFFE53935)),
-            title: Text(
-              '${surahInfo.nameTransliteration} — Verse $ayah (Juz $juz)',
-              style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFE8E1D2)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+            child: InkWell(
+              onTap: () => context.push('/home/surah/$surah?scrollToAyah=$ayah'),
+              borderRadius: BorderRadius.circular(16),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                child: Row(
+                  children: [
+                    // Leading Pill Icon Widget
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFDE8E8),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFFF8B4B4)),
+                      ),
+                      child: const Center(
+                        child: Icon(Icons.bookmark_remove_rounded, color: Color(0xFFC62828), size: 20),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${surahInfo.nameTransliteration} — Verse $ayah',
+                            style: GoogleFonts.outfit(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF0F2038),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          // Pill Badges for Juz, Page, Word
+                          Wrap(
+                            spacing: 5,
+                            runSpacing: 4,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 1.5),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF5EFE6),
+                                  borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(color: const Color(0xFFE8DFC8)),
+                                ),
+                                child: Text(
+                                  'Juz $juz',
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFF876510),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 1.5),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFFAF7F2),
+                                  borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(color: const Color(0xFFE8E1D2)),
+                                ),
+                                child: Text(
+                                  'Page $page',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF7C7365),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 1.5),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFFAF7F2),
+                                  borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(color: const Color(0xFFE8E1D2)),
+                                ),
+                                child: Text(
+                                  'Word $wId',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF7C7365),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            dateStr,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 10.5,
+                              color: const Color(0xFF9E9484),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      width: 30,
+                      height: 30,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFFAF7F2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Color(0xFF7C7365)),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            subtitle: Text(
-              'Word $wId • Page $page\n$dateStr',
-              style: GoogleFonts.inter(fontSize: 11, color: Colors.grey[600]),
-            ),
-            isThreeLine: true,
-            trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
-            onTap: () => context.push('/home/surah/$surah?scrollToAyah=$ayah'),
           ),
         );
       },

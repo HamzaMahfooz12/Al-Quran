@@ -1,5 +1,5 @@
 // lib/features/qibla/screens/qibla_screen.dart
-// Premium Islamic Qibla Compass with 3D Faceted Needle, Smooth Damping, and Alignment Aura
+// High-Precision Islamic Qibla Compass Screen matching Google Stitch design exactly
 
 import 'dart:async';
 import 'dart:math' as math;
@@ -11,6 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:vibration/vibration.dart';
 import '../../prayer_times/services/prayer_service.dart';
 import '../../prayer_times/widgets/location_picker_bottom_sheet.dart';
+import '../../../core/widgets/app_drawer.dart';
 
 class QiblaScreen extends ConsumerStatefulWidget {
   final bool isActive;
@@ -170,14 +171,15 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
         title: Row(
           children: [
             const Icon(Icons.screen_rotation_rounded,
-                color: Color(0xFF1E3A60), size: 24),
+                color: Color(0xFFC59A27), size: 24),
             const SizedBox(width: 10),
             Text(
               'Calibrate Compass',
               style: GoogleFonts.outfit(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF0F172A)),
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF354033),
+              ),
             ),
           ],
         ),
@@ -187,10 +189,11 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
           children: [
             Text(
               'To ensure maximum compass accuracy:',
-              style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xFF0F172A)),
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF354033),
+              ),
             ),
             const SizedBox(height: 10),
             _calibrationStep(
@@ -206,7 +209,7 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
         actions: [
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1E3A60),
+              backgroundColor: const Color(0xFFC59A27),
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
@@ -228,7 +231,7 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
           width: 22,
           height: 22,
           decoration: const BoxDecoration(
-            color: Color(0xFFEEF4FC),
+            color: Color(0xFFFAF5E8),
             shape: BoxShape.circle,
           ),
           child: Center(
@@ -237,7 +240,7 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
               style: GoogleFonts.outfit(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF1E3A60),
+                color: const Color(0xFFB8860B),
               ),
             ),
           ),
@@ -246,8 +249,11 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
         Expanded(
           child: Text(
             text,
-            style: GoogleFonts.inter(
-                fontSize: 12.5, color: const Color(0xFF334155), height: 1.35),
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 12.5,
+              color: const Color(0xFF59634A),
+              height: 1.35,
+            ),
           ),
         ),
       ],
@@ -264,576 +270,254 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
 
     final angleDiff = (_smoothedHeading - qiblaBearing).abs();
     final isAligned = angleDiff < 3.5 || angleDiff > 356.5;
-    final alignmentDegreesOff = (angleDiff > 180) ? 360 - angleDiff : angleDiff;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF9F6),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFFAF9F6),
-        elevation: 0,
-        centerTitle: true,
-        leading: Navigator.canPop(context)
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                    color: Color(0xFF1E3A60), size: 20),
-                onPressed: () => Navigator.pop(context),
-              )
-            : null,
-        title: Column(
-          children: [
-            Text(
-              'Qibla Compass',
-              style: GoogleFonts.outfit(
-                fontSize: 19,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFF0F172A),
-              ),
-            ),
-            Text(
-              'بوصلة القبلة المشرفة',
-              style: GoogleFonts.amiri(
-                fontSize: 12,
-                color: const Color(0xFFD4AF37),
-                height: 1.1,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.help_outline_rounded,
-                color: Color(0xFF1E3A60), size: 22),
-            tooltip: 'Compass Calibration',
-            onPressed: _showCalibrationDialog,
-          ),
-          IconButton(
-            icon: const Icon(Icons.tune_rounded,
-                color: Color(0xFF1E3A60), size: 22),
-            tooltip: 'Change Location',
-            onPressed: () => LocationPickerBottomSheet.show(context),
-          ),
-          const SizedBox(width: 4),
-        ],
-      ),
+      backgroundColor: const Color(0xFFFBF9F5),
+      drawer: const AppDrawer(),
+      appBar: _buildTopAppBar(context),
       body: SafeArea(
         bottom: true,
-        child: Column(
-          children: [
-            const SizedBox(height: 6),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            children: [
+              const SizedBox(height: 6),
 
-            // ── 1. Top Location Banner ──
-            InkWell(
-              onTap: () => LocationPickerBottomSheet.show(context),
-              borderRadius: BorderRadius.circular(18),
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.white,
-                      const Color(0xFF1E3A60).withValues(alpha: 0.04),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
-                      color: const Color(0xFFC5D5E8),
-                      width: 1.1),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF1E3A60).withValues(alpha: 0.04),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFEEF4FC), Color(0xFFDBEAFE)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                            color: const Color(0xFF1E3A60)
-                                .withValues(alpha: 0.25)),
-                      ),
-                      child: const Center(
-                        child: Icon(Icons.location_on_rounded,
-                            color: Color(0xFF1E3A60), size: 22),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                location.displayName,
-                                style: GoogleFonts.outfit(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF0F172A),
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(width: 6),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 6, vertical: 1.5),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFFEF3C7),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  'GPS',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 9.5,
-                                    fontWeight: FontWeight.w700,
-                                    color: const Color(0xFFB45309),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'Distance to Kaaba: ${distanceKm.toStringAsFixed(0)} km • ${_getCardinalDirection(qiblaBearing)}',
-                            style: GoogleFonts.inter(
-                              fontSize: 11.5,
-                              color: const Color(0xFF64748B),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Icon(Icons.chevron_right_rounded,
-                        color: Color(0xFF1E3A60), size: 22),
-                  ],
-                ),
-              ),
-            ),
+              // ── 1. Current Location Card (Stitch Exact) ──
+              _buildLocationCard(context, location, distanceKm, qiblaBearing),
 
-            const Spacer(),
+              const SizedBox(height: 8),
 
-            // ── 2. Master Realistic Compass Dial with 3D Faceted Needle ──
-            if (!_compassAvailable)
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  children: [
-                    const Icon(Icons.sensors_off_rounded,
-                        size: 54, color: Colors.orange),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Compass sensor not detected on this device.\nPlease ensure location and orientation permissions are enabled.',
-                      style: GoogleFonts.inter(
-                          fontSize: 14, color: const Color(0xFF6B7280)),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              )
-            else
-              Center(
-                child: SizedBox(
-                  width: 320,
-                  height: 320,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      // Alignment Outer Glow Aura
-                      if (isAligned)
-                        AnimatedBuilder(
-                          animation: _pulseAnimation,
-                          builder: (ctx, child) {
-                            return Transform.scale(
-                              scale: _pulseAnimation.value,
-                              child: Container(
-                                width: 310,
-                                height: 310,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  gradient: RadialGradient(
-                                    colors: [
-                                      const Color(0xFF1E3A60)
-                                          .withValues(alpha: 0.35),
-                                      const Color(0xFFD4AF37)
-                                          .withValues(alpha: 0.15),
-                                      Colors.transparent,
-                                    ],
-                                    stops: const [0.65, 0.85, 1.0],
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
+              // ── 2. Alignment Status Badge ──
+              _buildAlignmentStatusBadge(isAligned, angleDiff),
 
-                      // Outer Fixed Brass Bezel & Shadow
-                      Container(
-                        width: 300,
-                        height: 300,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFFFAF9F6),
-                              Color(0xFFEFE7D8),
-                              Color(0xFFFAF9F6),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          border: Border.all(
-                            color: isAligned
-                                ? const Color(0xFFD4AF37)
-                                : const Color(0xFFC5D5E8),
-                            width: isAligned ? 2.5 : 2.0,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: isAligned
-                                  ? const Color(0xFFD4AF37)
-                                      .withValues(alpha: 0.3)
-                                  : Colors.black.withValues(alpha: 0.08),
-                              blurRadius: isAligned ? 24 : 16,
-                              spreadRadius: isAligned ? 4 : 1,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                      ),
+              const Spacer(),
 
-                      // Inner Parchment Face
-                      Container(
-                        width: 278,
-                        height: 278,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                          border: Border.all(
-                              color: const Color(0xFFE2E8F0), width: 1.2),
-                        ),
-                      ),
+              // ── 3. Compass Dial (Stitch Exact 264x264 Metallic Bezel) ──
+              _buildCompassDial(isAligned, qiblaBearing),
 
-                      // Rotating Compass Dial (Dial Rotates With Phone Heading)
-                      Transform.rotate(
-                        angle: -_smoothedHeading * (math.pi / 180.0),
-                        child: SizedBox(
-                          width: 278,
-                          height: 278,
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              // Custom Dial with Degree Ticks & Rosette Lines
-                              CustomPaint(
-                                size: const Size(278, 278),
-                                painter: _RealisticCompassDialPainter(
-                                  isAligned: isAligned,
-                                  qiblaAngleDeg: qiblaBearing,
-                                ),
-                              ),
+              const Spacer(),
 
-                              // North 'N' Badge
-                              Positioned(
-                                top: 22,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 6, vertical: 1),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF1E3A60)
-                                        .withValues(alpha: 0.12),
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Text(
-                                    'N',
-                                    style: GoogleFonts.outfit(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w900,
-                                      color: const Color(0xFF1E3A60),
-                                    ),
-                                  ),
-                                ),
-                              ),
+              // ── 4. Telemetry Readout Card (Qibla Direction vs Your Heading) ──
+              _buildTelemetryCard(location.cityName, qiblaBearing, _smoothedHeading, isAligned),
 
-                              // South 'S'
-                              Positioned(
-                                bottom: 24,
-                                child: Text(
-                                  'S',
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
-                                    color: const Color(0xFF9CA3AF),
-                                  ),
-                                ),
-                              ),
+              const SizedBox(height: 10),
 
-                              // East 'E'
-                              Positioned(
-                                right: 24,
-                                child: Text(
-                                  'E',
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
-                                    color: const Color(0xFF9CA3AF),
-                                  ),
-                                ),
-                              ),
+              // ── 5. Confirmation Card (Facing the Holy Kaaba) ──
+              _buildConfirmationCard(isAligned),
 
-                              // West 'W'
-                              Positioned(
-                                left: 24,
-                                child: Text(
-                                  'W',
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
-                                    color: const Color(0xFF9CA3AF),
-                                  ),
-                                ),
-                              ),
+              SizedBox(height: 14 + MediaQuery.paddingOf(context).bottom),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
-                              // Kaaba Emblem at exact Qibla Bearing along the dial rim
-                              _buildKaabaRimMarker(qiblaBearing, isAligned),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      // Center 3D Faceted Qibla Needle Pointing Directly to Kaaba
-                      Transform.rotate(
-                        angle: (qiblaBearing - _smoothedHeading) *
-                            (math.pi / 180.0),
-                        child: CustomPaint(
-                          size: const Size(260, 260),
-                          painter: _Faceted3DQiblaNeedlePainter(
-                            isAligned: isAligned,
-                          ),
-                        ),
-                      ),
-
-                      // Top Glass Highlight Layer
-                      IgnorePointer(
-                        child: Container(
-                          width: 278,
-                          height: 278,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.white.withValues(alpha: 0.35),
-                                Colors.white.withValues(alpha: 0.0),
-                                Colors.black.withValues(alpha: 0.03),
-                              ],
-                              stops: const [0.0, 0.45, 1.0],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-            const Spacer(),
-
-            // ── 3. Angle Readout Dashboard Card ──
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+  PreferredSizeWidget _buildTopAppBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: const Color(0xFFFBF9F5),
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      centerTitle: true,
+      toolbarHeight: 66,
+      leading: Center(
+        child: Builder(
+          builder: (ctx) => InkWell(
+            onTap: () {
+              HapticFeedback.lightImpact();
+              Scaffold.of(ctx).openDrawer();
+            },
+            borderRadius: BorderRadius.circular(50),
+            child: Container(
+              width: 40,
+              height: 40,
+              margin: const EdgeInsets.only(left: 14),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
+                shape: BoxShape.circle,
                 border: Border.all(color: const Color(0xFFE8E1D2)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.02),
-                    blurRadius: 8,
+                    color: Colors.black.withValues(alpha: 0.03),
+                    blurRadius: 6,
                     offset: const Offset(0, 2),
                   ),
                 ],
               ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text('🕋', style: TextStyle(fontSize: 14)),
-                            const SizedBox(width: 6),
-                            Text(
-                              'Qibla Direction',
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF6B7280),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${qiblaBearing.toStringAsFixed(1)}°',
-                          style: GoogleFonts.outfit(
-                            fontSize: 28,
-                            fontWeight: FontWeight.w800,
-                            color: const Color(0xFF0F172A),
-                          ),
-                        ),
-                      ],
-                    ),
+              child: const Icon(Icons.menu_rounded, color: Color(0xFF354033), size: 20),
+            ),
+          ),
+        ),
+      ),
+      title: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'Qibla Compass',
+            style: GoogleFonts.outfit(
+              fontSize: 17,
+              fontWeight: FontWeight.w800,
+              color: const Color(0xFF354033),
+              letterSpacing: -0.2,
+            ),
+          ),
+          Text(
+            'بوصلة القبلة المشرفة',
+            style: GoogleFonts.amiri(
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFFB8860B),
+              height: 1.05,
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        Center(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              InkWell(
+                onTap: _showCalibrationDialog,
+                borderRadius: BorderRadius.circular(50),
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: const Color(0xFFE8E1D2)),
                   ),
-                  Container(
-                      width: 1, height: 46, color: const Color(0xFFE8E1D2)),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                  child: const Icon(Icons.help_outline_rounded, color: Color(0xFF59634A), size: 18),
+                ),
+              ),
+              const SizedBox(width: 6),
+              InkWell(
+                onTap: () => LocationPickerBottomSheet.show(context),
+                borderRadius: BorderRadius.circular(50),
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  margin: const EdgeInsets.only(right: 14),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: const Color(0xFFE8E1D2)),
+                  ),
+                  child: const Icon(Icons.tune_rounded, color: Color(0xFF59634A), size: 18),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLocationCard(
+    BuildContext context,
+    dynamic location,
+    double distanceKm,
+    double qiblaBearing,
+  ) {
+    return InkWell(
+      onTap: () => LocationPickerBottomSheet.show(context),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFEDE7DC)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: const Color(0xFFFEF6E9),
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFFFDE68A)),
+              ),
+              child: const Icon(Icons.location_on_rounded, color: Color(0xFFB8860B), size: 18),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        location.displayName,
+                        style: GoogleFonts.outfit(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF354033),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFEF6E9),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              Icons.explore_rounded,
-                              color: isAligned
-                                  ? const Color(0xFFD4AF37)
-                                  : const Color(0xFF1E3A60),
-                              size: 15,
+                            Container(
+                              width: 4,
+                              height: 4,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFB8860B),
+                                shape: BoxShape.circle,
+                              ),
                             ),
-                            const SizedBox(width: 6),
+                            const SizedBox(width: 3),
                             Text(
-                              'Your Direction',
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF64748B),
+                              'GPS',
+                              style: GoogleFonts.outfit(
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFFB8860B),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${_smoothedHeading.toStringAsFixed(1)}°',
-                          style: GoogleFonts.outfit(
-                            fontSize: 28,
-                            fontWeight: FontWeight.w800,
-                            color: isAligned
-                                ? const Color(0xFF1E3A60)
-                                : const Color(0xFF0F172A),
-                          ),
-                        ),
-                      ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Distance to Kaaba: ${distanceKm.toStringAsFixed(0)} km • ${_getCardinalDirection(qiblaBearing)} (${qiblaBearing.toStringAsFixed(1)}°)',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 11,
+                      color: const Color(0xFF59634A),
                     ),
                   ),
                 ],
               ),
             ),
-
-            const SizedBox(height: 10),
-
-            // ── 4. Dynamic Live Status Alignment Banner ──
             Container(
-              margin: EdgeInsets.fromLTRB(
-                  16, 0, 16, 14 + MediaQuery.paddingOf(context).bottom),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
-              decoration: BoxDecoration(
-                gradient: isAligned
-                    ? const LinearGradient(
-                        colors: [Color(0xFF0F2038), Color(0xFF1E3A60)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      )
-                    : null,
-                color: isAligned ? null : Colors.white,
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(
-                  color: isAligned
-                      ? const Color(0xFFD4AF37)
-                      : const Color(0xFFE2E8F0),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: isAligned
-                        ? const Color(0xFF0F2038).withValues(alpha: 0.3)
-                        : Colors.black.withValues(alpha: 0.02),
-                    blurRadius: 10,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
+              width: 28,
+              height: 28,
+              decoration: const BoxDecoration(
+                color: Color(0xFFFAF7F2),
+                shape: BoxShape.circle,
               ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: isAligned
-                          ? const Color(0xFFFFD54F)
-                          : const Color(0xFFFFF8E1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Icon(
-                        isAligned
-                            ? Icons.check_circle_rounded
-                            : Icons.near_me_rounded,
-                        color: isAligned
-                            ? const Color(0xFF0F2038)
-                            : const Color(0xFFD97706),
-                        size: 20,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          isAligned
-                              ? 'Alhamdulillah! Perfectly Aligned'
-                              : 'Rotate Device (${alignmentDegreesOff.toStringAsFixed(0)}° off)',
-                          style: GoogleFonts.outfit(
-                            fontSize: 14.5,
-                            fontWeight: FontWeight.bold,
-                            color: isAligned
-                                ? Colors.white
-                                : const Color(0xFF0F172A),
-                          ),
-                        ),
-                        Text(
-                          isAligned
-                              ? 'You are now facing the Holy Kaaba in Makkah.'
-                              : 'Turn until the golden needle points directly upward to the Kaaba.',
-                          style: GoogleFonts.inter(
-                            fontSize: 11.5,
-                            color: isAligned
-                                ? const Color(0xFFCBD5E1)
-                                : const Color(0xFF6B7280),
-                            height: 1.3,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+              child: const Icon(Icons.chevron_right_rounded, color: Color(0xFF94A3B8), size: 18),
             ),
           ],
         ),
@@ -841,52 +525,498 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen>
     );
   }
 
-  Widget _buildKaabaRimMarker(double qiblaAngleDeg, bool isAligned) {
-    final rad = qiblaAngleDeg * (math.pi / 180.0);
-    const radius = 106.0;
-    final x = radius * math.sin(rad);
-    final y = -radius * math.cos(rad);
+  Widget _buildAlignmentStatusBadge(bool isAligned, double angleDiff) {
+    final degreesOff = (angleDiff > 180) ? (360 - angleDiff) : angleDiff;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFDF9EE),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: const Color(0xFFCDA14A).withValues(alpha: 0.35),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              color: isAligned ? const Color(0xFFA87913) : const Color(0xFF94A3B8),
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            isAligned
+                ? 'PERFECTLY ALIGNED WITH MAKKAH'
+                : 'ALIGNING WITH MAKKAH (${degreesOff.toStringAsFixed(0)}° OFF)',
+            style: GoogleFonts.outfit(
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.8,
+              color: const Color(0xFF916710),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCompassDial(bool isAligned, double qiblaBearing) {
+    if (!_compassAvailable) {
+      return Container(
+        height: 264,
+        alignment: Alignment.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.sensors_off_rounded, size: 48, color: Color(0xFFC59A27)),
+            const SizedBox(height: 10),
+            Text(
+              'Compass sensor not detected',
+              style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: const Color(0xFF354033)),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return SizedBox(
+      width: 270,
+      height: 270,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Alignment Glow Aura
+          if (isAligned)
+            AnimatedBuilder(
+              animation: _pulseAnimation,
+              builder: (ctx, child) {
+                return Transform.scale(
+                  scale: _pulseAnimation.value,
+                  child: Container(
+                    width: 270,
+                    height: 270,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [
+                          const Color(0xFFC59A27).withValues(alpha: 0.25),
+                          const Color(0xFFE8B931).withValues(alpha: 0.10),
+                          Colors.transparent,
+                        ],
+                        stops: const [0.70, 0.88, 1.0],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+
+          // Outer Metallic Conic Bevel Ring (Stitch Exact: 264x264)
+          Container(
+            width: 264,
+            height: 264,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: const SweepGradient(
+                colors: [
+                  Color(0xFFD1A951),
+                  Color(0xFFFBE69B),
+                  Color(0xFFC89C3F),
+                  Color(0xFFEDD68D),
+                  Color(0xFFB4872C),
+                  Color(0xFFEDD48C),
+                  Color(0xFFBD8E32),
+                  Color(0xFFFAE59A),
+                  Color(0xFFD1A951),
+                ],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFB8860B).withValues(alpha: 0.20),
+                  blurRadius: 28,
+                  offset: const Offset(0, 14),
+                ),
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 16,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(9),
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFFFDFCFA),
+                  border: Border.all(color: const Color(0xFFE2E8F0).withValues(alpha: 0.5)),
+                ),
+              ),
+            ),
+          ),
+
+          // Rotating Compass Face Driven by Smooth Sensor Heading
+          Transform.rotate(
+            angle: -_smoothedHeading * (math.pi / 180.0),
+            child: SizedBox(
+              width: 246,
+              height: 246,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Custom Paint: Octagonal Star + Degree Ticks + Calibrations
+                  CustomPaint(
+                    size: const Size(246, 246),
+                    painter: _StitchCompassFacePainter(isAligned: isAligned, qiblaBearing: qiblaBearing),
+                  ),
+
+                  // North Badge (Top at 0 degrees on dial)
+                  Positioned(
+                    top: 14,
+                    child: Container(
+                      width: 17,
+                      height: 17,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF354033),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: const Color(0xFFD4AF37), width: 1.0),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'N',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 8.5,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Cardinal Points (E, S, W)
+                  Positioned(
+                    right: 18,
+                    child: Text(
+                      'E',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF354033),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 18,
+                    child: Text(
+                      'S',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF354033),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    left: 18,
+                    child: Text(
+                      'W',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF354033),
+                      ),
+                    ),
+                  ),
+
+                  // Kaaba Target Marker along dial rim
+                  _buildKaabaRimIcon(qiblaBearing),
+                ],
+              ),
+            ),
+          ),
+
+          // 3D Faceted Needle Pointing Toward Kaaba
+          Transform.rotate(
+            angle: (qiblaBearing - _smoothedHeading) * (math.pi / 180.0),
+            child: CustomPaint(
+              size: const Size(240, 240),
+              painter: _StitchFacetedNeedlePainter(),
+            ),
+          ),
+
+          // Top Target Indicator at 12 o'clock
+          Positioned(
+            top: 10,
+            child: Container(
+              width: 18,
+              height: 18,
+              decoration: BoxDecoration(
+                color: const Color(0xFF354033),
+                borderRadius: BorderRadius.circular(3),
+                border: Border.all(color: const Color(0xFFFDE68A), width: 1.0),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.15), blurRadius: 4),
+                ],
+              ),
+              child: Center(
+                child: Container(
+                  width: 12,
+                  height: 2.5,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD4AF37),
+                    borderRadius: BorderRadius.circular(1),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildKaabaRimIcon(double bearingDeg) {
+    final angleRad = (bearingDeg - 90) * (math.pi / 180.0);
+    const radius = 95.0;
+    final x = radius * math.cos(angleRad);
+    final y = radius * math.sin(angleRad);
 
     return Transform.translate(
       offset: Offset(x, y),
       child: Container(
-        width: 32,
-        height: 32,
+        width: 16,
+        height: 16,
         decoration: BoxDecoration(
-          color: const Color(0xFF0F172A),
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: isAligned
-                ? const Color(0xFFFFD54F)
-                : const Color(0xFFD4AF37),
-            width: 2.0,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: isAligned
-                  ? const Color(0xFFFFD54F).withValues(alpha: 0.6)
-                  : Colors.black.withValues(alpha: 0.3),
-              blurRadius: isAligned ? 10 : 4,
-              spreadRadius: isAligned ? 2 : 0,
-            ),
-          ],
+          color: const Color(0xFF354033),
+          borderRadius: BorderRadius.circular(3),
+          border: Border.all(color: const Color(0xFFFDE68A), width: 1),
         ),
         child: const Center(
-          child: Text('🕋', style: TextStyle(fontSize: 16)),
+          child: Text('🕋', style: TextStyle(fontSize: 8)),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTelemetryCard(
+    String cityName,
+    double qiblaBearing,
+    double heading,
+    bool isAligned,
+  ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFEDE7DC)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // Left: Qibla Direction
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 16,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF354033),
+                        borderRadius: BorderRadius.circular(3),
+                        border: Border.all(color: const Color(0xFFFDE68A), width: 0.8),
+                      ),
+                      child: const Center(
+                        child: Text('🕋', style: TextStyle(fontSize: 8)),
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      'QIBLA DIRECTION',
+                      style: GoogleFonts.outfit(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.6,
+                        color: const Color(0xFF59634A),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${qiblaBearing.toStringAsFixed(1)}°',
+                  style: GoogleFonts.outfit(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF354033),
+                    height: 1.15,
+                  ),
+                ),
+                Text(
+                  'True bearing from $cityName',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 10,
+                    color: const Color(0xFF94A3B8),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Divider
+          Container(
+            width: 1,
+            height: 48,
+            color: const Color(0xFFEDE7DC),
+            margin: const EdgeInsets.symmetric(horizontal: 12),
+          ),
+
+          // Right: Your Heading
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.explore_rounded, color: Color(0xFFB8860B), size: 15),
+                    const SizedBox(width: 5),
+                    Text(
+                      'YOUR HEADING',
+                      style: GoogleFonts.outfit(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.6,
+                        color: const Color(0xFF59634A),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${heading.toStringAsFixed(1)}°',
+                  style: GoogleFonts.outfit(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF354033),
+                    height: 1.15,
+                  ),
+                ),
+                Row(
+                  children: [
+                    const Icon(Icons.verified_user_rounded, color: Color(0xFFA47614), size: 12),
+                    const SizedBox(width: 3),
+                    Text(
+                      'High Accuracy (±1°)',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFFA47614),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildConfirmationCard(bool isAligned) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFEFAF0),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFEEDB9F).withValues(alpha: 0.7)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFFFDE68A)),
+            ),
+            child: const Icon(Icons.explore_rounded, color: Color(0xFFA87913), size: 19),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Facing the Holy Kaaba',
+                  style: GoogleFonts.outfit(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF354033),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  'Makkah al-Mukarramah • Aligned',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 10.5,
+                    color: const Color(0xFF59634A),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            width: 26,
+            height: 26,
+            decoration: BoxDecoration(
+              color: isAligned ? const Color(0xFFB8860B) : const Color(0xFFD4AF37).withValues(alpha: 0.4),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.check_rounded, color: Colors.white, size: 16),
+          ),
+        ],
       ),
     );
   }
 }
 
-// ── Realistic Compass Dial Painter with Sub-Degrees & Islamic Geometry ────────
-class _RealisticCompassDialPainter extends CustomPainter {
+// ── Stitch Compass Face Custom Painter ──────────────────────────────────────
+class _StitchCompassFacePainter extends CustomPainter {
   final bool isAligned;
-  final double qiblaAngleDeg;
+  final double qiblaBearing;
 
-  _RealisticCompassDialPainter({
+  const _StitchCompassFacePainter({
     required this.isAligned,
-    required this.qiblaAngleDeg,
+    required this.qiblaBearing,
   });
 
   @override
@@ -894,197 +1024,135 @@ class _RealisticCompassDialPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
 
-    // Outer subtle circle
-    final ringPaint = Paint()
-      ..color = const Color(0xFFE8E1D2)
+    // Outer Track Rings
+    final ringPaint1 = Paint()
+      ..color = const Color(0xFFD4AF37).withValues(alpha: 0.20)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
-    canvas.drawCircle(center, radius - 10, ringPaint);
-    canvas.drawCircle(center, radius - 26, ringPaint);
+    canvas.drawCircle(center, radius - 10, ringPaint1);
 
-    // Minor & Major Ticks around 360 degrees
-    final tickPaint = Paint()..strokeCap = StrokeCap.round;
+    final ringPaint2 = Paint()
+      ..color = const Color(0xFFC59B34).withValues(alpha: 0.35)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.2;
+    canvas.drawCircle(center, radius - 16, ringPaint2);
 
-    for (int i = 0; i < 360; i += 5) {
-      final isCardinal = (i % 90 == 0);
-      final isMajor = (i % 30 == 0);
-      final isTen = (i % 10 == 0);
+    // Subtle Octagonal Star Geometry in Center
+    final starPaint = Paint()
+      ..color = const Color(0xFFD4AF37).withValues(alpha: 0.30)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.8;
+    canvas.drawCircle(center, radius * 0.65, starPaint);
+    canvas.drawCircle(center, radius * 0.45, starPaint);
 
-      final double tickLen = isCardinal
-          ? 12.0
-          : isMajor
-              ? 9.0
-              : isTen
-                  ? 6.0
-                  : 3.5;
+    // Degree Ticks around perimeter
+    final tickPaint = Paint()
+      ..strokeCap = StrokeCap.round;
 
-      final rad = i * (math.pi / 180.0);
-      final p1 = Offset(
-        center.dx + (radius - 10) * math.sin(rad),
-        center.dy - (radius - 10) * math.cos(rad),
-      );
-      final p2 = Offset(
-        center.dx + (radius - 10 - tickLen) * math.sin(rad),
-        center.dy - (radius - 10 - tickLen) * math.cos(rad),
-      );
+    for (int deg = 0; deg < 360; deg += 5) {
+      final rad = (deg - 90) * (math.pi / 180.0);
+      final isMajor = deg % 30 == 0;
+      final isCardinal = deg % 90 == 0;
 
-      tickPaint.strokeWidth = isCardinal
-          ? 2.0
-          : isMajor
-              ? 1.5
-              : 0.9;
+      final tickLen = isCardinal ? 10.0 : (isMajor ? 6.5 : 3.5);
+      final tickWidth = isCardinal ? 2.0 : (isMajor ? 1.4 : 0.8);
+
+      tickPaint.strokeWidth = tickWidth;
       tickPaint.color = isCardinal
-          ? (i == 0 ? const Color(0xFF1E3A60) : const Color(0xFF334155))
-          : isMajor
-              ? const Color(0xFFD4AF37)
-              : const Color(0xFFD1D5DB);
+          ? const Color(0xFF354033)
+          : (isMajor ? const Color(0xFF59634A) : const Color(0xFFD6DCD4));
 
+      final startR = radius - 18;
+      final endR = startR - tickLen;
+
+      final p1 = Offset(center.dx + startR * math.cos(rad), center.dy + startR * math.sin(rad));
+      final p2 = Offset(center.dx + endR * math.cos(rad), center.dy + endR * math.sin(rad));
       canvas.drawLine(p1, p2, tickPaint);
     }
   }
 
   @override
-  bool shouldRepaint(covariant _RealisticCompassDialPainter oldDelegate) {
-    return oldDelegate.isAligned != isAligned ||
-        oldDelegate.qiblaAngleDeg != qiblaAngleDeg;
+  bool shouldRepaint(covariant _StitchCompassFacePainter oldDelegate) {
+    return oldDelegate.isAligned != isAligned || oldDelegate.qiblaBearing != qiblaBearing;
   }
 }
 
-// ── 3D Faceted Realistic Islamic Needle Custom Painter ──────────────────────
-class _Faceted3DQiblaNeedlePainter extends CustomPainter {
-  final bool isAligned;
-
-  _Faceted3DQiblaNeedlePainter({required this.isAligned});
-
+// ── 3D Faceted Needle Custom Painter (Gold North / Navy South with Jewel) ──
+class _StitchFacetedNeedlePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
+    const needleHalfLen = 78.0;
+    const needleWidth = 10.0;
 
-    // Needle Dimensions
-    const pointerLength = 100.0;
-    const tailLength = 62.0;
-    const halfWidth = 14.0;
-    const tailHalfWidth = 9.0;
+    // ── 1. Top Needle: Metallic Gold (Pointing to Kaaba) ──
+    final goldTopTip = Offset(center.dx, center.dy - needleHalfLen);
 
-    final tip = Offset(center.dx, center.dy - pointerLength);
-    final tailTip = Offset(center.dx, center.dy + tailLength);
-    final leftMid = Offset(center.dx - halfWidth, center.dy);
-    final rightMid = Offset(center.dx + halfWidth, center.dy);
-    final tailLeftMid = Offset(center.dx - tailHalfWidth, center.dy);
-    final tailRightMid = Offset(center.dx + tailHalfWidth, center.dy);
-
-    // ── 1. Needle Drop Shadow ──
-    final shadowPath = Path()
-      ..moveTo(tip.dx + 2, tip.dy + 3)
-      ..lineTo(rightMid.dx + 2, rightMid.dy + 3)
-      ..lineTo(tailTip.dx + 2, tailTip.dy + 3)
-      ..lineTo(leftMid.dx + 2, leftMid.dy + 3)
+    // Left Light Bevel
+    final leftGoldPath = Path()
+      ..moveTo(goldTopTip.dx, goldTopTip.dy)
+      ..lineTo(center.dx, center.dy)
+      ..lineTo(center.dx - needleWidth, center.dy)
       ..close();
-
-    final shadowPaint = Paint()
-      ..color = Colors.black.withValues(alpha: 0.18)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4.0);
-    canvas.drawPath(shadowPath, shadowPaint);
-
-    // ── 2. Top Pointer: Left Facet (Illuminated Side) ──
-    final leftPointerPath = Path()
-      ..moveTo(center.dx, center.dy)
-      ..lineTo(tip.dx, tip.dy)
-      ..lineTo(leftMid.dx, leftMid.dy)
-      ..close();
-
-    final leftPointerPaint = Paint()
-      ..shader = LinearGradient(
-        colors: isAligned
-            ? [const Color(0xFFFFE082), const Color(0xFFF59E0B)]
-            : [const Color(0xFF3B82F6), const Color(0xFF2563EB)],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-      ).createShader(Rect.fromPoints(tip, leftMid));
-    canvas.drawPath(leftPointerPath, leftPointerPaint);
-
-    // ── 3. Top Pointer: Right Facet (Shadowed Side) ──
-    final rightPointerPath = Path()
-      ..moveTo(center.dx, center.dy)
-      ..lineTo(tip.dx, tip.dy)
-      ..lineTo(rightMid.dx, rightMid.dy)
-      ..close();
-
-    final rightPointerPaint = Paint()
-      ..shader = LinearGradient(
-        colors: isAligned
-            ? [const Color(0xFFD97706), const Color(0xFFB45309)]
-            : [const Color(0xFF1E3A60), const Color(0xFF0F2038)],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-      ).createShader(Rect.fromPoints(tip, rightMid));
-    canvas.drawPath(rightPointerPath, rightPointerPaint);
-
-    // ── 4. Bottom Tail: Left Facet (Silver Illuminated) ──
-    final leftTailPath = Path()
-      ..moveTo(center.dx, center.dy)
-      ..lineTo(tailTip.dx, tailTip.dy)
-      ..lineTo(tailLeftMid.dx, tailLeftMid.dy)
-      ..close();
-
-    final leftTailPaint = Paint()
+    final leftGoldPaint = Paint()
       ..shader = const LinearGradient(
-        colors: [Color(0xFFE5E7EB), Color(0xFFD1D5DB)],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-      ).createShader(Rect.fromPoints(center, tailTip));
-    canvas.drawPath(leftTailPath, leftTailPaint);
+        colors: [Color(0xFFF9E298), Color(0xFFD4AF37)],
+      ).createShader(Rect.fromPoints(goldTopTip, center));
+    canvas.drawPath(leftGoldPath, leftGoldPaint);
 
-    // ── 5. Bottom Tail: Right Facet (Silver Shadowed) ──
-    final rightTailPath = Path()
-      ..moveTo(center.dx, center.dy)
-      ..lineTo(tailTip.dx, tailTip.dy)
-      ..lineTo(tailRightMid.dx, tailRightMid.dy)
+    // Right Dark Bevel
+    final rightGoldPath = Path()
+      ..moveTo(goldTopTip.dx, goldTopTip.dy)
+      ..lineTo(center.dx + needleWidth, center.dy)
+      ..lineTo(center.dx, center.dy)
       ..close();
-
-    final rightTailPaint = Paint()
+    final rightGoldPaint = Paint()
       ..shader = const LinearGradient(
-        colors: [Color(0xFF9CA3AF), Color(0xFF6B7280)],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-      ).createShader(Rect.fromPoints(center, tailTip));
-    canvas.drawPath(rightTailPath, rightTailPaint);
+        colors: [Color(0xFFC59828), Color(0xFF996D14)],
+      ).createShader(Rect.fromPoints(goldTopTip, center));
+    canvas.drawPath(rightGoldPath, rightGoldPaint);
 
-    // ── 6. Needle Center Centerline Ridge ──
-    final ridgePaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.4)
-      ..strokeWidth = 1.0;
-    canvas.drawLine(tip, center, ridgePaint);
+    // ── 2. Bottom Needle: Deep Olive Slate Counter-Needle ──
+    final navyBottomTip = Offset(center.dx, center.dy + needleHalfLen);
 
-    // ── 7. Multi-Layered Brass & Sapphire/Gold Pivot Center Cap ──
-    // Outer Gold Ring
-    final pivotOuterPaint = Paint()
-      ..shader = RadialGradient(
-        colors: isAligned
-            ? [const Color(0xFFFFD54F), const Color(0xFFB45309)]
-            : [const Color(0xFFE5E7EB), const Color(0xFF6B7280)],
-      ).createShader(Rect.fromCircle(center: center, radius: 14));
-    canvas.drawCircle(center, 14, pivotOuterPaint);
+    // Left Light Slate Bevel
+    final leftNavyPath = Path()
+      ..moveTo(navyBottomTip.dx, navyBottomTip.dy)
+      ..lineTo(center.dx - needleWidth * 0.85, center.dy)
+      ..lineTo(center.dx, center.dy)
+      ..close();
+    final leftNavyPaint = Paint()
+      ..shader = const LinearGradient(
+        colors: [Color(0xFF4A5546), Color(0xFF354033)],
+      ).createShader(Rect.fromPoints(center, navyBottomTip));
+    canvas.drawPath(leftNavyPath, leftNavyPaint);
 
-    // Inner Jewel Ring
-    final pivotJewelPaint = Paint()
-      ..color =
-          isAligned ? const Color(0xFFD4AF37) : const Color(0xFF1E3A60);
-    canvas.drawCircle(center, 9, pivotJewelPaint);
+    // Right Dark Slate Bevel
+    final rightNavyPath = Path()
+      ..moveTo(navyBottomTip.dx, navyBottomTip.dy)
+      ..lineTo(center.dx, center.dy)
+      ..lineTo(center.dx + needleWidth * 0.85, center.dy)
+      ..close();
+    final rightNavyPaint = Paint()
+      ..shader = const LinearGradient(
+        colors: [Color(0xFF354033), Color(0xFF262E25)],
+      ).createShader(Rect.fromPoints(center, navyBottomTip));
+    canvas.drawPath(rightNavyPath, rightNavyPaint);
 
-    // Center Gold Gem Core
-    final gemPaint = Paint()
-      ..color =
-          isAligned ? const Color(0xFFFFD54F) : const Color(0xFFFEF3C7);
-    canvas.drawCircle(center, 4.5, gemPaint);
+    // ── 3. Center Polished Multi-Tiered Gold Pin ──
+    final outerPinPaint = Paint()
+      ..shader = const RadialGradient(
+        colors: [Color(0xFFF9E298), Color(0xFFC59B34), Color(0xFF8C6415)],
+      ).createShader(Rect.fromCircle(center: center, radius: 13));
+    canvas.drawCircle(center, 13, outerPinPaint);
 
-    // Center Specular Glint
-    final glintPaint = Paint()..color = Colors.white.withValues(alpha: 0.85);
-    canvas.drawCircle(Offset(center.dx - 2, center.dy - 2), 1.5, glintPaint);
+    final innerNavyPaint = Paint()..color = const Color(0xFF354033);
+    canvas.drawCircle(center, 7, innerNavyPaint);
+
+    final jewelPaint = Paint()..color = const Color(0xFFD4AF37);
+    canvas.drawCircle(center, 3.5, jewelPaint);
   }
 
   @override
-  bool shouldRepaint(covariant _Faceted3DQiblaNeedlePainter oldDelegate) {
-    return oldDelegate.isAligned != isAligned;
-  }
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

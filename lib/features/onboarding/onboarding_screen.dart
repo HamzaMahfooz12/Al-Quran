@@ -830,18 +830,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
   }
 
   Future<void> _onNext() async {
-    if (_currentPage == 1) {
-      await _loadEditions();
-    } else if (_currentPage == 2) {
-      await _loadReciters();
-    } else if (_currentPage == 3) {
-      await _saveSettings();
-    } else if (_currentPage == 4) {
+    HapticFeedback.lightImpact();
+    if (_currentPage == 4) {
       await _saveSettings();
       await ref.read(settingsServiceProvider).setOnboardingDone();
       if (mounted) context.go('/home');
       return;
     }
+
+    // Save settings opportunistically in background without blocking transition
+    _saveSettings();
 
     _pageCtrl.nextPage(
       duration: const Duration(milliseconds: 350),
@@ -850,63 +848,87 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
   }
 
   Future<void> _loadEditions() async {
+    if (!mounted) return;
     setState(() => _loadingEditions = true);
     final repo = ref.read(quranRepositoryProvider);
     final langs = _selectedLanguages.toList();
 
-    await repo.fetchAndSyncApiEditions('translation');
-    await repo.fetchAndSyncApiEditions('tafseer');
-
-    final allTranslations = await repo.getAllEditions(type: 'translation');
-    final allTafseers = await repo.getAllEditions(type: 'tafseer');
-
-    final filteredT = allTranslations.where((e) => langs.contains(e.language)).toList();
-    final filteredTf = allTafseers.where((e) => langs.contains(e.language)).toList();
-
-    Edition? defaultTranslation;
     try {
-      defaultTranslation = filteredT.firstWhere(
-        (e) => e.apiKey.contains('jalandhry') || e.apiKey.contains('ahmedali'),
-      );
-    } catch (_) {
-      defaultTranslation = filteredT.isNotEmpty ? filteredT.first : null;
-    }
+      // 1. Immediately load bundled/cached editions from local SQLite
+      final allTranslations = await repo.getAllEditions(type: 'translation');
+      final allTafseers = await repo.getAllEditions(type: 'tafseer');
 
-    Edition? defaultTafseer;
-    try {
-      defaultTafseer = filteredTf.firstWhere(
-        (e) => e.apiKey.contains('ibn-e-kaseer') || e.apiKey.contains('bayan-ul-quran'),
-      );
-    } catch (_) {
-      defaultTafseer = filteredTf.isNotEmpty ? filteredTf.first : null;
-    }
+      final filteredT = allTranslations.where((e) => langs.contains(e.language)).toList();
+      final filteredTf = allTafseers.where((e) => langs.contains(e.language)).toList();
 
-    setState(() {
-      _translations = filteredT.isNotEmpty ? filteredT : allTranslations;
-      _tafseers = filteredTf.isNotEmpty ? filteredTf : allTafseers;
-      _selectedTranslation = defaultTranslation ?? (_translations.isNotEmpty ? _translations.first : null);
-      _selectedTafseer = defaultTafseer ?? (_tafseers.isNotEmpty ? _tafseers.first : null);
-      _loadingEditions = false;
-    });
+      Edition? defaultTranslation;
+      try {
+        defaultTranslation = filteredT.firstWhere(
+          (e) => e.apiKey.contains('jalandhry') || e.apiKey.contains('ahmedali'),
+        );
+      } catch (_) {
+        defaultTranslation = filteredT.isNotEmpty ? filteredT.first : null;
+      }
+
+      Edition? defaultTafseer;
+      try {
+        defaultTafseer = filteredTf.firstWhere(
+          (e) => e.apiKey.contains('ibn-e-kaseer') || e.apiKey.contains('bayan-ul-quran'),
+        );
+      } catch (_) {
+        defaultTafseer = filteredTf.isNotEmpty ? filteredTf.first : null;
+      }
+
+      if (mounted) {
+        setState(() {
+          _translations = filteredT.isNotEmpty ? filteredT : allTranslations;
+          _tafseers = filteredTf.isNotEmpty ? filteredTf : allTafseers;
+          _selectedTranslation = defaultTranslation ?? (_translations.isNotEmpty ? _translations.first : null);
+          _selectedTafseer = defaultTafseer ?? (_tafseers.isNotEmpty ? _tafseers.first : null);
+          _loadingEditions = false;
+        });
+      }
+
+      // 2. Non-blocking background sync with 4s timeout so it never hangs
+      repo.fetchAndSyncApiEditions('translation').timeout(const Duration(seconds: 4)).then((_) async {
+        if (!mounted) return;
+        final updatedT = await repo.getAllEditions(type: 'translation');
+        final updatedFiltered = updatedT.where((e) => langs.contains(e.language)).toList();
+        if (mounted && updatedFiltered.isNotEmpty) {
+          setState(() {
+            _translations = updatedFiltered;
+            _selectedTranslation ??= updatedFiltered.first;
+          });
+        }
+      }).catchError((_) {});
+    } catch (_) {
+      if (mounted) setState(() => _loadingEditions = false);
+    }
   }
 
   Future<void> _loadReciters() async {
+    if (!mounted) return;
     setState(() => _loadingReciters = true);
     final reciterRepo = ref.read(reciterRepositoryProvider);
-    final reciters = await reciterRepo.getReciters();
-
-    Reciter? defaultReciter;
     try {
-      defaultReciter = reciters.firstWhere((r) => r.id.contains('alafasy') || r.id.contains('sudais'));
-    } catch (_) {
-      defaultReciter = reciters.isNotEmpty ? reciters.first : null;
-    }
+      final reciters = await reciterRepo.getReciters();
+      Reciter? defaultReciter;
+      try {
+        defaultReciter = reciters.firstWhere((r) => r.id.contains('alafasy') || r.id.contains('sudais'));
+      } catch (_) {
+        defaultReciter = reciters.isNotEmpty ? reciters.first : null;
+      }
 
-    setState(() {
-      _reciters = reciters;
-      _selectedReciter = defaultReciter;
-      _loadingReciters = false;
-    });
+      if (mounted) {
+        setState(() {
+          _reciters = reciters;
+          _selectedReciter = defaultReciter;
+          _loadingReciters = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _loadingReciters = false);
+    }
   }
 
   Future<void> _saveSettings() async {
