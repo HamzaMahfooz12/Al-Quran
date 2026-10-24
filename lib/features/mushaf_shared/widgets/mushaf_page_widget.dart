@@ -599,15 +599,17 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
 
     final parts = rawText.trimRight().split(' ');
     if (parts.length > 1) {
-      final lastPart = parts.sublist(1).join(' ');
-      if (lastPart.split('').any((c) => WaqfHelper.waqfChars.contains(c))) {
+      final lastPart = parts.sublist(1).join(' ').trim();
+      // Ensure lastPart consists ONLY of genuine waqf codepoints and no normal letters
+      if (lastPart.isNotEmpty &&
+          lastPart.split('').every((c) => WaqfHelper.isWaqfCodepoint(c) || c == ' ')) {
         return (parts[0], lastPart.replaceAll(' ', ''));
       }
     }
 
     final chars = rawText.split('');
     final waqfList = <String>[];
-    while (chars.isNotEmpty && (WaqfHelper.waqfChars.contains(chars.last) || chars.last == ' ')) {
+    while (chars.isNotEmpty && (WaqfHelper.isWaqfCodepoint(chars.last) || chars.last == ' ')) {
       final c = chars.removeLast();
       if (c != ' ') {
         waqfList.insert(0, c);
@@ -663,7 +665,7 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
         style: TextStyle(
           fontFamily: fontFamily,
           fontSize: fontSize,
-          fontWeight: word.glyphCode.contains('﴿') ? FontWeight.bold : FontWeight.normal,
+          fontWeight: FontWeight.bold,
           color: isMarked ? const Color(0xFFD32F2F) : const Color(0xFF111111),
           height: 1.25,
         ),
@@ -681,7 +683,7 @@ class _MushafPageWidgetState extends ConsumerState<MushafPageWidget> {
             style: TextStyle(
               fontFamily: fontFamily,
               fontSize: fontSize,
-              fontWeight: word.glyphCode.contains('﴿') ? FontWeight.bold : FontWeight.normal,
+              fontWeight: FontWeight.bold,
               color: isMarked ? const Color(0xFFD32F2F) : const Color(0xFF111111),
               height: 1.25,
             ),

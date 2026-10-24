@@ -21,6 +21,7 @@ import '../audio/audio_control_bar.dart';
 import '../share/widgets/ayah_share_dialog.dart';
 import '../tafseer/widgets/ayah_tafseer_modal.dart';
 import '../shared/widgets/unified_ayah_card.dart';
+import '../shared/widgets/edition_selection_sheet.dart';
 
 // ── Juz metadata ──────────────────────────────────────────────────────────────
 const _kJuzInfo = [
@@ -266,172 +267,35 @@ class _JuzScreenState extends ConsumerState<JuzScreen> {
   }
 
   Future<void> _showEditionSelector(String type) async {
-    final repo = ref.read(quranRepositoryProvider);
-    final allEditions = await repo.getAllEditions(type: type);
+    final currentEd = type == 'translation'
+        ? _activeTranslationEdition
+        : _activeTafseerEdition;
 
-    final currentLang = type == 'translation'
-        ? (_activeTranslationEdition?.language.toLowerCase() ?? 'ur')
-        : (_activeTafseerEdition?.language.toLowerCase() ?? 'ar');
-    String selectedLangFilter = currentLang;
-
-    if (!mounted) return;
-
-    // Background sync without blocking the UI
-    unawaited(repo.fetchAndSyncApiEditions(type).catchError((_) => <Edition>[]));
-
-    // Pre-organize and pre-sort by language
-    final Map<String, List<Edition>> langMap = {};
-    for (final ed in allEditions) {
-      final lang = ed.language.toLowerCase();
-      langMap.putIfAbsent(lang, () => []).add(ed);
-    }
-    for (final list in langMap.values) {
-      list.sort((a, b) {
-        if (a.isAvailable && !b.isAvailable) return -1;
-        if (!a.isAvailable && b.isAvailable) return 1;
-        return a.name.compareTo(b.name);
-      });
-    }
-
-    showModalBottomSheet(
+    await showEditionSelectionSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            final filteredList = langMap[selectedLangFilter] ??
-                (selectedLangFilter == 'all' ? allEditions : <Edition>[]);
+      ref: ref,
+      type: type,
+      currentEdition: currentEd,
+      onEditionSelected: (ed) async {
+        if (type == 'translation') {
+          setState(() {
+            _activeTranslationEdition = ed;
+            _showTranslation = true;
+          });
+          await ref.read(settingsServiceProvider).setSelectedTranslationId(ed.id);
+        } else {
+          setState(() {
+            _activeTafseerEdition = ed;
+          });
+          await ref.read(settingsServiceProvider).setSelectedTafseerEditionId(ed.id);
+        }
 
-            return ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(ctx).size.height * 0.8,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          type == 'translation' ? 'Select Translation' : 'Select Tafseer',
-                          style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        const Spacer(),
-                        IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () => Navigator.pop(ctx),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
+        await _loadJuzAyahs();
 
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          _buildLangChip('Arabic (AR)', 'ar', selectedLangFilter, (lang) {
-                            setModalState(() => selectedLangFilter = lang);
-                          }),
-                          _buildLangChip('Urdu (UR)', 'ur', selectedLangFilter, (lang) {
-                            setModalState(() => selectedLangFilter = lang);
-                          }),
-                          _buildLangChip('English (EN)', 'en', selectedLangFilter, (lang) {
-                            setModalState(() => selectedLangFilter = lang);
-                          }),
-                          _buildLangChip('Hindi (HI)', 'hi', selectedLangFilter, (lang) {
-                            setModalState(() => selectedLangFilter = lang);
-                          }),
-                        ],
-                      ),
-                    ),
-
-                    const Divider(height: 20),
-
-                    Expanded(
-                      child: filteredList.isEmpty
-                          ? Center(
-                              child: Text(
-                                'No editions found for this language.',
-                                style: GoogleFonts.inter(color: AppTheme.textMuted),
-                              ),
-                            )
-                          : ListView.builder(
-                              itemCount: filteredList.length,
-                              itemBuilder: (context, index) {
-                                final ed = filteredList[index];
-                                final isSelected = type == 'translation'
-                                    ? _activeTranslationEdition?.id == ed.id
-                                    : _activeTafseerEdition?.id == ed.id;
-
-                                return ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                                  title: Text(ed.name, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14)),
-                                  subtitle: Text('${ed.language.toUpperCase()} • ${ed.apiKey}', style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textMuted)),
-                                  trailing: isSelected
-                                      ? const Icon(Icons.check_circle, color: AppTheme.primary, size: 24)
-                                      : (ed.isAvailable
-                                          ? const Icon(Icons.radio_button_unchecked, color: AppTheme.textMuted, size: 22)
-                                          : Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                const Icon(Icons.cloud_download_outlined, color: AppTheme.primary, size: 20),
-                                                const SizedBox(width: 4),
-                                                Text('Download', style: GoogleFonts.inter(fontSize: 12, color: AppTheme.primary, fontWeight: FontWeight.w600)),
-                                              ],
-                                            )),
-                                  onTap: () async {
-                                    Navigator.pop(ctx);
-
-                                    if (type == 'translation') {
-                                      setState(() {
-                                        _activeTranslationEdition = ed;
-                                        _showTranslation = true;
-                                      });
-                                      await ref.read(settingsServiceProvider).setSelectedTranslationId(ed.id);
-                                    } else {
-                                      setState(() {
-                                        _activeTafseerEdition = ed;
-                                      });
-                                      await ref.read(settingsServiceProvider).setSelectedTafseerEditionId(ed.id);
-                                    }
-
-                                    await _loadJuzAyahs();
-
-                                    if (!ed.isAvailable) {
-                                      _downloadAndSetEdition(ed);
-                                    }
-                                  },
-                                );
-                              },
-                            ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
+        if (!ed.isAvailable) {
+          _downloadAndSetEdition(ed);
+        }
       },
-    );
-  }
-
-  Widget _buildLangChip(String label, String code, String current, Function(String) onSelect) {
-    final isSelected = current == code;
-    return Padding(
-      padding: const EdgeInsets.only(right: 6),
-      child: FilterChip(
-        label: Text(label, style: GoogleFonts.inter(fontSize: 12, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
-        selected: isSelected,
-        selectedColor: AppTheme.primarySurface,
-        checkmarkColor: AppTheme.primary,
-        onSelected: (_) => onSelect(code),
-      ),
     );
   }
 

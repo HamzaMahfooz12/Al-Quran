@@ -1,6 +1,6 @@
 {
-  "version": "1.0.4",
-  "build_number": 5,
-  "download_url": "https://github.com/HamzaMahfooz12/Al-Quran/releases/download/v1.0.4/app-arm64-v8a-release.apk",
-  "changelog": "• Authentic Illuminated Gold & Ivory Surah Headers in 15-Line & 16-Line Mushafs\n• English-only Verse of the Day with one-tap copy\n• Enhanced Prayer Schedule with core prayers partition & voluntary timings\n• Synchronized Word-by-Word Audio Recitation & Pre-Caching Engine\n• Storage & Audio Cache Manager in Settings"
+  "version": "1.0.5",
+  "build_number": 7,
+  "download_url": "https://github.com/HamzaMahfooz12/Al-Quran/releases/download/v1.0.5/app-arm64-v8a-release.apk",
+  "changelog": "• Cleaned book titles and author names with expanded multi-line display without truncated badge noise\n• Simplified search bar with transparent placeholder styling\n• Added scholar portraits and emblems across all Tafseer and Translation books\n• English naming for Hindi translations with Mufti Taqi Usmani pre-bundled and Maududi downloadable\n• Real-time in-sheet download progress without closing the modal"
 }

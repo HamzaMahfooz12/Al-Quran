@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../core/theme/app_theme.dart';
+import '../../data/edition_metadata.dart';
 import '../../data/models/edition.dart';
 import '../../data/models/reciter.dart';
 import '../../data/repositories/quran_repository.dart';
@@ -48,13 +49,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
     'en': 'English',
     'hi': 'Hindi (हिंदी)',
     'ar': 'Arabic (العربية)',
-    'bn': 'Bengali (বাংলা)',
-    'tr': 'Turkish (Türkçe)',
-    'id': 'Indonesian (Bahasa)',
-    'ms': 'Malay (Melayu)',
-    'fa': 'Persian (فارسی)',
-    'fr': 'French (Français)',
-    'de': 'German (Deutsch)',
   };
 
   @override
@@ -476,20 +470,26 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                 physics: const BouncingScrollPhysics(),
                 children: [
                   _sectionLabel('Primary Translation'),
-                  ..._translations.map((e) => _radioTile(
-                        title: e.name,
-                        subtitle: e.language.toUpperCase(),
-                        selected: _selectedTranslation?.id == e.id,
-                        onTap: () => setState(() => _selectedTranslation = e),
-                      )),
+                  ..._translations.map((e) {
+                    final meta = EditionMetadataRegistry.getMetadata(e.apiKey, fallbackName: e.name);
+                    return _radioTile(
+                      title: meta.bookTitle,
+                      subtitle: '${meta.scholarName} • ${e.language.toUpperCase()}',
+                      selected: _selectedTranslation?.id == e.id,
+                      onTap: () => setState(() => _selectedTranslation = e),
+                    );
+                  }),
                   const SizedBox(height: 16),
                   _sectionLabel('Default Tafseer'),
-                  ..._tafseers.map((e) => _radioTile(
-                        title: e.name,
-                        subtitle: e.language.toUpperCase(),
-                        selected: _selectedTafseer?.id == e.id,
-                        onTap: () => setState(() => _selectedTafseer = e),
-                      )),
+                  ..._tafseers.map((e) {
+                    final meta = EditionMetadataRegistry.getMetadata(e.apiKey, fallbackName: e.name);
+                    return _radioTile(
+                      title: meta.bookTitle,
+                      subtitle: '${meta.scholarName} • ${e.language.toUpperCase()}',
+                      selected: _selectedTafseer?.id == e.id,
+                      onTap: () => setState(() => _selectedTafseer = e),
+                    );
+                  }),
                 ],
               ),
             ),
@@ -855,7 +855,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
 
     try {
       // 1. Immediately load bundled/cached editions from local SQLite
-      final allTranslations = await repo.getAllEditions(type: 'translation');
+      final allTranslations = (await repo.getAllEditions(type: 'translation'))
+          .where((e) => EditionMetadataRegistry.approvedTranslationKeys.contains(e.apiKey))
+          .toList();
       final allTafseers = await repo.getAllEditions(type: 'tafseer');
 
       final filteredT = allTranslations.where((e) => langs.contains(e.language)).toList();
@@ -864,7 +866,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
       Edition? defaultTranslation;
       try {
         defaultTranslation = filteredT.firstWhere(
-          (e) => e.apiKey.contains('jalandhry') || e.apiKey.contains('ahmedali'),
+          (e) => e.apiKey.contains('jalandhry') || e.apiKey.contains('taqiusmani') || e.apiKey.contains('sahih'),
         );
       } catch (_) {
         defaultTranslation = filteredT.isNotEmpty ? filteredT.first : null;

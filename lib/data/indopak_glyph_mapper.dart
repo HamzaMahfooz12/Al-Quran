@@ -23,17 +23,17 @@ class IndoPakGlyphMapper {
     '\uF666': '',   // Ligature mark
 
     // ── Waqf (Stop Signs) ──
-    '\uF64A': ' ۙ', // Waqf Lazim (U+06D9)
-    '\uF64B': ' ۚ', // Waqf Ja'iz (U+06DA)
-    '\uF64C': ' ؕ', // Waqf Mutlaq (Small Tah - U+0615)
-    '\uF64D': ' ۖ', // Al-Waslu Awla (U+06D6)
-    '\uF64E': ' ۛ', // Mu'anaqah (Three dots - U+06DB)
-    '\uF64F': ' ۬', // Waqf mark
-    '\uF652': ' ۘ', // Waqf mark
-    '\uF65B': ' ۙ', // Waqf mark
-    '\uF663': ' ۘ', // Waqf mark
-    '\uF697': ' ۚ', // Waqf mark
-    '\uF699': ' ؕ', // Waqf mark
+    '\uF64A': 'ۙ', // Waqf Lazim (U+06D9)
+    '\uF64B': '',  // In-word typographic ligature connector / tatweel (DO NOT map to Waqf!)
+    '\uF64C': 'ؕ', // Waqf Mutlaq (Small Tah - U+0615)
+    '\uF64D': 'ۖ', // Al-Waslu Awla (U+06D6)
+    '\uF64E': 'ۛ', // Mu'anaqah (Three dots - U+06DB)
+    '\uF64F': '۬', // Waqf mark (U+06AC)
+    '\uF652': 'ۘ', // Waqf mark (U+06D8)
+    '\uF65B': 'ۙ', // Waqf mark (U+06D9)
+    '\uF663': 'ۘ', // Waqf mark (U+06D8)
+    '\uF697': 'ۚ', // Waqf mark (U+06DA)
+    '\uF699': 'ؕ', // Waqf mark (U+0615)
   };
 
   /// Sanitizes text for display in standard Unicode Arabic fonts

@@ -19,7 +19,6 @@ class QuranSeeder {
   static const _bundledEditions = [
     {'api_key': 'quran-uthmani', 'type': 'arabic', 'language': 'ar', 'name': 'Uthmani Arabic'},
     {'api_key': 'ur.jalandhry', 'type': 'translation', 'language': 'ur', 'name': 'Fateh Muhammad Jalandhry'},
-    {'api_key': 'ur.ahmedali', 'type': 'translation', 'language': 'ur', 'name': 'Ahmed Ali'},
     {'api_key': 'en.sahih', 'type': 'translation', 'language': 'en', 'name': 'Sahih International'},
     {'api_key': 'ur.jalalayn', 'type': 'tafseer', 'language': 'ur', 'name': 'Tafseer Jalalayn (Urdu)'},
   ];

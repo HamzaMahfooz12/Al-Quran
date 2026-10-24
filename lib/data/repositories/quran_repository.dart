@@ -209,47 +209,9 @@ class QuranRepository {
     _editionsCache.clear();
   }
 
-  /// Fetches all worldwide editions of a given type ('translation' or 'tafseer')
+  /// Returns all curated editions of a given type ('translation' or 'tafseer')
   Future<List<Edition>> fetchAndSyncApiEditions(String type) async {
-    if (type == 'translation') {
-      try {
-        final dio = Dio();
-        final response = await dio.get('https://api.alquran.cloud/v1/edition/type/translation');
-        if (response.data != null && response.data['status'] == 'OK') {
-          final items = (response.data['data'] as List).cast<Map<String, dynamic>>();
-
-          final db = await _db.database;
-          final batch = db.batch();
-
-          for (final item in items) {
-            final apiKey = item['identifier'] as String? ?? '';
-            final name = item['name'] as String? ?? item['englishName'] as String? ?? '';
-            final language = item['language'] as String? ?? 'en';
-
-            // Skip invalid translation keys that return Arabic text
-            if (apiKey == 'ur.taqi' || apiKey == 'ur.tariqmasood' || apiKey == 'quran-uthmani') {
-              continue;
-            }
-
-            batch.insert(
-              'editions',
-              {
-                'type': 'translation',
-                'language': language,
-                'name': name,
-                'api_key': apiKey,
-                'is_bundled': 0,
-                'is_downloaded': 0,
-              },
-              conflictAlgorithm: ConflictAlgorithm.ignore,
-            );
-          }
-
-          await batch.commit(noResult: true);
-        }
-      } catch (_) {}
-    }
-
+    // Only return the curated, authentic editions established in our plan
     return getAllEditions(type: type);
   }
 

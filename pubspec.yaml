@@ -2,7 +2,7 @@ name: al_quran
 description: "Al Quran — Read, Listen, Reflect. A complete Quran app with verse-by-verse reading, Mushaf view, audio recitation, and Tafseer."
 publish_to: 'none'
 
-version: 1.0.4+5
+version: 1.0.5+7
 
 environment:
   sdk: ^3.11.4
@@ -83,6 +83,10 @@ flutter:
     - assets/app_database.sqlite.gz
     - assets/downloadable_editions.json
     - assets/data/
+    - assets/translations/urdu/
+    - assets/translations/english/
+    - assets/translations/hindi/
+    - assets/images/scholars/
     - assets/version.json
     - version.json
 

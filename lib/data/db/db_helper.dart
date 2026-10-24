@@ -61,6 +61,13 @@ class DatabaseHelper {
               final tafseerCount = (tafseerCountRes.first['c'] as int?) ?? 0;
               if (tafseerCount > 3000) {
                 shouldExtract = true;
+              } else {
+                // Check if DB has the new curated translation editions (e.g. Mufti Taqi Usmani id 501)
+                final editionCheck = await tempDb.rawQuery("SELECT COUNT(*) as c FROM editions WHERE id=501");
+                final editionCount = (editionCheck.first['c'] as int?) ?? 0;
+                if (editionCount == 0) {
+                  shouldExtract = true;
+                }
               }
             }
           }
@@ -122,6 +129,19 @@ class DatabaseHelper {
     await db.execute('CREATE INDEX IF NOT EXISTS idx_mutashabihat_src ON mutashabihat(src_surah, src_ayah)');
     await db.execute('CREATE INDEX IF NOT EXISTS idx_mutashabihat_juz ON mutashabihat(juz)');
     await db.execute('CREATE INDEX IF NOT EXISTS idx_mutashabihat_similar ON mutashabihat(similar_surah, similar_ayah)');
+
+    // Ensure only the 11 approved translations exist in editions table
+    try {
+      await db.execute('''
+        DELETE FROM editions 
+        WHERE type = 'translation' 
+          AND api_key NOT IN (
+            'ur.jalandhry', 'ur.kanzuliman', 'ur.maududi', 'ur.junagarhi', 'ur.qadri', 'ur.taqiusmani',
+            'en.sahih', 'en.wahiduddin', 'en.maududi',
+            'hi.maududi', 'hi.taqiusmani'
+          );
+      ''');
+    } catch (_) {}
 
     return db;
   }
@@ -320,63 +340,112 @@ class DatabaseHelper {
     await batch.commit(noResult: true);
   }
 
-  // ── Seed the 5 pre-bundled editions ─────────────────────────────────────
+  // ── Seed the approved editions ──────────────────────────────────────────
   Future<void> _seedBundledEditions(Database db) async {
     final editions = [
+      // Urdu (6)
       {
         'id': 1,
         'type': 'translation',
         'language': 'ur',
-        'name': 'Fateh Muhammad Jalandhry (مولانا فتح محمد جالندھری)',
+        'name': 'Fath-ul-Hameed (فتح الحمید)',
         'api_key': 'ur.jalandhry',
         'is_bundled': 1,
         'is_downloaded': 1,
       },
       {
-        'id': 2,
+        'id': 280,
         'type': 'translation',
         'language': 'ur',
-        'name': 'Ahmed Ali (احمد علی)',
-        'api_key': 'ur.ahmedali',
-        'is_bundled': 1,
-        'is_downloaded': 1,
+        'name': 'Kanz-ul-Iman (کنز الایمان فی ترجمۃ القرآن)',
+        'api_key': 'ur.kanzuliman',
+        'is_bundled': 0,
+        'is_downloaded': 0,
       },
       {
         'id': 3,
         'type': 'translation',
         'language': 'ur',
-        'name': 'Abul A\'la Maududi (مولانا ابوالاعلی مودودی)',
+        'name': 'Tafhim-ul-Quran (تفہیم القرآن)',
         'api_key': 'ur.maududi',
-        'is_bundled': 1,
+        'is_bundled': 0,
         'is_downloaded': 0,
       },
       {
-        'id': 4,
+        'id': 300,
         'type': 'translation',
         'language': 'ur',
-        'name': 'Kanzul Iman (کنز الایمان)',
-        'api_key': 'ur.kanzulumal',
-        'is_bundled': 1,
+        'name': 'Tarjuma Quran Majeed (ترجمہ قرآن مجید - شاہ فہد کمپلیکس)',
+        'api_key': 'ur.junagarhi',
+        'is_bundled': 0,
         'is_downloaded': 0,
       },
+      {
+        'id': 281,
+        'type': 'translation',
+        'language': 'ur',
+        'name': 'Irfan-ul-Quran (عرفان القرآن)',
+        'api_key': 'ur.qadri',
+        'is_bundled': 0,
+        'is_downloaded': 0,
+      },
+      {
+        'id': 501,
+        'type': 'translation',
+        'language': 'ur',
+        'name': 'Aasan Tarjuma Quran (آسان ترجمہ قرآن)',
+        'api_key': 'ur.taqiusmani',
+        'is_bundled': 1,
+        'is_downloaded': 1,
+      },
+      // English (3)
       {
         'id': 5,
         'type': 'translation',
         'language': 'en',
-        'name': 'Sahih International',
+        'name': "The Qur'an: English Meanings & Notes (Saheeh International)",
         'api_key': 'en.sahih',
+        'is_bundled': 0,
+        'is_downloaded': 0,
+      },
+      {
+        'id': 322,
+        'type': 'translation',
+        'language': 'en',
+        'name': 'The Quran: Translation & Commentary (Wahiduddin Khan)',
+        'api_key': 'en.wahiduddin',
+        'is_bundled': 0,
+        'is_downloaded': 0,
+      },
+      {
+        'id': 283,
+        'type': 'translation',
+        'language': 'en',
+        'name': "Towards Understanding the Qur'an (Tafhim-ul-Quran)",
+        'api_key': 'en.maududi',
+        'is_bundled': 1,
+        'is_downloaded': 1,
+      },
+      // Hindi (2)
+      {
+        'id': 241,
+        'type': 'translation',
+        'language': 'hi',
+        'name': 'क़ुरआन मजीद (तफ़हीम-उल-क़ुरआन अनुवाद)',
+        'api_key': 'hi.maududi',
         'is_bundled': 1,
         'is_downloaded': 1,
       },
       {
-        'id': 6,
+        'id': 502,
         'type': 'translation',
-        'language': 'en',
-        'name': 'Yusuf Ali',
-        'api_key': 'en.yusufali',
+        'language': 'hi',
+        'name': 'आसान तर्जुमा क़ुरआन (हिंदी - मुफ़्ती तकी उस्मानी)',
+        'api_key': 'hi.taqiusmani',
         'is_bundled': 1,
         'is_downloaded': 1,
       },
+      // Core Tafseer
       {
         'id': 7,
         'type': 'tafseer',

@@ -4,17 +4,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../data/edition_metadata.dart';
 import '../../../data/models/ayah.dart';
 import '../../../data/models/edition.dart';
 import '../../../data/models/surah_info.dart';
 import '../../../data/repositories/quran_repository.dart';
 import '../../../services/settings_service.dart';
+import '../../../services/tafseer_service.dart';
 
-/// Displays the dedicated Ayah Tafseer Modal Window matching the user's reference design:
-/// - Top Blue/Teal Header Banner: "Surat No.X Ayat No.Y" with Share & Close buttons
-/// - Tafseer Selector Dropdown Card: Dark container with green border, round emblem, active Tafseer name & dropdown
-/// - Scrollable rich Nastaliq Urdu / Arabic / English Tafseer content
-/// - Instant Tafseer switching across bundled & downloadable editions
+/// Displays the dedicated Ayah Tafseer Modal Window matching the app's signature
+/// tactile parchment & ivory theme with modern pills and high readability.
 void showAyahTafseerModal({
   required BuildContext context,
   required WidgetRef ref,
@@ -27,7 +27,7 @@ void showAyahTafseerModal({
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    barrierColor: Colors.black.withValues(alpha: 0.65),
+    barrierColor: Colors.black.withValues(alpha: 0.5),
     builder: (ctx) => _AyahTafseerModalContent(
       ayah: ayah,
       initialEdition: activeTafseerEdition,
@@ -62,6 +62,7 @@ class _AyahTafseerModalContentState
   bool _isLoading = true;
   List<Edition> _availableTafseers = [];
   bool _showDropdown = false;
+  String _selectedLangFilter = 'all';
   double _fontSize = 17.0;
 
   @override
@@ -69,7 +70,10 @@ class _AyahTafseerModalContentState
     super.initState();
     _fontSize = ref.read(urduFontSizeProvider);
     _currentEdition = widget.initialEdition;
-    _tafseerText = null;
+    _selectedLangFilter = widget.initialEdition.language.isNotEmpty
+        ? widget.initialEdition.language
+        : 'ur';
+    _tafseerText = widget.initialTafseerText;
     _loadAllTafseerEditions();
     _fetchTafseerForAyah(_currentEdition);
   }
@@ -77,6 +81,14 @@ class _AyahTafseerModalContentState
   Future<void> _loadAllTafseerEditions() async {
     final repo = ref.read(quranRepositoryProvider);
     final editions = await repo.getAllEditions(type: 'tafseer');
+
+    // Sort: Downloaded/bundled first, then alphabetically
+    editions.sort((a, b) {
+      if (a.isAvailable && !b.isAvailable) return -1;
+      if (!a.isAvailable && b.isAvailable) return 1;
+      return a.name.compareTo(b.name);
+    });
+
     if (mounted) {
       setState(() {
         _availableTafseers = editions;
@@ -89,17 +101,21 @@ class _AyahTafseerModalContentState
       _isLoading = true;
       _tafseerText = null;
     });
+
     final repo = ref.read(quranRepositoryProvider);
 
     try {
-      final text = await repo.getContent(widget.ayah.id, edition.id);
+      final text = await TafseerService.fetchTafseerForAyah(
+        surah: widget.ayah.surah,
+        ayah: widget.ayah.ayahNumber,
+        ayahId: widget.ayah.id,
+        edition: edition,
+        repo: repo,
+      );
 
       if (mounted) {
         setState(() {
-          final cleaned = (text != null && text.trim().isNotEmpty)
-              ? _cleanHtml(text).trim()
-              : null;
-          _tafseerText = (cleaned != null && cleaned.isNotEmpty) ? cleaned : null;
+          _tafseerText = (text != null && text.trim().isNotEmpty) ? text.trim() : null;
           _isLoading = false;
         });
       }
@@ -120,10 +136,7 @@ class _AyahTafseerModalContentState
     });
 
     widget.onEditionChanged(edition);
-    await ref
-        .read(settingsServiceProvider)
-        .setSelectedTafseerEditionId(edition.id);
-
+    await ref.read(settingsServiceProvider).setSelectedTafseerEditionId(edition.id);
     await _fetchTafseerForAyah(edition);
   }
 
@@ -152,20 +165,27 @@ class _AyahTafseerModalContentState
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.check_circle, color: Colors.white, size: 18),
+            const Icon(Icons.check_circle_rounded, color: Colors.white, size: 18),
             const SizedBox(width: 8),
             Text(
               'Tafseer copied to clipboard',
-              style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500),
+              style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w600),
             ),
           ],
         ),
-        backgroundColor: const Color(0xFF0F2038),
+        backgroundColor: AppTheme.primary,
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
+  }
+
+  List<Edition> _getFilteredTafseers() {
+    if (_selectedLangFilter == 'all') return _availableTafseers;
+    return _availableTafseers
+        .where((e) => e.language.toLowerCase() == _selectedLangFilter.toLowerCase())
+        .toList();
   }
 
   @override
@@ -173,140 +193,197 @@ class _AyahTafseerModalContentState
     final surahInfo = widget.ayah.surah <= kSurahList.length
         ? kSurahList[widget.ayah.surah - 1]
         : null;
-    final surahTitle = 'Surat No.${widget.ayah.surah} Ayat No.${widget.ayah.ayahNumber}';
-    final isUrduOrArabic = _currentEdition.language == 'ur' || _currentEdition.language == 'ar';
+    final surahTitle = 'Surat No.${widget.ayah.surah} • Ayat No.${widget.ayah.ayahNumber}';
+    final isUrdu = _currentEdition.language == 'ur';
+    final isArabic = _currentEdition.language == 'ar';
+    final isUrduOrArabic = isUrdu || isArabic;
+    final filteredTafseers = _getFilteredTafseers();
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.88,
       decoration: const BoxDecoration(
-        color: Color(0xFF1B2228), // Deep obsidian background matching reference
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        color: AppTheme.background,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black45,
-            blurRadius: 20,
+            color: Colors.black26,
+            blurRadius: 18,
             offset: Offset(0, -4),
           ),
         ],
       ),
       child: Column(
         children: [
-          // ── 1. Top Blue Header Banner ─────────────────────────────────────
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF1E3A60), Color(0xFF0F2038)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+          // ── 1. Top Drag Handle ────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.only(top: 12, bottom: 6),
+            child: Center(
+              child: Container(
+                width: 42,
+                height: 4.5,
+                decoration: BoxDecoration(
+                  color: AppTheme.borderWarm,
+                  borderRadius: BorderRadius.circular(2.5),
+                ),
               ),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
             ),
-            child: SafeArea(
-              bottom: false,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.menu_book_rounded,
-                          color: Colors.white,
-                          size: 20,
+          ),
+
+          // ── 2. Top Header Banner ──────────────────────────────────────────
+          Container(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+            decoration: const BoxDecoration(
+              color: AppTheme.surface,
+              border: Border(bottom: BorderSide(color: AppTheme.divider, width: 1.0)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: AppTheme.goldSurface,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppTheme.gold.withValues(alpha: 0.25)),
+                  ),
+                  child: const Icon(
+                    Icons.menu_book_rounded,
+                    color: AppTheme.goldDark,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        surahTitle,
+                        style: GoogleFonts.outfit(
+                          fontSize: 16.5,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textPrimary,
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            surahInfo != null
-                                ? '$surahTitle (${surahInfo.nameTransliteration})'
-                                : surahTitle,
-                            style: GoogleFonts.outfit(
-                              fontSize: 16.5,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              letterSpacing: 0.2,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                      ),
+                      const SizedBox(height: 1),
+                      Text(
+                        surahInfo != null
+                            ? '${surahInfo.nameTransliteration} (${surahInfo.nameTranslation})'
+                            : 'Surah ${widget.ayah.surah}',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 11.5,
+                          color: AppTheme.textMuted,
                         ),
-                      ],
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Share Button
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: _shareTafseer,
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      width: 34,
+                      height: 34,
+                      decoration: BoxDecoration(
+                        color: AppTheme.cardBgSecondary,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppTheme.divider),
+                      ),
+                      child: const Icon(
+                        Icons.share_rounded,
+                        size: 16,
+                        color: AppTheme.textPrimary,
+                      ),
                     ),
                   ),
+                ),
+                const SizedBox(width: 8),
 
-                  // Share Button
-                  IconButton(
-                    icon: const Icon(Icons.share_rounded, color: Colors.white, size: 21),
-                    tooltip: 'Share Tafseer',
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                    onPressed: _shareTafseer,
+                // Close Button
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => Navigator.of(context).pop(),
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      width: 34,
+                      height: 34,
+                      decoration: BoxDecoration(
+                        color: AppTheme.cardBgSecondary,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppTheme.divider),
+                      ),
+                      child: const Icon(
+                        Icons.close_rounded,
+                        size: 18,
+                        color: AppTheme.textPrimary,
+                      ),
+                    ),
                   ),
+                ),
+              ],
+            ),
+          ),
 
-                  const SizedBox(width: 4),
-
-                  // Close Button
-                  IconButton(
-                    icon: const Icon(Icons.close_rounded, color: Colors.white, size: 24),
-                    tooltip: 'Close',
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
+          // ── 3. Language Filter Pills ───────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              child: Row(
+                children: [
+                  _buildLangPill(label: 'Urdu (اردو)', code: 'ur'),
+                  _buildLangPill(label: 'Arabic (العربية)', code: 'ar'),
+                  _buildLangPill(label: 'English (EN)', code: 'en'),
+                  _buildLangPill(label: 'Hindi (हिंदी)', code: 'hi'),
+                  _buildLangPill(label: 'All Books', code: 'all'),
                 ],
               ),
             ),
           ),
 
-          // ── 2. Tafseer Selection Dropdown Bar ──────────────────────────────
+          // ── 4. Tafseer Book Selector Card (Dropdown Toggle) ───────────────
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: InkWell(
-              onTap: () {
-                setState(() => _showDropdown = !_showDropdown);
-              },
-              borderRadius: BorderRadius.circular(14),
+              onTap: () => setState(() => _showDropdown = !_showDropdown),
+              borderRadius: BorderRadius.circular(16),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF252D34),
-                  borderRadius: BorderRadius.circular(14),
+                  color: AppTheme.surface,
+                  borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: const Color(0xFFD4AF37).withValues(alpha: 0.7),
-                    width: 1.4,
+                    color: _showDropdown ? AppTheme.gold : AppTheme.divider,
+                    width: _showDropdown ? 1.6 : 1.0,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.03),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Row(
                   children: [
-                    // Emblem badge
-                    Container(
-                      width: 38,
-                      height: 38,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF1E3A60), Color(0xFF0F2038)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: const Color(0xFFD4AF37),
-                          width: 1.2,
-                        ),
+                    // Scholar / Emblem Avatar
+                    _buildTafseerAvatar(
+                      EditionMetadataRegistry.getMetadata(
+                        _currentEdition.apiKey,
+                        fallbackName: _currentEdition.name,
                       ),
-                      child: Center(
-                        child: Text(
-                          'تفسير',
-                          style: GoogleFonts.amiri(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFFFFD54F),
-                            height: 1.1,
-                          ),
-                        ),
-                      ),
+                      _currentEdition,
+                      true,
+                      size: 38,
                     ),
-
                     const SizedBox(width: 12),
 
                     // Active Tafseer name
@@ -315,22 +392,30 @@ class _AyahTafseerModalContentState
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            _currentEdition.name,
+                            EditionMetadataRegistry.getMetadata(
+                              _currentEdition.apiKey,
+                              fallbackName: _currentEdition.name,
+                            ).bookTitle,
                             style: GoogleFonts.outfit(
-                              fontSize: 15,
+                              fontSize: 14.5,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: AppTheme.textPrimary,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            'Tap to switch or select another Tafseer',
-                            style: GoogleFonts.inter(
+                            EditionMetadataRegistry.getMetadata(
+                              _currentEdition.apiKey,
+                              fallbackName: _currentEdition.name,
+                            ).scholarName,
+                            style: GoogleFonts.plusJakartaSans(
                               fontSize: 11,
-                              color: const Color(0xFF90A4AE),
+                              color: AppTheme.textMuted,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
@@ -340,7 +425,7 @@ class _AyahTafseerModalContentState
                       _showDropdown
                           ? Icons.keyboard_arrow_up_rounded
                           : Icons.keyboard_arrow_down_rounded,
-                      color: const Color(0xFFD4AF37),
+                      color: AppTheme.gold,
                       size: 26,
                     ),
                   ],
@@ -349,104 +434,85 @@ class _AyahTafseerModalContentState
             ),
           ),
 
-          // ── 3. Dropdown Menu List (shown when tapped) ─────────────────────
+          // ── 5. Dropdown Menu List ─────────────────────────────────────────
           if (_showDropdown)
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              constraints: const BoxConstraints(maxHeight: 230),
+              constraints: const BoxConstraints(maxHeight: 220),
               decoration: BoxDecoration(
-                color: const Color(0xFF222B32),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: const Color(0xFF37474F)),
-                boxShadow: const [
+                color: AppTheme.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppTheme.divider),
+                boxShadow: [
                   BoxShadow(
-                    color: Colors.black38,
-                    blurRadius: 10,
-                    offset: Offset(0, 4),
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 14,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
               child: ListView.separated(
                 shrinkWrap: true,
                 padding: const EdgeInsets.symmetric(vertical: 6),
-                itemCount: _availableTafseers.length,
+                itemCount: filteredTafseers.length,
                 separatorBuilder: (context, index) =>
-                    const Divider(color: Color(0xFF2E3842), height: 1),
+                    const Divider(color: AppTheme.divider, height: 1),
                 itemBuilder: (ctx, i) {
-                  final ed = _availableTafseers[i];
+                  final ed = filteredTafseers[i];
                   final isSelected = ed.id == _currentEdition.id;
+                  final meta = EditionMetadataRegistry.getMetadata(
+                    ed.apiKey,
+                    fallbackName: ed.name,
+                  );
 
                   return InkWell(
                     onTap: () => _onSelectNewEdition(ed),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 10),
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
                       child: Row(
                         children: [
-                          Container(
-                            width: 28,
-                            height: 28,
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? const Color(0xFF2563EB)
-                                  : const Color(0xFF37474F),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Center(
-                              child: Text(
-                                ed.language.toUpperCase(),
-                                style: GoogleFonts.inter(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
+                          _buildTafseerAvatar(meta, ed, isSelected, size: 32),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  ed.name,
-                                  style: GoogleFonts.inter(
+                                  meta.bookTitle,
+                                  style: GoogleFonts.outfit(
                                     fontSize: 13.5,
                                     fontWeight: isSelected
                                         ? FontWeight.bold
-                                        : FontWeight.w500,
+                                        : FontWeight.w600,
                                     color: isSelected
-                                        ? const Color(0xFFD4AF37)
-                                        : Colors.white,
+                                        ? AppTheme.goldDark
+                                        : AppTheme.textPrimary,
                                   ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                if (ed.language == 'ur')
-                                  Text(
-                                    'Urdu Tafseer',
-                                    style: GoogleFonts.inter(
-                                        fontSize: 10.5,
-                                        color: const Color(0xFF78909C)),
-                                  )
-                                else if (ed.language == 'ar')
-                                  Text(
-                                    'Arabic Tafseer',
-                                    style: GoogleFonts.inter(
-                                        fontSize: 10.5,
-                                        color: const Color(0xFF78909C)),
-                                  )
-                                else
-                                  Text(
-                                    'English / Other',
-                                    style: GoogleFonts.inter(
-                                        fontSize: 10.5,
-                                        color: const Color(0xFF78909C)),
+                                const SizedBox(height: 1),
+                                Text(
+                                  meta.scholarName,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 11,
+                                    color: AppTheme.textMuted,
                                   ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ],
                             ),
                           ),
                           if (isSelected)
-                            const Icon(Icons.check_rounded,
-                                color: Color(0xFFD4AF37), size: 22),
+                            const Icon(
+                              Icons.check_circle_rounded,
+                              color: AppTheme.gold,
+                              size: 20,
+                            ),
                         ],
                       ),
                     ),
@@ -455,7 +521,7 @@ class _AyahTafseerModalContentState
               ),
             ),
 
-          // ── 4. Main Tafseer Content Window ─────────────────────────────────
+          // ── 6. Main Tafseer Content Window ─────────────────────────────────
           Expanded(
             child: _isLoading
                 ? const Center(
@@ -463,157 +529,217 @@ class _AyahTafseerModalContentState
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         CircularProgressIndicator(
-                          color: Color(0xFF2563EB),
-                          strokeWidth: 3,
+                          color: AppTheme.primary,
+                          strokeWidth: 2.5,
+                        ),
+                        SizedBox(height: 12),
+                        Text(
+                          'Loading Tafseer commentary...',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: AppTheme.textMuted,
+                          ),
                         ),
                       ],
                     ),
                   )
                 : SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(16, 10, 16, 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         // Arabic Ayah Preview Box
                         Container(
-                          padding: const EdgeInsets.all(14),
+                          padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF14191E),
-                            borderRadius: BorderRadius.circular(14),
+                            color: AppTheme.surface,
+                            borderRadius: BorderRadius.circular(18),
                             border: Border.all(
-                                color: const Color(0xFF2C3E50), width: 1),
-                          ),
-                          child: Text(
-                            widget.ayah.arabicText,
-                            textAlign: TextAlign.right,
-                            textDirection: TextDirection.rtl,
-                            style: GoogleFonts.amiri(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: const Color(0xFFFFE082),
-                              height: 2.0,
+                              color: AppTheme.borderWarm,
+                              width: 1.0,
                             ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.02),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 9,
+                                      vertical: 3.5,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.goldSurface,
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(color: AppTheme.gold.withValues(alpha: 0.3)),
+                                    ),
+                                    child: Text(
+                                      'Ayat ${widget.ayah.ayahNumber}',
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppTheme.goldDark,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                widget.ayah.arabicText,
+                                textAlign: TextAlign.right,
+                                textDirection: TextDirection.rtl,
+                                style: GoogleFonts.amiri(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.textPrimary,
+                                  height: 2.1,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
 
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 14),
 
                         // Tafseer Heading Divider
                         Row(
                           children: [
-                            const Expanded(
-                                child: Divider(color: Color(0xFF37474F))),
+                            const Expanded(child: Divider(color: AppTheme.divider)),
                             Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
                               child: Text(
                                 '${_currentEdition.name} • تفصيل و تفسير',
-                                style: GoogleFonts.inter(
-                                  fontSize: 11.5,
+                                style: GoogleFonts.outfit(
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w600,
-                                  color: const Color(0xFFD4AF37),
+                                  color: AppTheme.goldDark,
                                 ),
                               ),
                             ),
-                            const Expanded(
-                                child: Divider(color: Color(0xFF37474F))),
+                            const Expanded(child: Divider(color: AppTheme.divider)),
                           ],
                         ),
 
                         const SizedBox(height: 14),
 
-                        // Tafseer Main Text Body or Standard Styled Empty State
+                        // Tafseer Main Text Body or Clean Styled Empty State
                         if (_tafseerText != null && _tafseerText!.isNotEmpty)
-                          SelectableText(
-                            _tafseerText!,
-                            textAlign: isUrduOrArabic
-                                ? TextAlign.right
-                                : TextAlign.left,
-                            textDirection: isUrduOrArabic
-                                ? TextDirection.rtl
-                                : TextDirection.ltr,
-                            style: isUrduOrArabic
-                                ? TextStyle(
-                                    fontFamily: _currentEdition.language == 'ur'
-                                        ? 'Jameel Noori Nastaleeq'
-                                        : 'Amiri',
-                                    fontSize: _fontSize + 4,
-                                    height: 2.2,
-                                    color: const Color(0xFFECEFF1),
-                                  )
-                                : GoogleFonts.inter(
-                                    fontSize: _fontSize,
-                                    height: 1.7,
-                                    color: const Color(0xFFECEFF1),
-                                  ),
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: AppTheme.surface,
+                              borderRadius: BorderRadius.circular(18),
+                              border: Border.all(color: AppTheme.divider),
+                            ),
+                            child: SelectableText(
+                              _tafseerText!,
+                              textAlign: isUrduOrArabic
+                                  ? TextAlign.right
+                                  : TextAlign.left,
+                              textDirection: isUrduOrArabic
+                                  ? TextDirection.rtl
+                                  : TextDirection.ltr,
+                              style: isUrdu
+                                  ? GoogleFonts.notoNastaliqUrdu(
+                                      fontSize: _fontSize,
+                                      height: 2.4,
+                                      color: AppTheme.textPrimary,
+                                      fontWeight: FontWeight.w500,
+                                    )
+                                  : (isArabic
+                                      ? GoogleFonts.amiri(
+                                          fontSize: _fontSize + 3,
+                                          height: 2.1,
+                                          color: AppTheme.textPrimary,
+                                        )
+                                      : GoogleFonts.plusJakartaSans(
+                                          fontSize: _fontSize,
+                                          height: 1.75,
+                                          color: AppTheme.textPrimary,
+                                        )),
+                            ),
                           )
                         else
                           Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const SizedBox(height: 32),
-                                Icon(
-                                  Icons.menu_book_rounded,
-                                  size: 48,
-                                  color: Colors.white.withValues(alpha: 0.2),
-                                ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  'تفسير غير متوفر في هذه النسخة',
-                                  textDirection: TextDirection.rtl,
-                                  style: GoogleFonts.amiri(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: const Color(0xFFFFD54F),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 30),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.menu_book_rounded,
+                                    size: 46,
+                                    color: AppTheme.textMuted.withValues(alpha: 0.35),
                                   ),
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  'Tafseer commentary is not available for this Ayah in the selected edition.',
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.inter(
-                                    fontSize: 13,
-                                    color: const Color(0xFF90A4AE),
-                                    height: 1.4,
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 14, vertical: 8),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF0F2038)
-                                        .withValues(alpha: 0.35),
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
-                                      color: const Color(0xFF2563EB)
-                                          .withValues(alpha: 0.4),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    'تفسير غير متوفر في هذه النسخة',
+                                    textDirection: TextDirection.rtl,
+                                    style: GoogleFonts.amiri(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppTheme.goldDark,
                                     ),
                                   ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      const Icon(
-                                        Icons.info_outline_rounded,
-                                        size: 16,
-                                        color: Color(0xFF2563EB),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    'Tafseer commentary is not available for this Ayah in the selected book.',
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 12.5,
+                                      color: AppTheme.textMuted,
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 14),
+                                  InkWell(
+                                    onTap: () => setState(() => _showDropdown = true),
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 14,
+                                        vertical: 8,
                                       ),
-                                      const SizedBox(width: 8),
-                                      Flexible(
-                                        child: Text(
-                                          'You can select another Tafseer from the dropdown above.',
-                                          style: GoogleFonts.inter(
-                                            fontSize: 12,
-                                            color: const Color(0xFFC5D5E8),
-                                          ),
-                                          textAlign: TextAlign.center,
+                                      decoration: BoxDecoration(
+                                        color: AppTheme.primarySurface,
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: AppTheme.primary.withValues(alpha: 0.2),
                                         ),
                                       ),
-                                    ],
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(
+                                            Icons.swap_horiz_rounded,
+                                            size: 16,
+                                            color: AppTheme.primary,
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Text(
+                                            'Switch to another Tafseer book',
+                                            style: GoogleFonts.outfit(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                              color: AppTheme.primary,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                       ],
@@ -621,12 +747,12 @@ class _AyahTafseerModalContentState
                   ),
           ),
 
-          // ── 5. Bottom Action Bar (Font size controls & Copy) ───────────────
+          // ── 7. Bottom Action Bar (Font size controls & Copy) ───────────────
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: const BoxDecoration(
-              color: Color(0xFF14191E),
-              border: Border(top: BorderSide(color: Color(0xFF2C3E50))),
+              color: AppTheme.surface,
+              border: Border(top: BorderSide(color: AppTheme.divider, width: 1.0)),
             ),
             child: SafeArea(
               top: false,
@@ -634,22 +760,39 @@ class _AyahTafseerModalContentState
                 children: [
                   // Font decrease
                   IconButton(
-                    icon: const Icon(Icons.text_decrease_rounded,
-                        color: Color(0xFF90A4AE), size: 20),
+                    icon: const Icon(
+                      Icons.text_decrease_rounded,
+                      color: AppTheme.textSecondary,
+                      size: 20,
+                    ),
                     tooltip: 'Decrease Font',
                     onPressed: () {
                       if (_fontSize > 13) setState(() => _fontSize -= 1.5);
                     },
                   ),
-                  Text(
-                    '${_fontSize.toInt()}pt',
-                    style: GoogleFonts.inter(
-                        fontSize: 12, color: const Color(0xFF90A4AE)),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: AppTheme.cardBgSecondary,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppTheme.divider),
+                    ),
+                    child: Text(
+                      '${_fontSize.toInt()}pt',
+                      style: GoogleFonts.outfit(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.textPrimary,
+                      ),
+                    ),
                   ),
                   // Font increase
                   IconButton(
-                    icon: const Icon(Icons.text_increase_rounded,
-                        color: Color(0xFF90A4AE), size: 20),
+                    icon: const Icon(
+                      Icons.text_increase_rounded,
+                      color: AppTheme.textSecondary,
+                      size: 20,
+                    ),
                     tooltip: 'Increase Font',
                     onPressed: () {
                       if (_fontSize < 28) setState(() => _fontSize += 1.5);
@@ -659,21 +802,27 @@ class _AyahTafseerModalContentState
                   const Spacer(),
 
                   // Copy button
-                  OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFFD4AF37),
-                      side: const BorderSide(color: Color(0xFFD4AF37)),
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primary,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
+                        horizontal: 16,
+                        vertical: 9,
+                      ),
                     ),
                     onPressed: _copyTafseer,
-                    icon: const Icon(Icons.copy_rounded, size: 16),
+                    icon: const Icon(Icons.copy_rounded, size: 15),
                     label: Text(
                       'Copy Tafseer',
-                      style: GoogleFonts.inter(
-                          fontSize: 12, fontWeight: FontWeight.w600),
+                      style: GoogleFonts.outfit(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
@@ -684,21 +833,126 @@ class _AyahTafseerModalContentState
       ),
     );
   }
-}
 
-/// Helper function to strip HTML tags from Tafseer strings
-String _cleanHtml(String text) {
-  var s = text;
-  s = s.replaceAll(RegExp(r'</p>|<br\s*/?>|</div>', caseSensitive: false), '\n');
-  s = s.replaceAll(RegExp(r'<[^>]*>'), '');
-  s = s
-      .replaceAll('&nbsp;', ' ')
-      .replaceAll('&quot;', '"')
-      .replaceAll('&amp;', '&')
-      .replaceAll('&lt;', '<')
-      .replaceAll('&gt;', '>')
-      .replaceAll('&#39;', "'");
-  s = s.replaceAll(RegExp(r'p\s+class="[^"]*"|div\s+lang="[^"]*"'), '');
-  s = s.replaceAll(RegExp(r'\n\s*\n+'), '\n\n');
-  return s.trim();
+  Widget _buildLangPill({required String label, required String code}) {
+    final isSelected = _selectedLangFilter == code;
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => setState(() {
+            _selectedLangFilter = code;
+            _showDropdown = true;
+          }),
+          borderRadius: BorderRadius.circular(22),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 6.5),
+            decoration: BoxDecoration(
+              color: isSelected ? AppTheme.primary : AppTheme.cardBg,
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(
+                color: isSelected ? AppTheme.primary : AppTheme.divider,
+                width: 1.2,
+              ),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: AppTheme.primary.withValues(alpha: 0.2),
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (isSelected) ...[
+                  const Icon(
+                    Icons.check_rounded,
+                    size: 13,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(width: 4),
+                ],
+                Text(
+                  label,
+                  style: GoogleFonts.outfit(
+                    fontSize: 12,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                    color: isSelected ? Colors.white : AppTheme.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTafseerAvatar(
+    EditionMetadata meta,
+    Edition ed,
+    bool isSelected, {
+    double size = 32.0,
+  }) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: isSelected ? AppTheme.gold : AppTheme.borderWarm,
+          width: isSelected ? 1.5 : 1.0,
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(size / 2),
+        child: meta.imageAsset != null
+            ? Image.asset(
+                meta.imageAsset!,
+                width: size,
+                height: size,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) =>
+                    _fallbackTafseerAvatar(ed, isSelected, size),
+              )
+            : _fallbackTafseerAvatar(ed, isSelected, size),
+      ),
+    );
+  }
+
+  Widget _fallbackTafseerAvatar(Edition ed, bool isSelected, double size) {
+    return Container(
+      color: isSelected ? AppTheme.primary : AppTheme.cardBgSecondary,
+      child: Center(
+        child: Text(
+          ed.language.toUpperCase(),
+          style: GoogleFonts.outfit(
+            fontSize: size * 0.35,
+            fontWeight: FontWeight.bold,
+            color: isSelected ? Colors.white : AppTheme.primary,
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _getLanguageLabel(String code) {
+    switch (code.toLowerCase()) {
+      case 'ur':
+        return 'Urdu';
+      case 'en':
+        return 'English';
+      case 'ar':
+        return 'Arabic';
+      case 'hi':
+        return 'Hindi';
+      default:
+        return code.toUpperCase();
+    }
+  }
 }
